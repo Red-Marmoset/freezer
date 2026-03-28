@@ -10,7 +10,6 @@ const splash = document.getElementById('splash');
 const btnStart = document.getElementById('btn-start');
 const splashStatus = document.getElementById('splash-status');
 const btnScope = document.getElementById('btn-scope');
-const btnLoadPreset = document.getElementById('btn-load-preset');
 const btnEditor = document.getElementById('btn-editor');
 const presetInput = document.getElementById('preset-input');
 const presetName = document.getElementById('preset-name');
@@ -51,9 +50,8 @@ function dismissSplash() {
 
 // --- Preset switching ---
 
-function setActivePreset(btn, name) {
+function setActivePreset(name) {
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
   presetName.textContent = name || '';
 }
 
@@ -62,7 +60,7 @@ function loadPresetJSON(json) {
     currentPresetJSON = json;
     const preset = loadAvsPreset(json);
     viz.setPreset(preset);
-    setActivePreset(btnLoadPreset, preset.name);
+    setActivePreset(preset.name);
     console.log('Loaded preset:', preset.name, json);
   } catch (e) {
     console.error('Failed to load preset:', e);
@@ -104,11 +102,7 @@ function loadPresetFile(file) {
 btnScope.addEventListener('click', () => {
   currentPresetJSON = null;
   viz.setPreset(oscilloscope);
-  setActivePreset(btnScope, '');
-});
-
-btnLoadPreset.addEventListener('click', () => {
-  presetInput.click();
+  setActivePreset('Oscilloscope');
 });
 
 presetInput.addEventListener('change', () => {
@@ -138,7 +132,7 @@ btnEditor.addEventListener('click', () => {
 
 // Expose for console
 window.loadPresetJSON = loadPresetJSON;
-window.loadDefaultPreset = () => { currentPresetJSON = null; viz.setPreset(oscilloscope); setActivePreset(btnScope, ''); };
+window.loadDefaultPreset = () => { currentPresetJSON = null; viz.setPreset(oscilloscope); setActivePreset('Oscilloscope'); };
 
 // --- Drag and drop ---
 

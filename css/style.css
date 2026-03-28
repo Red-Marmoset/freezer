@@ -163,6 +163,22 @@ button.active {
   margin-right: 2px;
 }
 
+/* Label styled as button for file input */
+.btn-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-label input[type="file"] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 /* ---- Preset readout ---- */
 
 .readout {
