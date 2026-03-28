@@ -46,14 +46,20 @@ export function createRenderer(canvas) {
     }
   }
 
+  const TARGET_FPS = 60;
+  const FRAME_INTERVAL = 1000 / TARGET_FPS;
+
   function loop() {
     animationId = requestAnimationFrame(loop);
 
     const now = performance.now();
+    const elapsed = now - lastTime;
+    if (elapsed < FRAME_INTERVAL) return; // cap at 60fps
+
     const ctx = buildCtx();
-    ctx.dt = (now - lastTime) / 1000;
+    ctx.dt = elapsed / 1000;
     ctx.time = (now - startTime) / 1000;
-    lastTime = now;
+    lastTime = now - (elapsed % FRAME_INTERVAL); // maintain cadence
 
     if (audioEngine) {
       audioEngine.update();

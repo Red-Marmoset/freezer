@@ -1,9 +1,6 @@
 // AVS SuperScope component — per-point code rendering (dots/lines)
 // The core visualization component of AVS.
 import * as THREE from 'https://esm.sh/three@0.171.0';
-import { Line2 } from 'https://esm.sh/three@0.171.0/addons/lines/Line2.js';
-import { LineMaterial } from 'https://esm.sh/three@0.171.0/addons/lines/LineMaterial.js';
-import { LineGeometry } from 'https://esm.sh/three@0.171.0/addons/lines/LineGeometry.js';
 import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
@@ -66,12 +63,6 @@ export class SuperScope extends AvsComponent {
       this._scene.remove(this._mesh);
       if (this._material) this._material.dispose();
     }
-    if (this._lineGeometry) {
-      this._lineGeometry.dispose();
-      this._lineGeometry = null;
-    }
-
-    this._useLine2 = false;
 
     if (this.drawMode === 'DOTS') {
       this._material = new THREE.PointsMaterial({
@@ -80,19 +71,9 @@ export class SuperScope extends AvsComponent {
         sizeAttenuation: false,
       });
       this._mesh = new THREE.Points(this._geometry, this._material);
-    } else if (this.thickness > 1) {
-      // Use Line2 for thick lines (WebGL ignores linewidth on LineBasicMaterial)
-      this._lineGeometry = new LineGeometry();
-      this._material = new LineMaterial({
-        color: 0xffffff,
-        linewidth: this.thickness,
-        vertexColors: true,
-        resolution: new THREE.Vector2(800, 600),
-        dashed: false,
-      });
-      this._mesh = new Line2(this._lineGeometry, this._material);
-      this._useLine2 = true;
     } else {
+      // Note: WebGL ignores linewidth on most platforms (always 1px).
+      // For thick lines, AVS presets typically use DOTS mode or Texer.
       this._material = new THREE.LineBasicMaterial({
         vertexColors: true,
       });
@@ -203,30 +184,16 @@ export class SuperScope extends AvsComponent {
       this._updateDrawMode();
     }
 
-    // Update thickness from EEL linesize variable
-    const ls = s.linesize || this.thickness;
+    // Update dot size from EEL linesize variable
     if (this.drawMode === 'DOTS' && this._material.size !== undefined) {
+      const ls = s.linesize || this.thickness;
       this._material.size = Math.max(2, ls * 2);
     }
 
-    if (this._useLine2 && drawCount >= 2) {
-      // Line2 needs flat arrays of positions and colors
-      const posArr = new Float32Array(drawCount * 3);
-      const colArr = new Float32Array(drawCount * 3);
-      for (let i = 0; i < drawCount * 3; i++) {
-        posArr[i] = positions[i];
-        colArr[i] = colorsBuf[i];
-      }
-      this._lineGeometry.setPositions(posArr);
-      this._lineGeometry.setColors(colArr);
-      this._material.linewidth = ls;
-      this._material.resolution.set(ctx.width, ctx.height);
-    } else {
-      // Standard geometry update
-      this._geometry.attributes.position.needsUpdate = true;
-      this._geometry.attributes.color.needsUpdate = true;
-      this._geometry.setDrawRange(0, drawCount);
-    }
+    // Standard geometry update
+    this._geometry.attributes.position.needsUpdate = true;
+    this._geometry.attributes.color.needsUpdate = true;
+    this._geometry.setDrawRange(0, drawCount);
 
     // Render onto the active framebuffer (autoClear disabled by engine)
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
