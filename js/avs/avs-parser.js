@@ -235,45 +235,64 @@ function parseComponents(r, endPos) {
 function parseEffectList(r, endPos) {
   if (!r.hasBytes(5)) { r.pos = endPos; return null; }
 
+  // Byte 0: mode byte
+  // bit 0 = clearFrame, bit 1 = !enabled, bit 7 = has extended config
   const byte0 = r.uint8();
   const enabled = !(byte0 & 0x02);
   const clearFrame = !!(byte0 & 0x01);
+  const hasExtended = !!(byte0 & 0x80);
 
-  r.skip(1); // byte1 (duplicate)
-  const inputBlend = r.uint8();
-  const outputBlendRaw = r.uint8();
-  const outputBlend = outputBlendRaw ^ 1; // XOR with 1
+  r.skip(1); // byte 1 (unused)
+  const inputBlend = r.uint8();  // byte 2
+  const outputBlend = r.uint8(); // byte 3 (NOT XOR'd — direct index into BLEND_OUT)
 
-  const configSize = r.uint8();
-
-  // Extended config (if configSize > 0)
   let enableOnBeat = false;
   let enableOnBeatFor = 1;
-  if (configSize > 0 && r.hasBytes(32)) {
-    r.skip(8);  // inAdjustBlend, outAdjustBlend
-    r.skip(8);  // inBuffer, outBuffer
-    r.skip(8);  // inBufferInvert, outBufferInvert
-    enableOnBeat = r.uint32() !== 0;
-    enableOnBeatFor = r.uint32();
-  }
+  let codeInit = '';
+  let codePerFrame = '';
+  let codeEnabled = false;
 
-  // Check for AVS 2.8+ Effect List Config header
-  // Skip it if present (36 bytes starting with 0x00 0x40)
-  if (r.hasBytes(36)) {
-    const marker1 = r.bytes[r.pos];
-    const marker2 = r.bytes[r.pos + 1];
-    if (marker1 === 0x00 && marker2 === 0x40) {
-      r.skip(36); // skip the config header
-      // Read code section: enabled flag + init + perFrame
-      if (r.hasBytes(4)) {
-        const codeEnabled = r.uint32();
-        const initCode = r.sizeString();
-        const perFrameCode = r.sizeString();
+  if (hasExtended) {
+    // Byte 4: config size (number of additional uint32 values)
+    const configSize = r.uint8();
+
+    // Extended config: 8 uint32 fields (32 bytes)
+    if (configSize > 0 && r.hasBytes(configSize * 4)) {
+      const inAdjust = r.uint32();
+      const outAdjust = r.uint32();
+      r.skip(4); // inBuffer
+      r.skip(4); // outBuffer
+      r.skip(4); // inBufferInvert
+      r.skip(4); // outBufferInvert
+      enableOnBeat = r.uint32() !== 0;
+      enableOnBeatFor = r.uint32();
+    }
+
+    // Check for "AVS 2.8+ Effect List Config" header
+    // Marker: uint32 0x00004000 followed by "AVS 2.8+ Effect List Config\0"
+    if (r.hasBytes(4)) {
+      const marker = r.bytes[r.pos] | (r.bytes[r.pos + 1] << 8);
+      if (marker === 0x4000) {
+        r.skip(36); // skip the 36-byte config header
+
+        // Code section: uint32 size, then enabled + init + perFrame
+        if (r.hasBytes(4)) {
+          const codeSize = r.uint32();
+          if (codeSize > 0 && r.hasBytes(codeSize)) {
+            const codeEnd = r.pos + codeSize;
+            codeEnabled = r.uint32() !== 0;
+            codeInit = r.sizeString();
+            codePerFrame = r.sizeString();
+            r.pos = codeEnd; // ensure we advance past code section
+          }
+        }
       }
     }
+  } else {
+    r.skip(1); // byte 4 (no extended config)
   }
 
-  // Parse child components
+  // Everything remaining is the child component stream
   const children = parseComponents(r, endPos);
 
   return {
@@ -284,6 +303,7 @@ function parseEffectList(r, endPos) {
     output: BLEND_OUT[outputBlend] || 'REPLACE',
     enableOnBeat,
     enableOnBeatFor,
+    code: { enabled: codeEnabled, init: codeInit, perFrame: codePerFrame },
     components: children,
   };
 }
