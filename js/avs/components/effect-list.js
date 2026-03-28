@@ -69,25 +69,33 @@ export class EffectList extends AvsComponent {
     s.b = ctx.beat ? 1 : 0;
     this.perFrameFn(s, lib);
 
-    // Input blend: copy parent content into child framebuffer
-    if (this.input !== BLEND.IGNORE && parentFb) {
-      blendTexture(ctx.renderer, parentFb.getActiveTexture(), this.childFb.getActiveTarget(), this.input);
+    // Determine rendering target:
+    // If both input and output are IGNORE, render directly onto parent FB
+    // (the EffectList IS the framebuffer, not a separate layer)
+    const renderToParent = (this.input === BLEND.IGNORE && this.output === BLEND.IGNORE && parentFb);
+    const targetFb = renderToParent ? parentFb : this.childFb;
+
+    if (!renderToParent) {
+      // Input blend: copy parent content into child framebuffer
+      if (this.input !== BLEND.IGNORE && parentFb) {
+        blendTexture(ctx.renderer, parentFb.getActiveTexture(), this.childFb.getActiveTarget(), this.input);
+      }
+
+      // Clear child framebuffer if configured
+      if (this.clearFrame) {
+        this.childFb.clear(0x000000);
+      }
     }
 
-    // Clear child framebuffer if configured
-    if (this.clearFrame) {
-      this.childFb.clear(0x000000);
-    }
-
-    // Render children onto child framebuffer
+    // Render children onto target framebuffer
     for (const child of this.children) {
       if (child.enabled) {
-        child.render(ctx, this.childFb);
+        child.render(ctx, targetFb);
       }
     }
 
     // Output blend: composite child result back onto parent framebuffer
-    if (this.output !== BLEND.IGNORE && parentFb) {
+    if (!renderToParent && this.output !== BLEND.IGNORE && parentFb) {
       blendTexture(ctx.renderer, this.childFb.getActiveTexture(), parentFb.getActiveTarget(), this.output);
     }
   }
