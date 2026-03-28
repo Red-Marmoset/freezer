@@ -313,14 +313,18 @@ export function createState(globalRegisters, globalMegabuf) {
     // Common variables initialized to 0 by default via Proxy
   };
   // Use Proxy to auto-initialize undefined variables to 0
+  // Do NOT mutate on read — just return 0 for undefined vars
   return new Proxy(state, {
     get(target, prop) {
       if (prop in target) return target[prop];
       if (typeof prop === 'string' && prop[0] !== '_') {
-        target[prop] = 0;
         return 0;
       }
       return undefined;
+    },
+    set(target, prop, value) {
+      target[prop] = value;
+      return true;
     }
   });
 }

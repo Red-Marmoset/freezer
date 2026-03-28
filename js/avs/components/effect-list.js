@@ -76,14 +76,14 @@ export class EffectList extends AvsComponent {
     const targetFb = renderToParent ? parentFb : this.childFb;
 
     if (!renderToParent) {
+      // Clear child framebuffer FIRST (before input blend overwrites it)
+      if (this.clearFrame) {
+        this.childFb.clear(0x000000);
+      }
+
       // Input blend: copy parent content into child framebuffer
       if (this.input !== BLEND.IGNORE && parentFb) {
         blendTexture(ctx.renderer, parentFb.getActiveTexture(), this.childFb.getActiveTarget(), this.input);
-      }
-
-      // Clear child framebuffer if configured
-      if (this.clearFrame) {
-        this.childFb.clear(0x000000);
       }
     }
 

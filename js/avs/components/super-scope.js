@@ -121,8 +121,11 @@ export class SuperScope extends AvsComponent {
       try { this.onBeatFn(s, lib); } catch {}
     }
 
-    // Get point count
-    const n = Math.max(1, Math.min(MAX_POINTS, Math.floor(s.n || 100)));
+    // Get point count — n=0 is valid (camera-only SuperScope, sets registers only)
+    const n = Math.max(0, Math.min(MAX_POINTS, Math.floor(s.n !== undefined ? s.n : 100)));
+
+    // If n=0, this is a camera/register-only SuperScope — no rendering needed
+    if (n === 0) return;
 
     // Get current color from cycling palette
     const color = this._getCurrentColor();

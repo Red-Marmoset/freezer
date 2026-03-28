@@ -203,6 +203,7 @@ function parseComponents(r, endPos) {
     const isDll = (code !== EFFECTLIST_CODE && code >= BUILTIN_MAX);
     let dllId = '';
     if (isDll) {
+      if (!r.hasBytes(32)) break; // boundary check for DLL ID
       dllId = r.fixedString(32);
     }
 

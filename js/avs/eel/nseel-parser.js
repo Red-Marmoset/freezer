@@ -88,7 +88,12 @@ function tokenize(code) {
       pos++;
       while (pos < code.length && /[a-zA-Z0-9_.]/.test(code[pos])) pos++;
       const name = code.slice(start, pos).toLowerCase();
-      tokens.push({ type: T.ID, value: name });
+      // Check for $XX hex literals (e.g. $FF, $00, $1A)
+      if (name[0] === '$' && name.length > 1 && /^\$[0-9a-f]+$/.test(name)) {
+        tokens.push({ type: T.NUM, value: parseInt(name.slice(1), 16) });
+      } else {
+        tokens.push({ type: T.ID, value: name });
+      }
       continue;
     }
 
