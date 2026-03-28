@@ -13,22 +13,6 @@
   <canvas id="visualizer"></canvas>
 
   <div id="controls">
-    <div class="panel panel-source">
-      <div class="panel-label">SOURCE</div>
-      <div class="panel-buttons">
-        <button id="btn-system" class="source-btn" title="Capture system audio (screen share)">
-          <span class="btn-icon">&#9654;</span> System
-        </button>
-        <button id="btn-mic" class="source-btn" title="Capture microphone">
-          <span class="btn-icon">&#9679;</span> Mic
-        </button>
-        <button id="btn-file" class="source-btn" title="Load audio file">
-          <span class="btn-icon">&#9835;</span> File
-        </button>
-        <input type="file" id="file-input" accept="audio/*" hidden>
-      </div>
-    </div>
-
     <div class="panel panel-preset">
       <div class="panel-label">PRESET</div>
       <div class="panel-buttons">
@@ -49,39 +33,40 @@
     </div>
   </div>
 
-  <div id="intro">
-    <div class="intro-card">
-      <div class="intro-accent-bar"></div>
-      <div class="intro-content">
+  <div id="splash">
+    <div class="splash-card">
+      <div class="splash-accent-bar"></div>
+      <div class="splash-content">
         <h1>FREEZER</h1>
-        <p class="intro-sub">Audio Visualization System</p>
+        <p class="splash-sub">Audio Visualization System</p>
 
-        <div class="intro-section">
-          <div class="intro-section-label">INPUT SOURCES</div>
-          <div class="intro-options">
-            <div class="intro-option">
-              <span class="intro-key">1</span>
-              <div><strong>System</strong><span class="intro-desc">Capture desktop audio</span></div>
-            </div>
-            <div class="intro-option">
-              <span class="intro-key">2</span>
-              <div><strong>Mic</strong><span class="intro-desc">Microphone input</span></div>
-            </div>
-            <div class="intro-option">
-              <span class="intro-key">3</span>
-              <div><strong>File</strong><span class="intro-desc">Play an audio file</span></div>
-            </div>
+        <div class="splash-explain">
+          <div class="splash-section-label">HOW IT WORKS</div>
+          <p class="splash-body">
+            Freezer visualizes whatever audio is playing on your system.
+            To capture your audio, your browser will ask you to
+            <strong>share a screen or tab</strong> &mdash; this is how
+            we access the audio stream. The video is immediately discarded;
+            nothing is recorded or transmitted.
+          </p>
+          <div class="splash-note">
+            <span class="splash-note-icon">&#x1F6C8;</span>
+            In the share dialog, pick any screen or tab that has audio playing.
+            If you share a tab, only that tab's audio is captured.
+            Sharing a screen captures all system audio.
           </div>
         </div>
 
-        <div class="intro-section">
-          <div class="intro-section-label">CONTROLS</div>
-          <div class="intro-hint"><kbd>F</kbd> Fullscreen <span class="intro-dot"></span> Drag &amp; drop audio or presets</div>
-        </div>
+        <button id="btn-start">START CAPTURE</button>
+        <div id="splash-status" class="splash-status"></div>
 
-        <button id="btn-dismiss">INITIALIZE</button>
+        <div class="splash-footer">
+          <span>Drag &amp; drop <kbd>.json</kbd> preset files onto the visualizer</span>
+          <span class="splash-dot"></span>
+          <span><kbd>F</kbd> for fullscreen</span>
+        </div>
       </div>
-      <div class="intro-accent-bar bottom"></div>
+      <div class="splash-accent-bar bottom"></div>
     </div>
   </div>
 
