@@ -10,11 +10,18 @@ import { BeatDetector } from './beat-detect.js';
 // Import components to register them
 import './components/clear-screen.js';
 import './components/super-scope.js';
+import './components/simple.js';
 import './components/fade-out.js';
 import './components/effect-list.js';
 import './components/movement.js';
 import './components/dynamic-movement.js';
 import './components/color-map.js';
+import './components/blur.js';
+import './components/invert.js';
+import './components/mosaic.js';
+import './components/on-beat-clear.js';
+import './components/brightness.js';
+import './components/mirror.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object

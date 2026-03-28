@@ -296,11 +296,17 @@ function parseBuiltinComponent(code, typeName, r, endPos) {
     case 0x03: return parseFadeOut(r, endPos);
     case 0x0F: return parseMovement(r, endPos);
     case 0x2B: return parseDynamicMovement(r, endPos);
+    case 0x00: return parseSimple(r, endPos);
+    case 0x05: return parseOnBeatClear(r, endPos);
     case 0x19: return parseClearScreen(r, endPos);
     case 0x2D: return parseColorModifier(r, endPos);
     case 0x25: return parseInvert(r, endPos);
     case 0x1A: return parseMirror(r, endPos);
     case 0x06: return parseBlur(r, endPos);
+    case 0x16: return parseBrightness(r, endPos);
+    case 0x2C: return parseFastBrightness(r, endPos);
+    case 0x12: return parseBufferSave(r, endPos);
+    case 0x1E: return parseMosaic(r, endPos);
     case 0x15: return parseComment(r, endPos);
     default:
       // Return a generic component with the type name so it's visible
@@ -540,23 +546,112 @@ function parseColorModifier(r, endPos) {
   };
 }
 
-// ---- Simple components ----
+// ---- Simple (0x00) — oscilloscope/spectrum ----
+
+function parseSimple(r, endPos) {
+  const effect = r.uint32();
+
+  let audioSource, renderType;
+  if (effect & (1 << 6)) {
+    renderType = 'DOTS';
+    audioSource = (effect & 2) ? 'WAVEFORM' : 'SPECTRUM';
+  } else {
+    switch (effect & 3) {
+      case 0: audioSource = 'SPECTRUM'; renderType = 'SOLID'; break;
+      case 1: audioSource = 'SPECTRUM'; renderType = 'LINES'; break;
+      case 2: audioSource = 'WAVEFORM'; renderType = 'LINES'; break;
+      case 3: audioSource = 'WAVEFORM'; renderType = 'SOLID'; break;
+      default: audioSource = 'WAVEFORM'; renderType = 'LINES';
+    }
+  }
+
+  const channelVal = (effect >> 2) & 3;
+  const audioChannel = ['LEFT', 'RIGHT', 'CENTER'][channelVal] || 'CENTER';
+  const posVal = (effect >> 4) & 3;
+  const positionY = ['TOP', 'BOTTOM', 'CENTER'][posVal] || 'CENTER';
+
+  const colors = [];
+  if (r.hasBytes(4)) {
+    const numColors = r.uint32();
+    for (let i = 0; i < numColors && r.hasBytes(4); i++) {
+      colors.push(r.color());
+    }
+  }
+
+  return {
+    type: 'Simple',
+    audioSource,
+    renderType,
+    audioChannel,
+    positionY,
+    colors: colors.length > 0 ? colors : ['#ffffff'],
+  };
+}
+
+// ---- OnBeatClear (0x05) ----
+
+function parseOnBeatClear(r, endPos) {
+  const color = r.hasBytes(4) ? r.color() : '#000000';
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+  const clearBeats = r.hasBytes(4) ? r.uint32() : 1;
+  return { type: 'OnBeatClear', color, blendMode, clearBeats };
+}
+
+// ---- Brightness (0x16) ----
+
+function parseBrightness(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const blend = r.hasBytes(4) ? r.uint32() : 0;
+  const red = r.hasBytes(4) ? r.int32() : 0;
+  const green = r.hasBytes(4) ? r.int32() : 0;
+  const blue = r.hasBytes(4) ? r.int32() : 0;
+  return { type: 'Brightness', enabled, blend, red, green, blue };
+}
+
+// ---- FastBrightness (0x2C) ----
+
+function parseFastBrightness(r, endPos) {
+  const mode = r.hasBytes(4) ? r.uint32() : 0;
+  return { type: 'FastBrightness', mode };
+}
+
+// ---- BufferSave (0x12) ----
+
+function parseBufferSave(r, endPos) {
+  const action = r.hasBytes(4) ? r.uint32() : 0; // 0=save, 1=restore, 2=restoreEveryOther
+  const buffer = r.hasBytes(4) ? r.uint32() : 0;
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+  const adjustBlend = r.hasBytes(4) ? r.uint32() : 128;
+  return { type: 'BufferSave', action, buffer, blendMode, adjustBlend };
+}
+
+// ---- Mosaic (0x1E) ----
+
+function parseMosaic(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const squareSize = r.hasBytes(4) ? r.uint32() : 8;
+  const onBeatSquareSize = r.hasBytes(4) ? r.uint32() : 8;
+  const onBeatDuration = r.hasBytes(4) ? r.uint32() : 1;
+  return { type: 'Mosaic', enabled, squareSize, onBeatSquareSize, onBeatDuration };
+}
+
+// ---- Other components ----
 
 function parseInvert(r, endPos) {
   const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
-  return { type: 'Invert', enabled, _unsupported: true };
+  return { type: 'Invert', enabled };
 }
 
 function parseMirror(r, endPos) {
   const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
   const mode = r.hasBytes(4) ? r.uint32() : 0;
-  return { type: 'Mirror', enabled, mode, _unsupported: true };
+  return { type: 'Mirror', enabled, mode };
 }
 
 function parseBlur(r, endPos) {
   const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
   const mode = r.hasBytes(4) ? r.uint32() : 0;
-  return { type: 'Blur', enabled, mode, _unsupported: true };
+  return { type: 'Blur', enabled, mode };
 }
 
 function parseComment(r, endPos) {
