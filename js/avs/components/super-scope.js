@@ -1,6 +1,9 @@
 // AVS SuperScope component — per-point code rendering (dots/lines)
 // The core visualization component of AVS.
 import * as THREE from 'https://esm.sh/three@0.171.0';
+import { Line2 } from 'https://esm.sh/three@0.171.0/addons/lines/Line2.js';
+import { LineMaterial } from 'https://esm.sh/three@0.171.0/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'https://esm.sh/three@0.171.0/addons/lines/LineGeometry.js';
 import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
@@ -61,26 +64,42 @@ export class SuperScope extends AvsComponent {
     // Clean up old mesh
     if (this._mesh) {
       this._scene.remove(this._mesh);
-      this._material.dispose();
+      if (this._material) this._material.dispose();
     }
+    if (this._lineGeometry) {
+      this._lineGeometry.dispose();
+      this._lineGeometry = null;
+    }
+
+    this._useLine2 = false;
 
     if (this.drawMode === 'DOTS') {
       this._material = new THREE.PointsMaterial({
-        size: this.thickness * 2,
+        size: Math.max(2, this.thickness * 2),
         vertexColors: true,
         sizeAttenuation: false,
       });
       this._mesh = new THREE.Points(this._geometry, this._material);
+    } else if (this.thickness > 1) {
+      // Use Line2 for thick lines (WebGL ignores linewidth on LineBasicMaterial)
+      this._lineGeometry = new LineGeometry();
+      this._material = new LineMaterial({
+        color: 0xffffff,
+        linewidth: this.thickness,
+        vertexColors: true,
+        resolution: new THREE.Vector2(800, 600),
+        dashed: false,
+      });
+      this._mesh = new Line2(this._lineGeometry, this._material);
+      this._useLine2 = true;
     } else {
       this._material = new THREE.LineBasicMaterial({
-        linewidth: this.thickness,
         vertexColors: true,
       });
       this._mesh = new THREE.Line(this._geometry, this._material);
     }
 
     this._material.depthTest = false;
-
     this._scene.add(this._mesh);
   }
 
@@ -176,17 +195,37 @@ export class SuperScope extends AvsComponent {
       drawCount++;
     }
 
-    // Update geometry
-    this._geometry.attributes.position.needsUpdate = true;
-    this._geometry.attributes.color.needsUpdate = true;
-    this._geometry.setDrawRange(0, drawCount);
-
     // Check if drawmode was changed by code
     const newMode = (s.drawmode !== undefined && s.drawmode > 0) ? 'LINES' :
                     (s.drawmode !== undefined && s.drawmode === 0) ? 'DOTS' : this.drawMode;
     if (newMode !== this.drawMode) {
       this.drawMode = newMode;
       this._updateDrawMode();
+    }
+
+    // Update thickness from EEL linesize variable
+    const ls = s.linesize || this.thickness;
+    if (this.drawMode === 'DOTS' && this._material.size !== undefined) {
+      this._material.size = Math.max(2, ls * 2);
+    }
+
+    if (this._useLine2 && drawCount >= 2) {
+      // Line2 needs flat arrays of positions and colors
+      const posArr = new Float32Array(drawCount * 3);
+      const colArr = new Float32Array(drawCount * 3);
+      for (let i = 0; i < drawCount * 3; i++) {
+        posArr[i] = positions[i];
+        colArr[i] = colorsBuf[i];
+      }
+      this._lineGeometry.setPositions(posArr);
+      this._lineGeometry.setColors(colArr);
+      this._material.linewidth = ls;
+      this._material.resolution.set(ctx.width, ctx.height);
+    } else {
+      // Standard geometry update
+      this._geometry.attributes.position.needsUpdate = true;
+      this._geometry.attributes.color.needsUpdate = true;
+      this._geometry.setDrawRange(0, drawCount);
     }
 
     // Render onto the active framebuffer (autoClear disabled by engine)

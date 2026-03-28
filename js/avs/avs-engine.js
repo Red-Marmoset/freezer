@@ -22,6 +22,34 @@ import './components/mosaic.js';
 import './components/on-beat-clear.js';
 import './components/brightness.js';
 import './components/mirror.js';
+import './components/color-modifier.js';
+import './components/channel-shift.js';
+import './components/color-clip.js';
+import './components/grain.js';
+import './components/interleave.js';
+import './components/color-fade.js';
+import './components/unique-tone.js';
+import './components/scatter.js';
+import './components/blitter-feedback.js';
+import './components/roto-blitter.js';
+import './components/ring.js';
+import './components/starfield.js';
+import './components/dot-grid.js';
+import './components/dot-plane.js';
+import './components/dot-fountain.js';
+import './components/bass-spin.js';
+import './components/rotating-stars.js';
+import './components/timescope.js';
+import './components/buffer-save.js';
+import './components/set-render-mode.js';
+import './components/water.js';
+import './components/water-bump.js';
+import './components/bump.js';
+import './components/interferences.js';
+import './components/dynamic-shift.js';
+import './components/dynamic-distance-modifier.js';
+import './components/texer.js';
+import './components/texer2.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object
@@ -41,6 +69,8 @@ class AvsPreset {
     this.beatDetector = new BeatDetector();
     this.globalRegisters = new Float64Array(100);
     this.globalMegabuf = {};
+    this.saveBuffers = new Array(8).fill(null);
+    this.renderMode = { blend: 0, lineSize: 1, enabled: false };
     this._outputQuad = null;
     this._outputMaterial = null;
     this._renderer = null;
@@ -122,6 +152,13 @@ class AvsPreset {
       comp.destroy();
     }
     if (this.framebuffer) this.framebuffer.dispose();
+    // Dispose save buffers
+    for (let i = 0; i < this.saveBuffers.length; i++) {
+      if (this.saveBuffers[i]) {
+        this.saveBuffers[i].dispose();
+        this.saveBuffers[i] = null;
+      }
+    }
     this.components = [];
     this.framebuffer = null;
   }
@@ -137,6 +174,8 @@ class AvsPreset {
       beat: false,
       globalRegisters: this.globalRegisters,
       globalMegabuf: this.globalMegabuf,
+      saveBuffers: this.saveBuffers,
+      renderMode: this.renderMode,
     };
   }
 }

@@ -23,16 +23,24 @@ export function parseBlendMode(str) {
 }
 
 // Composite srcTexture onto dstTarget using the given blend mode.
-// Creates a temporary helper on first use and caches it.
+// All blending is done in a fragment shader reading both src and dst textures.
+// We render to a temporary target, then copy to dstTarget to avoid
+// read-write hazard (can't sample and render to same target).
 let _blendScene, _blendCamera, _blendMesh, _blendMaterial;
+let _copyScene, _copyCamera, _copyMesh, _copyMaterial;
+let _tempTarget = null;
+let _tempTargetW = 0, _tempTargetH = 0;
 
 function ensureBlendResources() {
   if (_blendScene) return;
+
+  // ---- Blend pass: reads src + dst, writes blended result ----
   _blendScene = new THREE.Scene();
   _blendCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   _blendMaterial = new THREE.ShaderMaterial({
     uniforms: {
       tSrc: { value: null },
+      tDst: { value: null },
       uMode: { value: 1 },
       uAlpha: { value: 0.5 },
     },
@@ -45,29 +53,40 @@ function ensureBlendResources() {
     `,
     fragmentShader: `
       uniform sampler2D tSrc;
+      uniform sampler2D tDst;
       uniform int uMode;
       uniform float uAlpha;
       varying vec2 vUv;
+
       void main() {
         vec4 src = texture2D(tSrc, vUv);
-        // Blend modes that need the dst pixel are handled differently.
-        // For simple modes, just output the source with appropriate alpha.
-        if (uMode == 2) {
-          // ADDITIVE — will use WebGL blendFunc
-          gl_FragColor = src;
+        vec4 dst = texture2D(tDst, vUv);
+
+        if (uMode == 1) {
+          gl_FragColor = src; // REPLACE
+        } else if (uMode == 2) {
+          gl_FragColor = vec4(min(src.rgb + dst.rgb, 1.0), 1.0); // ADDITIVE
         } else if (uMode == 3) {
-          // FIFTY_FIFTY
-          gl_FragColor = vec4(src.rgb, 0.5);
+          gl_FragColor = vec4(mix(dst.rgb, src.rgb, 0.5), 1.0); // FIFTY_FIFTY
+        } else if (uMode == 4) {
+          gl_FragColor = vec4(max(src.rgb, dst.rgb), 1.0); // MAXIMUM
+        } else if (uMode == 5) {
+          gl_FragColor = vec4(max(dst.rgb - src.rgb, 0.0), 1.0); // SUB_DEST_SRC
+        } else if (uMode == 6) {
+          gl_FragColor = vec4(max(src.rgb - dst.rgb, 0.0), 1.0); // SUB_SRC_DEST
+        } else if (uMode == 7) {
+          gl_FragColor = vec4(src.rgb * dst.rgb, 1.0); // MULTIPLY
+        } else if (uMode == 8) {
+          gl_FragColor = vec4(min(src.rgb, dst.rgb), 1.0); // MINIMUM
+        } else if (uMode == 9) {
+          gl_FragColor = vec4(mix(dst.rgb, src.rgb, uAlpha), 1.0); // ALPHA / ADJUSTABLE
         } else if (uMode == 10) {
-          // ADJUSTABLE
-          gl_FragColor = vec4(src.rgb, uAlpha);
+          gl_FragColor = vec4(mix(dst.rgb, src.rgb, uAlpha), 1.0); // ADJUSTABLE (same)
         } else {
-          // REPLACE
-          gl_FragColor = src;
+          gl_FragColor = src; // default REPLACE
         }
       }
     `,
-    transparent: true,
     depthTest: false,
   });
   _blendMesh = new THREE.Mesh(
@@ -75,33 +94,57 @@ function ensureBlendResources() {
     _blendMaterial
   );
   _blendScene.add(_blendMesh);
+
+  // ---- Copy pass: simple blit from temp to actual dst ----
+  _copyScene = new THREE.Scene();
+  _copyCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  _copyMaterial = new THREE.MeshBasicMaterial({ map: null, depthTest: false });
+  _copyMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(2, 2),
+    _copyMaterial
+  );
+  _copyScene.add(_copyMesh);
+}
+
+function ensureTempTarget(width, height) {
+  if (_tempTarget && _tempTargetW === width && _tempTargetH === height) return;
+  if (_tempTarget) _tempTarget.dispose();
+  _tempTarget = new THREE.WebGLRenderTarget(width, height, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+    format: THREE.RGBAFormat,
+    type: THREE.UnsignedByteType,
+  });
+  _tempTargetW = width;
+  _tempTargetH = height;
 }
 
 /**
  * Composite srcTexture onto dstTarget using the given blend mode.
+ * All modes are handled purely in a fragment shader (no WebGL blend state).
+ * Uses a temporary render target to avoid read-write hazard on dstTarget.
  */
 export function blendTexture(renderer, srcTexture, dstTarget, mode, alpha = 0.5) {
   if (mode === BLEND.IGNORE) return;
 
   ensureBlendResources();
+
+  const w = dstTarget.width;
+  const h = dstTarget.height;
+  ensureTempTarget(w, h);
+
+  // Set uniforms
   _blendMaterial.uniforms.tSrc.value = srcTexture;
+  _blendMaterial.uniforms.tDst.value = dstTarget.texture;
   _blendMaterial.uniforms.uMode.value = mode;
   _blendMaterial.uniforms.uAlpha.value = alpha;
 
-  // Set WebGL blend state based on mode
-  if (mode === BLEND.ADDITIVE) {
-    _blendMaterial.blending = THREE.AdditiveBlending;
-  } else if (mode === BLEND.FIFTY_FIFTY || mode === BLEND.ADJUSTABLE) {
-    _blendMaterial.blending = THREE.NormalBlending;
-  } else if (mode === BLEND.MAXIMUM) {
-    _blendMaterial.blending = THREE.AdditiveBlending; // Approximation
-  } else if (mode === BLEND.SUB_DEST_SRC) {
-    _blendMaterial.blending = THREE.SubtractiveBlending;
-  } else {
-    _blendMaterial.blending = THREE.NoBlending; // REPLACE
-  }
-  _blendMaterial.needsUpdate = true;
-
-  renderer.setRenderTarget(dstTarget);
+  // Pass 1: render blended result to temp target
+  renderer.setRenderTarget(_tempTarget);
   renderer.render(_blendScene, _blendCamera);
+
+  // Pass 2: copy temp result back to dstTarget
+  _copyMaterial.map = _tempTarget.texture;
+  renderer.setRenderTarget(dstTarget);
+  renderer.render(_copyScene, _copyCamera);
 }

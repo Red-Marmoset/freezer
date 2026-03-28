@@ -328,6 +328,29 @@ function parseBuiltinComponent(code, typeName, r, endPos) {
     case 0x12: return parseBufferSave(r, endPos);
     case 0x1E: return parseMosaic(r, endPos);
     case 0x15: return parseComment(r, endPos);
+    case 0x0B: return parseColorFade(r, endPos);
+    case 0x0C: return parseColorClip(r, endPos);
+    case 0x10: return parseScatter(r, endPos);
+    case 0x17: return parseInterleave(r, endPos);
+    case 0x18: return parseGrain(r, endPos);
+    case 0x26: return parseUniqueTone(r, endPos);
+    case 0x04: return parseBlitterFeedback(r, endPos);
+    case 0x09: return parseRotoBlitter(r, endPos);
+    case 0x0E: return parseRing(r, endPos);
+    case 0x1B: return parseStarfield(r, endPos);
+    case 0x11: return parseDotGrid(r, endPos);
+    case 0x01: return parseDotPlane(r, endPos);
+    case 0x13: return parseDotFountain(r, endPos);
+    case 0x07: return parseBassSpin(r, endPos);
+    case 0x0D: return parseRotatingStars(r, endPos);
+    case 0x27: return parseTimescope(r, endPos);
+    case 0x14: return parseWater(r, endPos);
+    case 0x1F: return parseWaterBump(r, endPos);
+    case 0x1D: return parseBump(r, endPos);
+    case 0x28: return parseSetRenderMode(r, endPos);
+    case 0x29: return parseInterferences(r, endPos);
+    case 0x2A: return parseDynamicShift(r, endPos);
+    case 0x23: return parseDynamicDistanceModifier(r, endPos);
     default:
       // Return a generic component with the type name so it's visible
       return { type: typeName, enabled: true, _unsupported: true };
@@ -562,7 +585,6 @@ function parseColorModifier(r, endPos) {
   return {
     type: 'ColorModifier',
     code: { init, perFrame, onBeat },
-    _unsupported: true,
   };
 }
 
@@ -684,16 +706,525 @@ function parseComment(r, endPos) {
   return { type: 'Comment', text, enabled: false };
 }
 
+// ---- ColorClip (0x0C) ----
+
+function parseColorClip(r, endPos) {
+  const mode = r.hasBytes(4) ? r.uint32() : 0;
+  const color_clip = r.hasBytes(4) ? r.color() : '#000000';
+  const color_clip_out = r.hasBytes(4) ? r.color() : '#000000';
+  const distance = r.hasBytes(4) ? r.uint32() : 0;
+  return { type: 'ColorClip', enabled: true, mode, color_clip, color_clip_out, distance };
+}
+
+// ---- ColorFade (0x0B) ----
+
+function parseColorFade(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const fader1 = [];
+  const fader2 = [];
+  const fader3 = [];
+  // 3 faders x 3 channels (R,G,B) = 9 int32 values
+  for (let i = 0; i < 3; i++) fader1.push(r.hasBytes(4) ? r.int32() : 0);
+  for (let i = 0; i < 3; i++) fader2.push(r.hasBytes(4) ? r.int32() : 0);
+  for (let i = 0; i < 3; i++) fader3.push(r.hasBytes(4) ? r.int32() : 0);
+  return { type: 'ColorFade', enabled, fader1, fader2, fader3 };
+}
+
+// ---- Scatter (0x10) ----
+
+function parseScatter(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  return { type: 'Scatter', enabled };
+}
+
+// ---- Interleave (0x17) ----
+
+function parseInterleave(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const x = r.hasBytes(4) ? r.uint32() : 0;
+  const y = r.hasBytes(4) ? r.uint32() : 0;
+  const color = r.hasBytes(4) ? r.color() : '#000000';
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+  const onBeatX = r.hasBytes(4) ? r.uint32() : 0;
+  const onBeatY = r.hasBytes(4) ? r.uint32() : 0;
+  const onBeatDuration = r.hasBytes(4) ? r.uint32() : 1;
+  return { type: 'Interleave', enabled, x, y, color, blendMode, onBeatX, onBeatY, onBeatDuration };
+}
+
+// ---- Grain (0x18) ----
+
+function parseGrain(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const blendMode = r.hasBytes(4) ? r.uint32() : 1;
+  const amount = r.hasBytes(4) ? r.uint32() : 50;
+  return { type: 'Grain', enabled, blendMode, amount };
+}
+
+// ---- UniqueTone (0x26) ----
+
+function parseUniqueTone(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+  const color = r.hasBytes(4) ? r.color() : '#ffffff';
+  return { type: 'UniqueTone', enabled, blendMode, color };
+}
+
+// ---- BlitterFeedback (0x04) ----
+
+function parseBlitterFeedback(r, endPos) {
+  const scale = r.hasBytes(4) ? r.uint32() : 256;
+  const onBeatScale = r.hasBytes(4) ? r.uint32() : 256;
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+  return { type: 'BlitterFeedback', enabled: true, scale, onBeatScale, blendMode };
+}
+
+// ---- RotoBlitter (0x09) ----
+
+function parseRotoBlitter(r, endPos) {
+  const zoom = r.hasBytes(4) ? r.uint32() : 256;
+  const rotate = r.hasBytes(4) ? r.uint32() : 0;
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+  const onBeatZoom = r.hasBytes(4) ? r.uint32() : 256;
+  const onBeatRotate = r.hasBytes(4) ? r.uint32() : 0;
+  const bilinear = r.hasBytes(4) ? r.uint32() : 1;
+  return { type: 'RotoBlitter', enabled: true, zoom, rotate, blendMode, onBeatZoom, onBeatRotate, bilinear };
+}
+
+// ---- Ring (0x0E) ----
+
+function parseRing(r, endPos) {
+  const audioSource = r.hasBytes(4) ? (r.uint32() === 0 ? 'WAVEFORM' : 'SPECTRUM') : 'WAVEFORM';
+  // size is stored as uint32 but represents a float (AVS convention: divide by 256 or use as-is)
+  const sizeRaw = r.hasBytes(4) ? r.uint32() : 128;
+  const size = sizeRaw / 256;
+
+  const colors = [];
+  if (r.hasBytes(4)) {
+    const numColors = r.uint32();
+    for (let i = 0; i < numColors && r.hasBytes(4); i++) {
+      colors.push(r.color());
+    }
+  }
+
+  return {
+    type: 'Ring',
+    audioSource,
+    size: Math.max(0.1, size),
+    colors: colors.length > 0 ? colors : ['#ffffff'],
+  };
+}
+
+// ---- Starfield (0x1B) ----
+
+function parseStarfield(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const color = r.hasBytes(4) ? r.color() : '#ffffff';
+  const numStars = r.hasBytes(4) ? r.uint32() : 350;
+  const speed = r.hasBytes(4) ? r.uint32() : 16;
+  const onBeatAction = r.hasBytes(4) ? r.uint32() : 0;
+  const onBeatDuration = r.hasBytes(4) ? r.uint32() : 15;
+
+  return {
+    type: 'Starfield',
+    enabled,
+    color,
+    numStars: Math.min(4096, numStars),
+    speed,
+    onBeatAction,
+    onBeatDuration,
+  };
+}
+
+// ---- DotGrid (0x11) ----
+
+function parseDotGrid(r, endPos) {
+  const numColors = r.hasBytes(4) ? r.uint32() : 1;
+  const colors = [];
+  for (let i = 0; i < numColors && i < 16 && r.hasBytes(4); i++) {
+    colors.push(r.color());
+  }
+  const spacing = r.hasBytes(4) ? r.uint32() : 8;
+  const xSpeed = r.hasBytes(4) ? r.uint32() : 0;
+  const ySpeed = r.hasBytes(4) ? r.uint32() : 0;
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+
+  return {
+    type: 'DotGrid',
+    numColors,
+    colors: colors.length > 0 ? colors : ['#ffffff'],
+    spacing,
+    xSpeed,
+    ySpeed,
+    blendMode,
+  };
+}
+
+// ---- DotPlane (0x01) ----
+
+function parseDotPlane(r, endPos) {
+  const rotSpeed = r.hasBytes(4) ? r.uint32() : 16;
+  const color = r.hasBytes(4) ? r.color() : '#ffffff';
+  const angle = r.hasBytes(4) ? r.uint32() : 0;
+  const style = r.hasBytes(4) ? r.uint32() : 0;
+
+  return {
+    type: 'DotPlane',
+    rotSpeed,
+    color,
+    angle,
+    style,
+  };
+}
+
+// ---- DotFountain (0x13) ----
+
+function parseDotFountain(r, endPos) {
+  const rotSpeed = r.hasBytes(4) ? r.uint32() : 16;
+  const color = r.hasBytes(4) ? r.color() : '#ff8800';
+  const angle = r.hasBytes(4) ? r.uint32() : 0;
+  const style = r.hasBytes(4) ? r.uint32() : 0;
+
+  return {
+    type: 'DotFountain',
+    rotSpeed,
+    color,
+    angle,
+    style,
+  };
+}
+
+// ---- BassSpin (0x07) ----
+
+function parseBassSpin(r, endPos) {
+  const enabledLeft = r.hasBytes(4) ? r.uint32() : 1;
+  const enabledRight = r.hasBytes(4) ? r.uint32() : 1;
+  const colors = [];
+  // Two colors: left channel, right channel
+  colors.push(r.hasBytes(4) ? r.color() : '#ffffff');
+  colors.push(r.hasBytes(4) ? r.color() : '#ffffff');
+  const mode = r.hasBytes(4) ? r.uint32() : 0;
+
+  return {
+    type: 'BassSpin',
+    enabledLeft,
+    enabledRight,
+    colors,
+    mode,
+  };
+}
+
+// ---- RotatingStars (0x0D) ----
+
+function parseRotatingStars(r, endPos) {
+  const numStars = r.hasBytes(4) ? r.uint32() : 1;
+  const color = r.hasBytes(4) ? r.color() : '#ffffff';
+
+  return {
+    type: 'RotatingStars',
+    numStars: Math.max(1, numStars),
+    color,
+  };
+}
+
+// ---- Timescope (0x27) ----
+
+function parseTimescope(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const color = r.hasBytes(4) ? r.color() : '#ffffff';
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+  const bands = r.hasBytes(4) ? r.uint32() : 576;
+
+  return {
+    type: 'Timescope',
+    enabled,
+    color,
+    blendMode,
+    bands: Math.max(1, bands),
+  };
+}
+
+// ---- Water (0x14) ----
+
+function parseWater(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  return { type: 'Water', enabled };
+}
+
+// ---- WaterBump (0x1F) ----
+
+function parseWaterBump(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const density = r.hasBytes(4) ? r.uint32() : 4;
+  return { type: 'WaterBump', enabled, density };
+}
+
+// ---- Bump (0x1D) ----
+
+function parseBump(r, endPos) {
+  const version = r.uint8();
+  const isNew = (version === 1);
+
+  let init, perFrame, onBeat, perPoint;
+  if (isNew) {
+    // CodeIFBP order: init, perFrame, onBeat, perPoint
+    init = r.sizeString();
+    perFrame = r.sizeString();
+    onBeat = r.sizeString();
+    perPoint = r.sizeString();
+  } else {
+    r.pos--;
+    init = r.fixedString(256);
+    perFrame = r.fixedString(256);
+    onBeat = r.fixedString(256);
+    perPoint = r.fixedString(256);
+  }
+
+  let onBeatEnabled = false, depth = 30, blendMode = 0;
+  if (r.hasBytes(4)) onBeatEnabled = r.uint32() !== 0;
+  if (r.hasBytes(4)) depth = r.uint32();
+
+  return {
+    type: 'Bump',
+    code: { init, perFrame, onBeat, perPoint },
+    onBeat: onBeatEnabled,
+    depth,
+  };
+}
+
+// ---- SetRenderMode (0x28) ----
+
+function parseSetRenderMode(r, endPos) {
+  const blend = r.hasBytes(4) ? r.uint32() : 0;
+  const lineSize = r.hasBytes(4) ? r.uint32() : 1;
+  return { type: 'SetRenderMode', blend, lineSize };
+}
+
+// ---- Interferences (0x29) ----
+
+function parseInterferences(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const numLayers = r.hasBytes(4) ? r.uint32() : 2;
+  const rotation = r.hasBytes(4) ? r.uint32() : 0;
+  const distance = r.hasBytes(4) ? r.uint32() : 0;
+  const alpha = r.hasBytes(4) ? r.uint32() : 128;
+  const onBeatRotation = r.hasBytes(4) ? r.uint32() : 0;
+  const onBeatDistance = r.hasBytes(4) ? r.uint32() : 0;
+  return {
+    type: 'Interferences',
+    enabled, numLayers, rotation, distance, alpha,
+    onBeatRotation, onBeatDistance,
+  };
+}
+
+// ---- DynamicShift (0x2A) ----
+
+function parseDynamicShift(r, endPos) {
+  const version = r.uint8();
+  const isNew = (version === 1);
+
+  let init, perFrame, onBeat;
+  if (isNew) {
+    // CodeIFB order: init, perFrame, onBeat
+    init = r.sizeString();
+    perFrame = r.sizeString();
+    onBeat = r.sizeString();
+  } else {
+    r.pos--;
+    init = r.fixedString(256);
+    perFrame = r.fixedString(256);
+    onBeat = r.fixedString(256);
+  }
+
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+
+  return {
+    type: 'DynamicShift',
+    code: { init, perFrame, onBeat },
+    blendMode,
+  };
+}
+
+// ---- DynamicDistanceModifier (0x23) ----
+
+function parseDynamicDistanceModifier(r, endPos) {
+  const version = r.uint8();
+  const isNew = (version === 1);
+
+  let perPoint, perFrame, onBeat, init;
+  if (isNew) {
+    // CodePFBI: perPoint, perFrame, onBeat, init
+    perPoint = r.sizeString();
+    perFrame = r.sizeString();
+    onBeat = r.sizeString();
+    init = r.sizeString();
+  } else {
+    r.pos--;
+    perPoint = r.fixedString(256);
+    perFrame = r.fixedString(256);
+    onBeat = r.fixedString(256);
+    init = r.fixedString(256);
+  }
+
+  return {
+    type: 'DynamicDistanceModifier',
+    code: { init, perFrame, onBeat, perPoint },
+  };
+}
+
 // ---- DLL/APE components ----
 
 function parseDllComponent(dllId, r, endPos) {
   const cleanId = dllId.replace(/\0/g, '').trim();
+
+  // Channel Shift APE
+  if (cleanId === 'Channel Shift' || cleanId === 'Misc: Channel Shift') {
+    const mode = r.hasBytes(4) ? r.uint32() : 0;
+    const onBeatMode = r.hasBytes(4) ? r.uint32() : 0;
+    return { type: 'ChannelShift', enabled: true, mode, onBeatMode };
+  }
+
+  // Texer APE
+  if (cleanId === 'Texer') {
+    return parseTexerAPE(r, endPos);
+  }
+
+  // Texer II APE (Acko.net)
+  if (cleanId === 'Acko.net: Texer II') {
+    return parseTexer2APE(r, endPos);
+  }
+
   return {
     type: cleanId || 'UnknownAPE',
     enabled: true,
     _unsupported: true,
     _apeId: cleanId,
   };
+}
+
+// ---- Texer APE ----
+// Binary layout (after DLL ID + size header already consumed):
+//   uint32 version (0 or 1)
+//   null-terminated image filename string
+//   Size-prefixed code strings (init, perFrame, onBeat, perPoint)
+//   Trailing flags: wrap(uint32), resize(uint32)
+
+function parseTexerAPE(r, endPos) {
+  const result = {
+    type: 'Texer',
+    enabled: true,
+    imageSrc: '',
+    code: { init: '', perFrame: '', onBeat: '', perPoint: '' },
+    wrap: false,
+    resize: false,
+  };
+
+  try {
+    if (!r.hasBytes(1)) return result;
+
+    // Some Texer versions start with a version/enabled uint32.
+    // Peek: if the first byte is 0 or 1 and the next three are zero,
+    // treat it as a uint32 version field.
+    const firstByte = r.bytes[r.pos];
+
+    if (firstByte <= 1 && r.hasBytes(4) &&
+        r.bytes[r.pos + 1] === 0 && r.bytes[r.pos + 2] === 0 && r.bytes[r.pos + 3] === 0) {
+      r.uint32(); // skip version/enabled
+    }
+
+    // Read image source filename (null-terminated)
+    if (r.pos < endPos) {
+      result.imageSrc = r.ntString();
+    }
+
+    // Try to read code strings (size-prefixed)
+    if (r.pos + 4 <= endPos) {
+      result.code.init = r.sizeString();
+    }
+    if (r.pos + 4 <= endPos) {
+      result.code.perFrame = r.sizeString();
+    }
+    if (r.pos + 4 <= endPos) {
+      result.code.onBeat = r.sizeString();
+    }
+    if (r.pos + 4 <= endPos) {
+      result.code.perPoint = r.sizeString();
+    }
+
+    // Trailing flags
+    if (r.pos + 4 <= endPos) {
+      result.wrap = r.uint32() !== 0;
+    }
+    if (r.pos + 4 <= endPos) {
+      result.resize = r.uint32() !== 0;
+    }
+  } catch {
+    // If parsing fails, return with empty code — the component will still render
+    // using the gaussian blob fallback with default behavior.
+  }
+
+  return result;
+}
+
+// ---- Texer II APE (Acko.net: Texer II) ----
+// Binary layout (after DLL ID + size header already consumed):
+//   uint32 version
+//   null-terminated image filename string
+//   uint32 resize flag
+//   uint32 wrap flag
+//   uint32 color filtering mode
+//   Code sections: init, perFrame, onBeat, perPoint (size-prefixed strings)
+
+function parseTexer2APE(r, endPos) {
+  const result = {
+    type: 'Acko.net: Texer II',
+    enabled: true,
+    imageSrc: '',
+    code: { init: '', perFrame: '', onBeat: '', perPoint: '' },
+    wrap: false,
+    resize: false,
+    colorFilter: 0,
+  };
+
+  try {
+    if (!r.hasBytes(4)) return result;
+
+    // Version
+    const version = r.uint32();
+
+    // Image source — null-terminated string
+    if (r.pos < endPos) {
+      result.imageSrc = r.ntString();
+    }
+
+    // Flags
+    if (r.pos + 4 <= endPos) {
+      result.resize = r.uint32() !== 0;
+    }
+    if (r.pos + 4 <= endPos) {
+      result.wrap = r.uint32() !== 0;
+    }
+    if (r.pos + 4 <= endPos) {
+      result.colorFilter = r.uint32();
+    }
+
+    // Code sections (size-prefixed strings)
+    if (r.pos + 4 <= endPos) {
+      result.code.init = r.sizeString();
+    }
+    if (r.pos + 4 <= endPos) {
+      result.code.perFrame = r.sizeString();
+    }
+    if (r.pos + 4 <= endPos) {
+      result.code.onBeat = r.sizeString();
+    }
+    if (r.pos + 4 <= endPos) {
+      result.code.perPoint = r.sizeString();
+    }
+  } catch {
+    // If parsing fails, return with empty code — the fallback blob will render
+  }
+
+  return result;
 }
 
 // ---- Public API ----

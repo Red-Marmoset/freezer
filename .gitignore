@@ -3,3 +3,5 @@ node_modules/
 Thumbs.db
 .claude/
 .serena/
+.playwright-mcp/
+node_modules/
