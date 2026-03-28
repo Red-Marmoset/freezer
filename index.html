@@ -4,41 +4,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Freezer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <canvas id="visualizer"></canvas>
 
   <div id="controls">
-    <div class="control-group">
-      <button id="btn-system" class="source-btn" title="Capture system audio (screen share)">System</button>
-      <button id="btn-mic" class="source-btn" title="Capture microphone">Mic</button>
-      <button id="btn-file" class="source-btn" title="Load audio file">File</button>
-      <input type="file" id="file-input" accept="audio/*" hidden>
+    <div class="panel panel-source">
+      <div class="panel-label">SOURCE</div>
+      <div class="panel-buttons">
+        <button id="btn-system" class="source-btn" title="Capture system audio (screen share)">
+          <span class="btn-icon">&#9654;</span> System
+        </button>
+        <button id="btn-mic" class="source-btn" title="Capture microphone">
+          <span class="btn-icon">&#9679;</span> Mic
+        </button>
+        <button id="btn-file" class="source-btn" title="Load audio file">
+          <span class="btn-icon">&#9835;</span> File
+        </button>
+        <input type="file" id="file-input" accept="audio/*" hidden>
+      </div>
     </div>
-    <div class="control-group">
-      <span class="separator"></span>
-      <button id="btn-scope" class="preset-btn active" title="Default oscilloscope">Scope</button>
-      <button id="btn-load-preset" class="preset-btn" title="Load AVS preset JSON">Load Preset</button>
-      <input type="file" id="preset-input" accept=".json" hidden>
-      <span id="preset-name"></span>
+
+    <div class="panel panel-preset">
+      <div class="panel-label">PRESET</div>
+      <div class="panel-buttons">
+        <button id="btn-scope" class="preset-btn active" title="Default oscilloscope">Scope</button>
+        <button id="btn-load-preset" class="preset-btn" title="Load AVS preset JSON">Load</button>
+        <input type="file" id="preset-input" accept=".json" hidden>
+      </div>
+      <div id="preset-name" class="readout"></div>
     </div>
-    <div class="control-group">
-      <button id="btn-fullscreen" title="Toggle fullscreen (F)">Fullscreen</button>
+
+    <div class="panel panel-display">
+      <div class="panel-label">DISPLAY</div>
+      <div class="panel-buttons">
+        <button id="btn-fullscreen" title="Toggle fullscreen (F)">
+          <span class="btn-icon">&#x26F6;</span> Full
+        </button>
+      </div>
     </div>
   </div>
 
   <div id="intro">
-    <div class="intro-content">
-      <h2>Freezer</h2>
-      <p>Click a source to start visualizing audio:</p>
-      <ul>
-        <li><strong>System</strong> &mdash; captures whatever is playing on your machine</li>
-        <li><strong>Mic</strong> &mdash; captures your microphone input</li>
-        <li><strong>File</strong> &mdash; play and visualize an audio file</li>
-      </ul>
-      <p class="hint">Press <kbd>F</kbd> for fullscreen &middot; drag &amp; drop audio files anywhere</p>
-      <button id="btn-dismiss">Got it</button>
+    <div class="intro-card">
+      <div class="intro-accent-bar"></div>
+      <div class="intro-content">
+        <h1>FREEZER</h1>
+        <p class="intro-sub">Audio Visualization System</p>
+
+        <div class="intro-section">
+          <div class="intro-section-label">INPUT SOURCES</div>
+          <div class="intro-options">
+            <div class="intro-option">
+              <span class="intro-key">1</span>
+              <div><strong>System</strong><span class="intro-desc">Capture desktop audio</span></div>
+            </div>
+            <div class="intro-option">
+              <span class="intro-key">2</span>
+              <div><strong>Mic</strong><span class="intro-desc">Microphone input</span></div>
+            </div>
+            <div class="intro-option">
+              <span class="intro-key">3</span>
+              <div><strong>File</strong><span class="intro-desc">Play an audio file</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="intro-section">
+          <div class="intro-section-label">CONTROLS</div>
+          <div class="intro-hint"><kbd>F</kbd> Fullscreen <span class="intro-dot"></span> Drag &amp; drop audio or presets</div>
+        </div>
+
+        <button id="btn-dismiss">INITIALIZE</button>
+      </div>
+      <div class="intro-accent-bar bottom"></div>
     </div>
   </div>
 
