@@ -106,7 +106,7 @@ body {
 
 /* ---- Buttons ---- */
 
-button {
+button, .btn-label {
   font-family: var(--font-display);
   font-size: 11px;
   font-weight: 500;
@@ -128,7 +128,7 @@ button {
   overflow: hidden;
 }
 
-button::before {
+button::before, .btn-label::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -140,14 +140,14 @@ button::before {
   pointer-events: none;
 }
 
-button:hover {
+button:hover, .btn-label:hover {
   background: rgba(0, 229, 255, 0.12);
   border-color: rgba(0, 229, 255, 0.35);
   color: var(--text-bright);
   box-shadow: 0 0 12px rgba(0, 229, 255, 0.1);
 }
 
-button.active {
+button.active, .btn-label.active {
   background: rgba(0, 229, 255, 0.15);
   border-color: var(--accent);
   color: var(--accent);
@@ -498,7 +498,7 @@ body.dragover::after {
     padding: 8px 10px 6px;
   }
 
-  button {
+  button, .btn-label {
     padding: 6px 10px;
     font-size: 10px;
   }
