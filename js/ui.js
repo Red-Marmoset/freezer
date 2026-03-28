@@ -12,6 +12,10 @@ const btnFile = document.getElementById('btn-file');
 const fileInput = document.getElementById('file-input');
 const btnFullscreen = document.getElementById('btn-fullscreen');
 const btnDismiss = document.getElementById('btn-dismiss');
+const btnScope = document.getElementById('btn-scope');
+const btnLoadPreset = document.getElementById('btn-load-preset');
+const presetInput = document.getElementById('preset-input');
+const presetName = document.getElementById('preset-name');
 
 const audio = createAudioEngine();
 const viz = createRenderer(canvas);
@@ -19,21 +23,52 @@ const viz = createRenderer(canvas);
 viz.setPreset(oscilloscope);
 viz.start(audio);
 
-// --- AVS preset loading ---
+// --- Preset switching ---
+
+function setActivePreset(btn, name) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  presetName.textContent = name || '';
+}
 
 function loadAvsJSON(json) {
   try {
     const preset = loadAvsPreset(json);
     viz.setPreset(preset);
-    console.log('Loaded AVS preset:', preset.name);
+    setActivePreset(btnLoadPreset, preset.name);
   } catch (e) {
     console.error('Failed to load AVS preset:', e);
   }
 }
 
+btnScope.addEventListener('click', () => {
+  viz.setPreset(oscilloscope);
+  setActivePreset(btnScope, '');
+});
+
+btnLoadPreset.addEventListener('click', () => {
+  presetInput.click();
+});
+
+presetInput.addEventListener('change', () => {
+  if (presetInput.files.length === 0) return;
+  const file = presetInput.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      loadAvsJSON(JSON.parse(reader.result));
+      dismissIntro();
+    } catch (err) {
+      console.error('Failed to parse preset JSON:', err);
+    }
+  };
+  reader.readAsText(file);
+  presetInput.value = '';
+});
+
 // Expose for console testing
 window.loadAvsJSON = loadAvsJSON;
-window.loadDefaultPreset = () => viz.setPreset(oscilloscope);
+window.loadDefaultPreset = () => { viz.setPreset(oscilloscope); setActivePreset(btnScope, ''); };
 
 // --- Audio source switching ---
 
@@ -98,8 +133,7 @@ document.addEventListener('drop', (e) => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const json = JSON.parse(reader.result);
-        loadAvsJSON(json);
+        loadAvsJSON(JSON.parse(reader.result));
         dismissIntro();
       } catch (err) {
         console.error('Failed to parse preset JSON:', err);

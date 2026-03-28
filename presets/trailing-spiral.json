@@ -1,0 +1,22 @@
+{
+  "name": "Trailing Spiral",
+  "clearFrame": false,
+  "components": [
+    { "type": "FadeOut", "speed": 0.05, "color": "#000000" },
+    {
+      "type": "SuperScope",
+      "code": {
+        "init": "n=400",
+        "perFrame": "t=t+0.03",
+        "onBeat": "",
+        "perPoint": "d=0.5+v*0.3; r=t+i*$PI*6; x=cos(r)*d*i; y=sin(r)*d*i"
+      },
+      "drawMode": "DOTS",
+      "colors": ["#00ff00", "#00ffff"],
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "cycleSpeed": 0.02
+    },
+    { "type": "Movement", "builtinEffect": 10 }
+  ]
+}

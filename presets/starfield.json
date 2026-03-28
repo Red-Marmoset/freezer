@@ -1,0 +1,21 @@
+{
+  "name": "Starfield",
+  "clearFrame": false,
+  "components": [
+    { "type": "FadeOut", "speed": 0.08, "color": "#000000" },
+    {
+      "type": "SuperScope",
+      "code": {
+        "init": "n=100",
+        "perFrame": "t=t+0.01",
+        "onBeat": "",
+        "perPoint": "x=cos(i*284.3+t*0.1)*v; y=sin(i*371.7+t*0.1)*v; red=1; green=1; blue=1"
+      },
+      "drawMode": "DOTS",
+      "colors": ["#ffffff"],
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER"
+    },
+    { "type": "Movement", "builtinEffect": 14 }
+  ]
+}

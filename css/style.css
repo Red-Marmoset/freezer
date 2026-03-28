@@ -140,6 +140,23 @@ kbd {
   background: rgba(0, 255, 0, 0.3);
 }
 
+.separator {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
+}
+
+#preset-name {
+  font-size: 13px;
+  color: #888;
+  align-self: center;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Drag-and-drop highlight */
 body.dragover::after {
   content: 'Drop audio file';
