@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head><title>EEL Engine Test</title></head>
+<body>
+<pre id="output"></pre>
+<script type="module">
+import { parse } from './nseel-parser.js';
+import { compileEEL, createState } from './nseel-compiler.js';
+import { createStdlib } from './nseel-stdlib.js';
+
+const out = document.getElementById('output');
+function log(...args) {
+  out.textContent += args.join(' ') + '\n';
+  console.log(...args);
+}
+
+// Test 1: Parse and compile basic SuperScope code
+log('=== Test 1: Basic SuperScope init ===');
+const initCode = 'n=800';
+const initFn = compileEEL(initCode);
+const s = createState();
+const lib = createStdlib({ time: 0 });
+initFn(s, lib);
+log('n =', s.n, '(expected: 800)');
+log('PASS:', s.n === 800);
+
+// Test 2: perFrame code with arithmetic
+log('\n=== Test 2: perFrame arithmetic ===');
+s.t = 1.0;
+const perFrameFn = compileEEL('t=t-0.05');
+perFrameFn(s, lib);
+log('t =', s.t, '(expected: 0.95)');
+log('PASS:', Math.abs(s.t - 0.95) < 0.0001);
+
+// Test 3: perPoint code with trig and $PI
+log('\n=== Test 3: perPoint with trig and $PI ===');
+const perPointFn = compileEEL('d=i+v*0.2; r=t+i*$PI*4; x=cos(r)*d; y=sin(r)*d');
+s.i = 0.5;
+s.v = 0.8;
+s.t = 0;
+perPointFn(s, lib);
+log('d =', s.d, '(expected: 0.66)');
+log('r =', s.r, '(expected:', 0 + 0.5 * Math.PI * 4, ')');
+log('x =', s.x, '(expected:', Math.cos(0.5 * Math.PI * 4) * 0.66, ')');
+log('y =', s.y, '(expected:', Math.sin(0.5 * Math.PI * 4) * 0.66, ')');
+const expectedD = 0.5 + 0.8 * 0.2;
+log('PASS d:', Math.abs(s.d - expectedD) < 0.0001);
+
+// Test 4: Conditional — if function
+log('\n=== Test 4: if() function ===');
+const ifFn = compileEEL('x = if(above(v, 0.5), 1, 0)');
+s.v = 0.8;
+ifFn(s, lib);
+log('x =', s.x, '(expected: 1)');
+s.v = 0.2;
+ifFn(s, lib);
+log('x =', s.x, '(expected: 0)');
+log('PASS:', s.x === 0);
+
+// Test 5: Logical operators
+log('\n=== Test 5: Logical operators (& |) ===');
+const logicFn = compileEEL('a = 1 & 1; b = 1 & 0; c = 0 | 1; d = 0 | 0');
+logicFn(s, lib);
+log('a=', s.a, 'b=', s.b, 'c=', s.c, 'd=', s.d);
+log('PASS:', s.a === 1 && s.b === 0 && s.c === 1 && s.d === 0);
+
+// Test 6: Registers
+log('\n=== Test 6: Registers (reg00-reg99) ===');
+const regFn = compileEEL('reg00 = 42; reg01 = reg00 * 2; x = reg01');
+regFn(s, lib);
+log('reg00 =', s._reg[0], 'reg01 =', s._reg[1], 'x =', s.x);
+log('PASS:', s._reg[0] === 42 && s._reg[1] === 84 && s.x === 84);
+
+// Test 7: Ternary operator
+log('\n=== Test 7: Ternary ? : ===');
+const ternFn = compileEEL('x = v > 0.5 ? 10 : 20');
+s.v = 0.8;
+ternFn(s, lib);
+log('x =', s.x, '(expected: 10)');
+s.v = 0.2;
+ternFn(s, lib);
+log('x =', s.x, '(expected: 20)');
+log('PASS:', s.x === 20);
+
+// Test 8: Loop
+log('\n=== Test 8: loop() ===');
+const loopFn = compileEEL('x = 0; loop(10, x = x + 1)');
+loopFn(s, lib);
+log('x =', s.x, '(expected: 10)');
+log('PASS:', s.x === 10);
+
+// Test 9: rand
+log('\n=== Test 9: rand() ===');
+const randFn = compileEEL('x = rand(100)');
+randFn(s, lib);
+log('x =', s.x, '(should be 0-99)');
+log('PASS:', s.x >= 0 && s.x < 100);
+
+// Test 10: Compound assignment
+log('\n=== Test 10: Compound assignment += ===');
+s.x = 5;
+const compoundFn = compileEEL('x += 3');
+compoundFn(s, lib);
+log('x =', s.x, '(expected: 8)');
+log('PASS:', s.x === 8);
+
+// Test 11: Unary minus
+log('\n=== Test 11: Unary minus ===');
+const unaryFn = compileEEL('x = -sin(1.0)');
+unaryFn(s, lib);
+log('x =', s.x, '(expected:', -Math.sin(1.0), ')');
+log('PASS:', Math.abs(s.x - (-Math.sin(1.0))) < 0.0001);
+
+// Test 12: Case insensitivity
+log('\n=== Test 12: Case insensitivity ===');
+const caseFn = compileEEL('X = SIN(1.0); Y = COS(1.0)');
+caseFn(s, lib);
+log('x =', s.x, 'y =', s.y);
+log('PASS:', Math.abs(s.x - Math.sin(1.0)) < 0.0001);
+
+log('\n=== All tests complete ===');
+</script>
+</body>
+</html>

@@ -23,6 +23,7 @@ export function createRenderer(canvas) {
     return {
       scene,
       camera,
+      _renderer: renderer, // Exposed for AVS engine render target access
       audioData: {
         waveform: audioEngine?.waveform,
         spectrum: audioEngine?.spectrum,

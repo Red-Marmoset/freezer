@@ -1,6 +1,7 @@
 import { createAudioEngine } from './audio-engine.js';
 import { createRenderer } from './renderer.js';
 import oscilloscope from './presets/oscilloscope.js';
+import { loadAvsPreset } from './avs/avs-engine.js';
 
 const canvas = document.getElementById('visualizer');
 const controls = document.getElementById('controls');
@@ -17,6 +18,22 @@ const viz = createRenderer(canvas);
 
 viz.setPreset(oscilloscope);
 viz.start(audio);
+
+// --- AVS preset loading ---
+
+function loadAvsJSON(json) {
+  try {
+    const preset = loadAvsPreset(json);
+    viz.setPreset(preset);
+    console.log('Loaded AVS preset:', preset.name);
+  } catch (e) {
+    console.error('Failed to load AVS preset:', e);
+  }
+}
+
+// Expose for console testing
+window.loadAvsJSON = loadAvsJSON;
+window.loadDefaultPreset = () => viz.setPreset(oscilloscope);
 
 // --- Audio source switching ---
 
@@ -74,7 +91,26 @@ document.addEventListener('drop', (e) => {
   e.preventDefault();
   document.body.classList.remove('dragover');
   const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('audio/')) {
+  if (!file) return;
+
+  // AVS preset JSON files
+  if (file.name.endsWith('.json')) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const json = JSON.parse(reader.result);
+        loadAvsJSON(json);
+        dismissIntro();
+      } catch (err) {
+        console.error('Failed to parse preset JSON:', err);
+      }
+    };
+    reader.readAsText(file);
+    return;
+  }
+
+  // Audio files
+  if (file.type.startsWith('audio/')) {
     audio.loadFile(file);
     setActiveButton(btnFile);
     dismissIntro();

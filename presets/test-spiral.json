@@ -1,0 +1,20 @@
+{
+  "name": "Test Spiral",
+  "clearFrame": true,
+  "components": [
+    { "type": "ClearScreen", "color": "#000000" },
+    {
+      "type": "SuperScope",
+      "code": {
+        "init": "n=800",
+        "perFrame": "t=t-0.05",
+        "onBeat": "",
+        "perPoint": "d=i+v*0.2; r=t+i*$PI*4; x=cos(r)*d; y=sin(r)*d"
+      },
+      "drawMode": "LINES",
+      "colors": ["#00ff00"],
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER"
+    }
+  ]
+}
