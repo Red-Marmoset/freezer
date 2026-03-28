@@ -79,10 +79,7 @@ export class SuperScope extends AvsComponent {
       this._mesh = new THREE.Line(this._geometry, this._material);
     }
 
-    // Enable transparency for blending
-    this._material.transparent = true;
     this._material.depthTest = false;
-    this._material.blending = THREE.AdditiveBlending;
 
     this._scene.add(this._mesh);
   }
@@ -164,9 +161,9 @@ export class SuperScope extends AvsComponent {
       // Check skip
       if (s.skip >= 0.00001) continue;
 
-      // Collect vertex
-      const x = Math.max(-1, Math.min(1, s.x || 0));
-      const y = Math.max(-1, Math.min(1, -(s.y || 0))); // Y inverted (AVS convention)
+      // Collect vertex — don't clamp, let points go off-screen like real AVS
+      const x = s.x || 0;
+      const y = -(s.y || 0); // Y inverted (AVS convention)
 
       positions[drawCount * 3] = x;
       positions[drawCount * 3 + 1] = y;

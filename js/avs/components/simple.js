@@ -51,9 +51,7 @@ export class Simple extends AvsComponent {
       this._material = new THREE.LineBasicMaterial({ vertexColors: true });
       this._mesh = new THREE.Line(this._geometry, this._material);
     }
-    this._material.transparent = true;
     this._material.depthTest = false;
-    this._material.blending = THREE.AdditiveBlending;
     this._scene.add(this._mesh);
   }
 
