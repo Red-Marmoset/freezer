@@ -17,8 +17,9 @@
       <div class="panel-label">PRESET</div>
       <div class="panel-buttons">
         <button id="btn-scope" class="preset-btn active" title="Default oscilloscope">Scope</button>
-        <button id="btn-load-preset" class="preset-btn" title="Load AVS preset JSON">Load</button>
-        <input type="file" id="preset-input" accept=".json" hidden>
+        <button id="btn-load-preset" class="preset-btn" title="Load AVS preset (.avs or .json)">Load</button>
+        <button id="btn-editor" class="preset-btn" title="Open preset editor">Edit</button>
+        <input type="file" id="preset-input" accept=".avs,.json" hidden>
       </div>
       <div id="preset-name" class="readout"></div>
     </div>
@@ -61,7 +62,7 @@
         <div id="splash-status" class="splash-status"></div>
 
         <div class="splash-footer">
-          <span>Drag &amp; drop <kbd>.json</kbd> preset files onto the visualizer</span>
+          <span>Drag &amp; drop <kbd>.avs</kbd> or <kbd>.json</kbd> preset files onto the visualizer</span>
           <span class="splash-dot"></span>
           <span><kbd>F</kbd> for fullscreen</span>
         </div>

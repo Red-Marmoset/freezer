@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head><title>AVS Parser Test</title></head>
+<body style="background:#111;color:#eee;font-family:monospace;padding:20px;">
+<h2>AVS Binary Parser Test</h2>
+<p>Drop a .avs file here or <input type="file" id="picker" accept=".avs"></p>
+<pre id="output" style="font-size:12px;line-height:1.5;white-space:pre-wrap;"></pre>
+<script type="module">
+import { parseAvsFileWithName } from './avs-parser.js';
+
+const out = document.getElementById('output');
+const picker = document.getElementById('picker');
+
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const json = parseAvsFileWithName(reader.result, file.name);
+      out.textContent = JSON.stringify(json, null, 2);
+      console.log(json);
+    } catch (e) {
+      out.textContent = 'ERROR: ' + e.message + '\n' + e.stack;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+picker.addEventListener('change', () => {
+  if (picker.files.length > 0) loadFile(picker.files[0]);
+});
+
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+</script>
+</body>
+</html>
