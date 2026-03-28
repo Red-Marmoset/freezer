@@ -40,7 +40,7 @@ export class SuperScope extends AvsComponent {
   }
 
   init(ctx) {
-    this.state = createState(ctx.globalRegisters);
+    this.state = createState(ctx.globalRegisters, ctx.globalMegabuf);
     this._scene = new THREE.Scene();
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     this._camera.position.z = 1;

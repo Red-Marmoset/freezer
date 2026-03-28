@@ -305,11 +305,11 @@ export function compileEEL(code) {
  * @param {Float64Array} globalRegisters — shared reg00-reg99
  * @returns {object} — state object for compiled functions
  */
-export function createState(globalRegisters) {
+export function createState(globalRegisters, globalMegabuf) {
   const state = {
     _reg: globalRegisters || new Float64Array(100),
     _megabuf: {},
-    _gmegabuf: {}, // Shared across components
+    _gmegabuf: globalMegabuf || {},
     // Common variables initialized to 0 by default via Proxy
   };
   // Use Proxy to auto-initialize undefined variables to 0

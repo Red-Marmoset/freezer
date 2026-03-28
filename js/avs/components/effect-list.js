@@ -27,7 +27,7 @@ export class EffectList extends AvsComponent {
   }
 
   init(ctx) {
-    this.state = createState(ctx.globalRegisters);
+    this.state = createState(ctx.globalRegisters, ctx.globalMegabuf);
 
     // Create child framebuffer
     this.childFb = new Framebuffer(ctx.renderer, ctx.width, ctx.height);

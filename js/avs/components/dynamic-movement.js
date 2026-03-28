@@ -46,7 +46,7 @@ export class DynamicMovement extends AvsComponent {
   }
 
   init(ctx) {
-    this.state = createState(ctx.globalRegisters);
+    this.state = createState(ctx.globalRegisters, ctx.globalMegabuf);
     this._scene = new THREE.Scene();
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
