@@ -1,0 +1,157 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #fff;
+}
+
+#visualizer {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Controls */
+#controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  transition: opacity 0.4s ease;
+  z-index: 10;
+}
+
+#controls.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.control-group {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+button.active {
+  background: rgba(0, 255, 0, 0.2);
+  border-color: #0f0;
+  color: #0f0;
+}
+
+/* Intro overlay */
+#intro {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  transition: opacity 0.4s ease;
+}
+
+#intro.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-content {
+  max-width: 420px;
+  text-align: center;
+}
+
+.intro-content h2 {
+  font-size: 28px;
+  margin-bottom: 16px;
+  color: #0f0;
+}
+
+.intro-content p {
+  margin-bottom: 12px;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+.intro-content ul {
+  list-style: none;
+  margin-bottom: 16px;
+}
+
+.intro-content li {
+  padding: 4px 0;
+  color: #ccc;
+}
+
+.intro-content li strong {
+  color: #fff;
+}
+
+.hint {
+  font-size: 13px;
+  color: #888;
+}
+
+kbd {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+#btn-dismiss {
+  margin-top: 8px;
+  background: rgba(0, 255, 0, 0.15);
+  border-color: #0f0;
+  color: #0f0;
+  padding: 10px 28px;
+  font-size: 15px;
+}
+
+#btn-dismiss:hover {
+  background: rgba(0, 255, 0, 0.3);
+}
+
+/* Drag-and-drop highlight */
+body.dragover::after {
+  content: 'Drop audio file';
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 0, 0.1);
+  border: 2px dashed #0f0;
+  font-size: 24px;
+  color: #0f0;
+  z-index: 200;
+  pointer-events: none;
+}

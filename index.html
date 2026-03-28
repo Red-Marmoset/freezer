@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freezer</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="visualizer"></canvas>
+
+  <div id="controls">
+    <div class="control-group">
+      <button id="btn-system" class="source-btn" title="Capture system audio (screen share)">System</button>
+      <button id="btn-mic" class="source-btn" title="Capture microphone">Mic</button>
+      <button id="btn-file" class="source-btn" title="Load audio file">File</button>
+      <input type="file" id="file-input" accept="audio/*" hidden>
+    </div>
+    <div class="control-group">
+      <button id="btn-fullscreen" title="Toggle fullscreen (F)">Fullscreen</button>
+    </div>
+  </div>
+
+  <div id="intro">
+    <div class="intro-content">
+      <h2>Freezer</h2>
+      <p>Click a source to start visualizing audio:</p>
+      <ul>
+        <li><strong>System</strong> &mdash; captures whatever is playing on your machine</li>
+        <li><strong>Mic</strong> &mdash; captures your microphone input</li>
+        <li><strong>File</strong> &mdash; play and visualize an audio file</li>
+      </ul>
+      <p class="hint">Press <kbd>F</kbd> for fullscreen &middot; drag &amp; drop audio files anywhere</p>
+      <button id="btn-dismiss">Got it</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/ui.js"></script>
+</body>
+</html>
