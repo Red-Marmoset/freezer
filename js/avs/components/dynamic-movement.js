@@ -86,16 +86,16 @@ export class DynamicMovement extends AvsComponent {
 
     // Run init on first frame
     if (this.firstFrame) {
-      this.initFn(s, lib);
+      try { this.initFn(s, lib); } catch {}
       this.firstFrame = false;
     }
 
     // Run perFrame
-    this.perFrameFn(s, lib);
+    try { this.perFrameFn(s, lib); } catch {}
 
     // Run onBeat
     if (ctx.beat) {
-      this.onBeatFn(s, lib);
+      try { this.onBeatFn(s, lib); } catch {}
     }
 
     // Run perPoint code for each grid vertex and update UVs
@@ -121,7 +121,7 @@ export class DynamicMovement extends AvsComponent {
       }
 
       // Run perPoint code
-      this.perPointFn(s, lib);
+      try { this.perPointFn(s, lib); } catch {}
 
       // Get output UV
       let newU, newV;

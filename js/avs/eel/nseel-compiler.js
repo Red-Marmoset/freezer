@@ -309,7 +309,7 @@ export function createState(globalRegisters) {
   const state = {
     _reg: globalRegisters || new Float64Array(100),
     _megabuf: {},
-    _gmegabuf: null, // Set from engine context (shared across components)
+    _gmegabuf: {}, // Shared across components
     // Common variables initialized to 0 by default via Proxy
   };
   // Use Proxy to auto-initialize undefined variables to 0
