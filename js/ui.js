@@ -10,8 +10,8 @@ const splash = document.getElementById('splash');
 const btnStart = document.getElementById('btn-start');
 const splashStatus = document.getElementById('splash-status');
 const btnScope = document.getElementById('btn-scope');
+const btnLoadPreset = document.getElementById('btn-load-preset');
 const btnEditor = document.getElementById('btn-editor');
-const presetInput = document.getElementById('preset-input');
 const presetName = document.getElementById('preset-name');
 const btnFullscreen = document.getElementById('btn-fullscreen');
 
@@ -105,10 +105,14 @@ btnScope.addEventListener('click', () => {
   setActivePreset('Oscilloscope');
 });
 
-presetInput.addEventListener('change', () => {
-  if (presetInput.files.length === 0) return;
-  loadPresetFile(presetInput.files[0]);
-  presetInput.value = '';
+btnLoadPreset.addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.avs,.json';
+  input.onchange = () => {
+    if (input.files.length > 0) loadPresetFile(input.files[0]);
+  };
+  input.click();
 });
 
 // --- Editor ---

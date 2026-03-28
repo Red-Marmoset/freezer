@@ -106,7 +106,7 @@ body {
 
 /* ---- Buttons ---- */
 
-button, .btn-label {
+button {
   font-family: var(--font-display);
   font-size: 11px;
   font-weight: 500;
@@ -128,7 +128,7 @@ button, .btn-label {
   overflow: hidden;
 }
 
-button::before, .btn-label::before {
+button::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -140,14 +140,14 @@ button::before, .btn-label::before {
   pointer-events: none;
 }
 
-button:hover, .btn-label:hover {
+button:hover {
   background: rgba(0, 229, 255, 0.12);
   border-color: rgba(0, 229, 255, 0.35);
   color: var(--text-bright);
   box-shadow: 0 0 12px rgba(0, 229, 255, 0.1);
 }
 
-button.active, .btn-label.active {
+button.active {
   background: rgba(0, 229, 255, 0.15);
   border-color: var(--accent);
   color: var(--accent);
@@ -163,21 +163,6 @@ button.active, .btn-label.active {
   margin-right: 2px;
 }
 
-/* Label styled as button for file input */
-.btn-label {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-label input[type="file"] {
-  position: absolute;
-  width: 0;
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
 
 /* ---- Preset readout ---- */
 
@@ -498,7 +483,7 @@ body.dragover::after {
     padding: 8px 10px 6px;
   }
 
-  button, .btn-label {
+  button {
     padding: 6px 10px;
     font-size: 10px;
   }
