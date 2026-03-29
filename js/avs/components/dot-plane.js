@@ -1,31 +1,24 @@
-// AVS DotPlane component (code 0x01) — r_dotpln.cpp
-// 64x64 grid where height = audio waveform amplitude with spring physics
-// and 3D rotation + perspective projection.
+// AVS DotPlane component (code 0x01)
+// 64x64 grid of dots, audio data scrolls across as height displacement.
+// New audio injected at one edge, propagates across with damped spring physics.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
+import { buildColorMap } from './dot-fountain.js';
 
-const GRID_SIZE = 64;
-const GRID_POINTS = GRID_SIZE * GRID_SIZE;
+const GRID = 64;
+const MAX_DOTS = GRID * GRID;
 
 export class DotPlane extends AvsComponent {
   constructor(opts) {
     super(opts);
     this.rotSpeed = opts.rotSpeed != null ? opts.rotSpeed : 16;
-    this.color = opts.color ? parseHexColor(opts.color) :
-                 (opts.colors ? parseHexColor(opts.colors) : [1, 1, 1]);
-    this.angle = opts.angle || 0;
-    this.style = opts.style || 0; // 0=dots, 1=lines
-
-    // Spring physics state — each column has an amplitude and velocity
-    this._amplitudes = new Float32Array(GRID_SIZE);
-    this._velocities = new Float32Array(GRID_SIZE);
+    this.angle = opts.angle != null ? opts.angle : -20;
+    this.colors = opts.colors || ['#1c6b18', '#ff0a23', '#2a1d74', '#9036d9', '#6b88ff'];
     this._rotation = 0;
-
-    this._scene = null;
-    this._camera = null;
-    this._geometry = null;
-    this._material = null;
-    this._mesh = null;
+    this._colorMap = null;
+    this._gridHeight = null;
+    this._gridDelta = null;
+    this._gridColor = null;
   }
 
   init(ctx) {
@@ -33,101 +26,107 @@ export class DotPlane extends AvsComponent {
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     this._camera.position.z = 1;
 
+    this._colorMap = buildColorMap(this.colors);
+    this._gridHeight = new Float32Array(MAX_DOTS);
+    this._gridDelta = new Float32Array(MAX_DOTS);
+    this._gridColor = new Uint32Array(MAX_DOTS).fill(0xffffff);
+
     this._geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(GRID_POINTS * 3);
-    const colors = new Float32Array(GRID_POINTS * 3);
-    this._geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    this._geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    this._geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(MAX_DOTS * 3), 3));
+    this._geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(MAX_DOTS * 3), 3));
     this._geometry.setDrawRange(0, 0);
 
-    if (this.style === 1) {
-      this._material = new THREE.LineBasicMaterial({ vertexColors: true });
-      this._mesh = new THREE.LineSegments(this._geometry, this._material);
-    } else {
-      this._material = new THREE.PointsMaterial({
-        size: 2,
-        vertexColors: true,
-        sizeAttenuation: false,
-      });
-      this._mesh = new THREE.Points(this._geometry, this._material);
-    }
-    this._material.depthTest = false;
-    this._scene.add(this._mesh);
-
-    // Initialize amplitudes
-    this._amplitudes.fill(0);
-    this._velocities.fill(0);
+    this._material = new THREE.PointsMaterial({ size: 2, vertexColors: true, sizeAttenuation: false, depthTest: false });
+    this._points = new THREE.Points(this._geometry, this._material);
+    this._scene.add(this._points);
   }
 
   render(ctx, fb) {
-    if (!this.enabled) return;
-
+    if (!this.enabled || !this._gridHeight) return;
     const waveform = ctx.audioData.waveform;
-    if (!waveform) return;
 
-    // Update spring physics from waveform
-    for (let i = 0; i < GRID_SIZE; i++) {
-      const sampleIdx = Math.floor(i * waveform.length / GRID_SIZE);
-      const target = ((waveform[sampleIdx] || 128) - 128) / 128;
+    // Save first row for delta calculation
+    const tmpLine = new Float32Array(GRID);
+    for (let x = 0; x < GRID; x++) tmpLine[x] = this._gridHeight[x];
 
-      // Spring toward target
-      const diff = target - this._amplitudes[i];
-      this._velocities[i] += diff * 0.2;
-      this._velocities[i] *= 0.85; // damping
-      this._amplitudes[i] += this._velocities[i];
+    // Shift rows: propagate existing data, inject new audio at last iteration
+    for (let yPos = 0; yPos < GRID; yPos++) {
+      const line = (GRID - 2 - yPos) * GRID;
+      if (line < 0) continue;
+
+      if (yPos < GRID - 1) {
+        // Propagate existing row
+        const nextLine = line + GRID;
+        for (let x = 0; x < GRID; x++) {
+          let h = this._gridHeight[line + x] + this._gridDelta[line + x];
+          if (h < 0) h = 0;
+          this._gridHeight[nextLine + x] = h;
+          this._gridDelta[nextLine + x] = this._gridDelta[line + x] - 0.15 * (h / 255);
+          this._gridColor[nextLine + x] = this._gridColor[line + x];
+        }
+      } else {
+        // Inject new audio data at row 0
+        for (let x = 0; x < GRID; x++) {
+          let audio = 0;
+          if (waveform) {
+            const i0 = Math.min(waveform.length - 1, x * 3);
+            const i1 = Math.min(waveform.length - 1, x * 3 + 1);
+            const i2 = Math.min(waveform.length - 1, x * 3 + 2);
+            audio = Math.max(waveform[i0], waveform[i1], waveform[i2]);
+          }
+          this._gridHeight[x] = audio;
+          this._gridColor[x] = this._colorMap[Math.min(63, Math.floor(audio / 4))];
+          this._gridDelta[x] = (audio - tmpLine[x]) / 90;
+        }
+      }
     }
 
-    // Advance rotation
-    this._rotation += (this.rotSpeed / 256) * 0.03;
-
-    // 3D rotation matrix (rotate around Y axis, tilt around X)
-    const cosR = Math.cos(this._rotation);
-    const sinR = Math.sin(this._rotation);
-    const tiltAngle = 0.6 + (this.angle / 256) * 0.5; // tilt range
-    const cosT = Math.cos(tiltAngle);
-    const sinT = Math.sin(tiltAngle);
+    // 3D transform
+    const rotRad = this._rotation * Math.PI / 180;
+    const angRad = this.angle * Math.PI / 180;
+    const cosR = Math.cos(rotRad), sinR = Math.sin(rotRad);
+    const cosA = Math.cos(angRad), sinA = Math.sin(angRad);
+    const zoom = Math.min(ctx.width * 440 / 640, ctx.height * 440 / 480);
+    const hw = ctx.width / 2, hh = ctx.height / 2;
+    const gridStep = 350 / GRID;
 
     const positions = this._geometry.attributes.position.array;
     const colorsBuf = this._geometry.attributes.color.array;
     let drawCount = 0;
 
-    // Perspective distance
-    const viewDist = 4.0;
+    for (let yPos = 0; yPos < GRID; yPos++) {
+      const gridStartPos = (this._rotation < 90 || this._rotation > 270) ? GRID - yPos - 1 : yPos;
+      const curX = (gridStartPos - 32) * gridStep;
 
-    for (let gy = 0; gy < GRID_SIZE; gy++) {
-      for (let gx = 0; gx < GRID_SIZE; gx++) {
-        // Grid position centered at origin, range [-1, 1]
-        const px = (gx / (GRID_SIZE - 1)) * 2 - 1;
-        const pz = (gy / (GRID_SIZE - 1)) * 2 - 1;
-        const py = this._amplitudes[gx] * 0.5; // height from audio
+      for (let xPos = 0; xPos < GRID; xPos++) {
+        const gx = this._rotation < 180 ? GRID - 1 - xPos : xPos;
+        const idx = yPos * GRID + gx;
+        const curY = (gx - 32) * gridStep;
+        const h = this._gridHeight[idx];
 
-        // Rotate around Y axis
-        const rx = px * cosR - pz * sinR;
-        const rz = px * sinR + pz * cosR;
+        const wx = curY, wy = 64 - h, wz = curX;
 
-        // Tilt around X axis
-        const ry = py * cosT - rz * sinT;
-        const rz2 = py * sinT + rz * cosT;
+        let x = wx * cosR - wz * sinR;
+        let z = wx * sinR + wz * cosR;
+        const y2 = wy * cosA - z * sinA;
+        const z2 = wy * sinA + z * cosA;
+        const y = y2 - 20;
+        const zf = z2 + 400;
 
-        // Perspective projection
-        const depth = viewDist + rz2;
-        if (depth <= 0.1) continue;
+        if (zf <= 1) continue;
+        const persp = zoom / zf;
+        const sx = (x * persp + hw) / ctx.width * 2 - 1;
+        const sy = -((y * persp + hh) / ctx.height * 2 - 1);
 
-        const projScale = 2.0 / depth;
-        const screenX = rx * projScale;
-        const screenY = ry * projScale;
+        if (sx < -1.5 || sx > 1.5 || sy < -1.5 || sy > 1.5) continue;
 
-        // Depth-based brightness
-        const brightness = Math.max(0.1, Math.min(1.0, (viewDist - rz2) / (viewDist * 2)));
-
-        positions[drawCount * 3] = screenX;
-        positions[drawCount * 3 + 1] = screenY;
+        const c = this._gridColor[idx];
+        positions[drawCount * 3] = sx;
+        positions[drawCount * 3 + 1] = sy;
         positions[drawCount * 3 + 2] = 0;
-
-        colorsBuf[drawCount * 3] = this.color[0] * brightness;
-        colorsBuf[drawCount * 3 + 1] = this.color[1] * brightness;
-        colorsBuf[drawCount * 3 + 2] = this.color[2] * brightness;
-
+        colorsBuf[drawCount * 3] = ((c >> 16) & 0xff) / 255;
+        colorsBuf[drawCount * 3 + 1] = ((c >> 8) & 0xff) / 255;
+        colorsBuf[drawCount * 3 + 2] = (c & 0xff) / 255;
         drawCount++;
       }
     }
@@ -138,23 +137,15 @@ export class DotPlane extends AvsComponent {
 
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
     ctx.renderer.render(this._scene, this._camera);
+
+    this._rotation = (this._rotation + this.rotSpeed / 5) % 360;
+    if (this._rotation < 0) this._rotation += 360;
   }
 
   destroy() {
     if (this._geometry) this._geometry.dispose();
     if (this._material) this._material.dispose();
-    this._scene = null;
-    this._camera = null;
   }
-}
-
-function parseHexColor(hex) {
-  if (typeof hex === 'string' && hex[0] === '#') hex = hex.slice(1);
-  if (typeof hex === 'number') {
-    return [(hex >> 16 & 0xff) / 255, (hex >> 8 & 0xff) / 255, (hex & 0xff) / 255];
-  }
-  const n = parseInt(hex, 16);
-  return [(n >> 16 & 0xff) / 255, (n >> 8 & 0xff) / 255, (n & 0xff) / 255];
 }
 
 AvsComponent.register('DotPlane', DotPlane);
