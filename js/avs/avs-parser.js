@@ -353,6 +353,7 @@ function parseBuiltinComponent(code, typeName, r, endPos) {
     case 0x2A: return parseDynamicShift(r, endPos);
     case 0x23: return parseDynamicDistanceModifier(r, endPos);
     case 0x22: return parsePicture(r, endPos);
+    case 0x08: return parseMovingParticle(r, endPos);
     default:
       // Return a generic component with the type name so it's visible
       return { type: typeName, enabled: true, _unsupported: true };
@@ -782,6 +783,29 @@ function parseBlitterFeedback(r, endPos) {
 
 // ---- RotoBlitter (0x09) ----
 
+// ---- MovingParticle (0x08) ----
+// Binary: enabled_and_flags(u32), color(u32), distance(u32), size(u32), onBeatSize(u32), blendMode(u32)
+
+function parseMovingParticle(r, endPos) {
+  const flags = r.hasBytes(4) ? r.uint32() : 1;
+  const enabled = !!(flags & 1);
+  const onBeatSizeChange = !!(flags & 2);
+
+  // Color is stored as 0x00BBGGRR
+  const colorRaw = r.hasBytes(4) ? r.uint32() : 0xffffff;
+  const cr = colorRaw & 0xff;
+  const cg = (colorRaw >> 8) & 0xff;
+  const cb = (colorRaw >> 16) & 0xff;
+  const color = '#' + ((1 << 24) | (cr << 16) | (cg << 8) | cb).toString(16).slice(1);
+
+  const maxdist = r.hasBytes(4) ? r.uint32() : 16;
+  const size = r.hasBytes(4) ? r.uint32() : 8;
+  const size2 = r.hasBytes(4) ? r.uint32() : 8;
+  const blend = r.hasBytes(4) ? r.uint32() : 1;
+
+  return { type: 'MovingParticle', enabled, color, maxdist, size, size2, blend, onBeatSizeChange };
+}
+
 function parseRotoBlitter(r, endPos) {
   const zoom = r.hasBytes(4) ? r.uint32() : 256;
   const rotate = r.hasBytes(4) ? r.uint32() : 0;
@@ -996,9 +1020,17 @@ function parseBump(r, endPos) {
 // ---- SetRenderMode (0x28) ----
 
 function parseSetRenderMode(r, endPos) {
-  const blend = r.hasBytes(4) ? r.uint32() : 0;
-  const lineSize = r.hasBytes(4) ? r.uint32() : 1;
-  return { type: 'SetRenderMode', blend, lineSize };
+  // g_line_blend_mode is a single packed uint32:
+  //   bits 0-7:   blend mode index
+  //   bits 8-15:  alpha value (0-255)
+  //   bits 16-23: line size
+  //   bit 31:     enabled flag
+  const raw = r.hasBytes(4) ? r.uint32() : 0;
+  const blend = raw & 0xff;
+  const alpha = (raw >> 8) & 0xff;
+  const lineSize = (raw >> 16) & 0xff;
+  const enabled = !(raw & 0x80000000); // bit 31 set = disabled
+  return { type: 'SetRenderMode', enabled, blend, alpha, lineSize: lineSize || 1 };
 }
 
 // ---- Interferences (0x29) ----
@@ -1076,15 +1108,32 @@ function parseDynamicDistanceModifier(r, endPos) {
 // ---- Picture (0x22) ----
 
 function parsePicture(r, endPos) {
+  // Binary layout: enabled(u32), blend_additive(u32), blend_5050(u32),
+  //   on_beat_additive(u32), on_beat_duration(u32), image(ntString),
+  //   keep_aspect_ratio(u32), fit_height(u32)
   const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
-  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
-  // Image filename is null-terminated string in remaining data
+  const blendAdditive = r.hasBytes(4) ? r.uint32() !== 0 : false;
+  const blend5050 = r.hasBytes(4) ? r.uint32() !== 0 : false;
+  const onBeatAdditive = r.hasBytes(4) ? r.uint32() !== 0 : false;
+  const onBeatDuration = r.hasBytes(4) ? r.uint32() : 1;
+
   let imageSrc = '';
   if (r.pos < endPos) {
     imageSrc = r.ntString();
   }
-  const onBeatBlendMode = r.hasBytes(4) ? r.uint32() : blendMode;
-  return { type: 'Picture', enabled, blendMode, onBeatBlendMode, imageSrc };
+
+  const keepAspect = (r.pos + 4 <= endPos) ? r.uint32() !== 0 : false;
+  const fitHeight = (r.pos + 4 <= endPos) ? r.uint32() !== 0 : false;
+
+  // Derive blend modes from flags
+  let blendMode = 'REPLACE';
+  if (blendAdditive) blendMode = 'ADDITIVE';
+  else if (blend5050) blendMode = 'FIFTY_FIFTY';
+
+  let onBeatBlendMode = blendMode;
+  if (onBeatAdditive) onBeatBlendMode = 'ADDITIVE';
+
+  return { type: 'Picture', enabled, blendMode, onBeatBlendMode, imageSrc, onBeatDuration, keepAspect };
 }
 
 // ---- DLL/APE components ----
@@ -1118,6 +1167,16 @@ function parseDllComponent(dllId, r, endPos) {
   if (cleanId === 'Multiply' || cleanId === 'Multiplier') {
     const mode = r.hasBytes(4) ? r.uint32() : 0;
     return { type: 'Multiplier', enabled: true, mode };
+  }
+
+  // Convolution Filter APE (Holden03)
+  if (cleanId === 'Holden03: Convolution Filter' || (cleanId.startsWith('Holden') && cleanId.toLowerCase().includes('convolution'))) {
+    return parseConvolutionAPE(r, endPos);
+  }
+
+  // Color Map APE
+  if (cleanId === 'Color Map') {
+    return parseColorMapAPE(r, endPos);
   }
 
   return {
@@ -1266,6 +1325,136 @@ function parseTexer2APE(r, endPos) {
     }
   } catch {
     // If parsing fails, return with empty code — the fallback blob will render
+  }
+
+  return result;
+}
+
+// ---- Color Map APE ----
+// Binary: header(16), 8 map headers(60 each), then color stops(12 each)
+
+function parseColorMapAPE(r, endPos) {
+  const KEY_NAMES = ['RED', 'GREEN', 'BLUE', '(R+G+B)/2', 'MAX', '(R+G+B)/3'];
+  const BLEND_NAMES = ['REPLACE', 'ADDITIVE', 'MAXIMUM', 'MINIMUM', '5050',
+    'SUB1', 'SUB2', 'MULTIPLY', 'XOR', 'ADJUSTABLE'];
+  const CYCLE_NAMES = ['NONE', 'BEAT_RANDOM', 'BEAT_SEQUENTIAL'];
+
+  const result = {
+    type: 'ColorMap',
+    enabled: true,
+    key: 'RED',
+    blendMode: 'REPLACE',
+    mapCycleMode: 'NONE',
+    adjustableAlpha: 128,
+    dontSkipFastBeats: false,
+    mapCycleSpeed: 8,
+    maps: [],
+    currentMap: 0,
+  };
+
+  try {
+    // Header (16 bytes)
+    const colorKey = r.hasBytes(4) ? r.uint32() : 0;
+    result.key = KEY_NAMES[colorKey] || 'RED';
+
+    const blendmode = r.hasBytes(4) ? r.uint32() : 0;
+    result.blendMode = BLEND_NAMES[blendmode] || 'REPLACE';
+
+    const cycleMode = r.hasBytes(4) ? r.uint32() : 0;
+    result.mapCycleMode = CYCLE_NAMES[cycleMode] || 'NONE';
+
+    if (r.hasBytes(4)) {
+      result.adjustableAlpha = r.uint8();
+      r.skip(1); // unused
+      result.dontSkipFastBeats = r.uint8() !== 0;
+      result.mapCycleSpeed = r.uint8() || 8;
+    }
+
+    // 8 map headers (60 bytes each)
+    const mapHeaders = [];
+    for (let m = 0; m < 8; m++) {
+      const enabled = r.hasBytes(4) ? r.uint32() !== 0 : false;
+      const numColors = r.hasBytes(4) ? r.uint32() : 0;
+      const mapId = r.hasBytes(4) ? r.uint32() : 0;
+      const filepath = r.hasBytes(48) ? r.fixedString(48) : '';
+      mapHeaders.push({ enabled, numColors, filepath });
+    }
+
+    // Color stops
+    for (let m = 0; m < 8; m++) {
+      const colors = [];
+      for (let c = 0; c < mapHeaders[m].numColors; c++) {
+        if (r.pos + 12 > endPos) break;
+        const position = r.uint32();
+        const colorRaw = r.uint32();
+        r.skip(4); // color_id (ignored)
+        // Color is 0x00RRGGBB
+        const cr = (colorRaw >> 16) & 0xff;
+        const cg = (colorRaw >> 8) & 0xff;
+        const cb = colorRaw & 0xff;
+        const hex = '#' + ((1 << 24) | (cr << 16) | (cg << 8) | cb).toString(16).slice(1);
+        colors.push({ position, color: hex });
+      }
+      result.maps.push({
+        enabled: mapHeaders[m].enabled,
+        colors: colors.length > 0 ? colors : [
+          { position: 0, color: '#000000' },
+          { position: 255, color: '#ffffff' },
+        ],
+      });
+    }
+  } catch {
+    // Partial parse
+  }
+
+  // Default if no maps
+  if (result.maps.length === 0) {
+    result.maps.push({
+      enabled: true,
+      colors: [
+        { position: 0, color: '#000000' },
+        { position: 255, color: '#ffffff' },
+      ],
+    });
+  }
+
+  return result;
+}
+
+// ---- Convolution Filter APE (Holden03: Convolution Filter) ----
+// Binary layout: enabled(u32), wrap(u32), absolute(u32), twoPass(u32),
+//   kernel[49](u32 each), bias(u32), scale(u32), saveFile(remaining bytes)
+
+function parseConvolutionAPE(r, endPos) {
+  const result = {
+    type: 'Holden03: Convolution Filter',
+    enabled: true,
+    wrap: false,
+    absolute: false,
+    twoPass: false,
+    kernel: new Array(49).fill(0),
+    bias: 0,
+    scale: 1,
+  };
+
+  try {
+    if (r.pos + 4 <= endPos) result.enabled = r.uint32() !== 0;
+    if (r.pos + 4 <= endPos) result.wrap = r.uint32() !== 0;
+    if (r.pos + 4 <= endPos) result.absolute = r.uint32() !== 0;
+    if (r.pos + 4 <= endPos) result.twoPass = r.uint32() !== 0;
+
+    // 49 kernel values (signed int32)
+    for (let i = 0; i < 49; i++) {
+      if (r.pos + 4 <= endPos) {
+        result.kernel[i] = r.int32();
+      }
+    }
+
+    if (r.pos + 4 <= endPos) result.bias = r.int32();
+    if (r.pos + 4 <= endPos) result.scale = r.int32();
+    // Remaining bytes = save file path (ignore)
+  } catch {
+    // Partial parse is fine
   }
 
   return result;
