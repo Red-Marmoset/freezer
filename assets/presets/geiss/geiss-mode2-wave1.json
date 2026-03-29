@@ -1,0 +1,7 @@
+{
+  "name": "Geiss - Spiral (Scope)",
+  "clearFrame": false,
+  "components": [
+    { "type": "GeissEffect", "enabled": true, "mode": 2, "waveform": 1 }
+  ]
+}

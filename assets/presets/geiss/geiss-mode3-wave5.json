@@ -1,0 +1,7 @@
+{
+  "name": "Geiss - Terra Landing (Circle)",
+  "clearFrame": false,
+  "components": [
+    { "type": "GeissEffect", "enabled": true, "mode": 3, "waveform": 5 }
+  ]
+}

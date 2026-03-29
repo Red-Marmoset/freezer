@@ -1,0 +1,7 @@
+{
+  "name": "Geiss - Spherical Zoom (Circle)",
+  "clearFrame": false,
+  "components": [
+    { "type": "GeissEffect", "enabled": true, "mode": 25, "waveform": 5 }
+  ]
+}
