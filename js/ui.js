@@ -249,6 +249,61 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+function getSliderRange(key, val) {
+  const k = key.toLowerCase();
+  // Speed/opacity values (0-1 range)
+  if (k === 'speed' || k === 'opacity' || k === 'alpha' || k === 'adjustblend') {
+    return { min: 0, max: 1, step: 0.005 };
+  }
+  // Zoom/scale values
+  if (k === 'zoom' || k === 'scale' || k === 'onbeatzoom' || k === 'onbeatscale') {
+    return { min: 0, max: 64, step: 1 };
+  }
+  // Effect index
+  if (k === 'builtineffect' || k === 'effectindex') {
+    return { min: 0, max: 23, step: 1 };
+  }
+  // Mode selectors
+  if (k === 'mode' || k === 'blendmode' || k === 'clearmode' || k === 'action') {
+    return { min: 0, max: 12, step: 1 };
+  }
+  // Grid size
+  if (k === 'gridw' || k === 'gridh') {
+    return { min: 2, max: 64, step: 1 };
+  }
+  // Size/thickness
+  if (k === 'thickness' || k === 'linesize' || k === 'squaresize') {
+    return { min: 1, max: 16, step: 1 };
+  }
+  // Point count
+  if (k === 'numstars' || k === 'numcolors' || k === 'numlayers' || k === 'sides') {
+    return { min: 1, max: 4096, step: 1 };
+  }
+  // Rotation/angle
+  if (k.includes('rot') || k.includes('angle') || k === 'distance') {
+    return { min: -6.28, max: 6.28, step: 0.01 };
+  }
+  // Density
+  if (k === 'density') {
+    return { min: 1, max: 10, step: 1 };
+  }
+  // Spacing
+  if (k === 'spacing' || k === 'bands') {
+    return { min: 1, max: 128, step: 1 };
+  }
+  // Brightness offsets
+  if (k === 'red' || k === 'green' || k === 'blue') {
+    if (Math.abs(val) > 1) return { min: -4096, max: 4096, step: 1 };
+    return { min: -1, max: 1, step: 0.01 };
+  }
+  // Generic: derive from current value
+  if (Number.isInteger(val)) {
+    const absVal = Math.abs(val) || 10;
+    return { min: 0, max: Math.max(absVal * 4, 100), step: 1 };
+  }
+  return { min: -2, max: 2, step: 0.001 };
+}
+
 // --- Path-based JSON navigation ---
 
 function getComponentAtPath(path) {
@@ -527,16 +582,43 @@ function buildDetailDom(container, comp, path) {
         });
         valSpan.appendChild(cb);
       } else if (typeof val === 'number') {
-        const inp = document.createElement('input');
-        inp.type = 'number';
-        inp.className = 'ed-input';
-        inp.value = val;
-        inp.step = Number.isInteger(val) ? '1' : '0.01';
-        inp.addEventListener('change', () => {
-          comp[key] = Number(inp.value);
+        // Slider + number input combo
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;gap:6px;align-items:center;width:100%;';
+
+        const slider = document.createElement('input');
+        slider.type = 'range';
+        slider.className = 'ed-slider';
+        // Guess reasonable min/max/step from key name and current value
+        const range = getSliderRange(key, val);
+        slider.min = range.min;
+        slider.max = range.max;
+        slider.step = range.step;
+        slider.value = val;
+
+        const numInp = document.createElement('input');
+        numInp.type = 'number';
+        numInp.className = 'ed-input';
+        numInp.value = Number.isInteger(val) ? val : val.toFixed(3);
+        numInp.step = range.step;
+        numInp.style.width = '65px';
+        numInp.style.flexShrink = '0';
+
+        slider.addEventListener('input', () => {
+          const v = Number(slider.value);
+          numInp.value = Number.isInteger(v) ? v : v.toFixed(3);
+          comp[key] = v;
           rebuildPreset();
         });
-        valSpan.appendChild(inp);
+        numInp.addEventListener('change', () => {
+          const v = Number(numInp.value);
+          slider.value = v;
+          comp[key] = v;
+          rebuildPreset();
+        });
+        wrap.appendChild(slider);
+        wrap.appendChild(numInp);
+        valSpan.appendChild(wrap);
       } else if (typeof val === 'string') {
         // Check if it looks like a color
         if (/^#[0-9a-fA-F]{6}$/.test(val) || (key.toLowerCase().includes('color') && val.startsWith('#'))) {

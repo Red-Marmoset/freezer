@@ -22,6 +22,10 @@ export class SuperScope extends AvsComponent {
     this.drawMode = (opts.drawMode || 'LINES').toUpperCase();
     this.thickness = opts.thickness || 1;
 
+    // Check if any EEL code explicitly references 'drawmode'
+    const allCode = [code.init, code.perFrame, code.onBeat, code.perPoint].join(' ').toLowerCase();
+    this._codeUsesDrawmode = allCode.includes('drawmode');
+
     // Color cycling
     this.colors = (opts.colors || ['#ffffff']).map(parseHexColor);
     this.cycleSpeed = opts.cycleSpeed || 0.01;
@@ -179,12 +183,14 @@ export class SuperScope extends AvsComponent {
       drawCount++;
     }
 
-    // Check if drawmode was changed by code
-    const newMode = (s.drawmode !== undefined && s.drawmode > 0) ? 'LINES' :
-                    (s.drawmode !== undefined && s.drawmode === 0) ? 'DOTS' : this.drawMode;
-    if (newMode !== this.drawMode) {
-      this.drawMode = newMode;
-      this._updateDrawMode();
+    // Check if drawmode was explicitly changed by EEL code
+    // Only override if the code actually writes to 'drawmode'
+    if (this._codeUsesDrawmode) {
+      const newMode = s.drawmode > 0.5 ? 'LINES' : 'DOTS';
+      if (newMode !== this.drawMode) {
+        this.drawMode = newMode;
+        this._updateDrawMode();
+      }
     }
 
     // Update dot size from EEL linesize variable
