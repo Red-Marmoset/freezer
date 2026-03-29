@@ -1099,6 +1099,11 @@ function parseDllComponent(dllId, r, endPos) {
     return { type: 'ChannelShift', enabled: true, mode, onBeatMode };
   }
 
+  // Triangle APE
+  if (cleanId === 'Render: Triangle' || cleanId === 'Triangle') {
+    return parseTriangleAPE(r, endPos);
+  }
+
   // Texer APE
   if (cleanId === 'Texer') {
     return parseTexerAPE(r, endPos);
@@ -1109,12 +1114,35 @@ function parseDllComponent(dllId, r, endPos) {
     return parseTexer2APE(r, endPos);
   }
 
+  // Multiplier APE
+  if (cleanId === 'Multiply' || cleanId === 'Multiplier') {
+    const mode = r.hasBytes(4) ? r.uint32() : 0;
+    return { type: 'Multiplier', enabled: true, mode };
+  }
+
   return {
     type: cleanId || 'UnknownAPE',
     enabled: true,
     _unsupported: true,
     _apeId: cleanId,
   };
+}
+
+// ---- Triangle APE (Render: Triangle) ----
+// Format: NtCodeIFBP — 4 null-terminated strings
+
+function parseTriangleAPE(r, endPos) {
+  const result = {
+    type: 'Triangle',
+    code: { init: '', perFrame: '', onBeat: '', perPoint: '' },
+  };
+  try {
+    if (r.pos < endPos) result.code.init = r.ntString();
+    if (r.pos < endPos) result.code.perFrame = r.ntString();
+    if (r.pos < endPos) result.code.onBeat = r.ntString();
+    if (r.pos < endPos) result.code.perPoint = r.ntString();
+  } catch {}
+  return result;
 }
 
 // ---- Texer APE ----

@@ -1,12 +1,15 @@
-// AVS Triangle component — renders filled triangles from EEL-computed vertices
-// Similar to SuperScope but draws filled triangles instead of dots/lines.
-// Every 3 consecutive points form a triangle. Uses dynamic vertex buffer.
+// AVS Triangle APE — per-triangle filled rendering from EEL code
+// Port of the original Triangle APE by TomYam/Cockos.
+// Each iteration of perPoint code defines ONE complete triangle with 3 vertices:
+//   x1,y1  x2,y2  x3,y3  — vertex positions (-1 to 1)
+//   red1,green1,blue1     — triangle color (0 to 1) [flat shaded]
+// Variable n sets how many triangles to draw.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
 
-const MAX_VERTS = 4096;
+const MAX_TRIS = 2048;
 
 export class Triangle extends AvsComponent {
   constructor(opts) {
@@ -17,13 +20,6 @@ export class Triangle extends AvsComponent {
     this.perFrameFn = compileEEL(code.perFrame || '');
     this.onBeatFn = compileEEL(code.onBeat || '');
     this.perPointFn = compileEEL(code.perPoint || '');
-
-    this.audioSource = (opts.audioSource || 'WAVEFORM').toUpperCase();
-    this.audioChannel = (opts.audioChannel || 'CENTER').toUpperCase();
-
-    this.colors = (opts.colors || ['#ffffff']).map(parseHexColor);
-    this.cycleSpeed = opts.cycleSpeed || 0.01;
-    this.colorPos = 0;
 
     this.state = null;
     this.firstFrame = true;
@@ -41,10 +37,10 @@ export class Triangle extends AvsComponent {
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     this._camera.position.z = 1;
 
-    // Dynamic triangle buffer
+    // Dynamic triangle buffer: 3 verts per tri, max MAX_TRIS triangles
     this._geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(MAX_VERTS * 3);
-    const colors = new Float32Array(MAX_VERTS * 3);
+    const positions = new Float32Array(MAX_TRIS * 3 * 3);
+    const colors = new Float32Array(MAX_TRIS * 3 * 3);
     this._geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     this._geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     this._geometry.setDrawRange(0, 0);
@@ -65,14 +61,11 @@ export class Triangle extends AvsComponent {
     if (!this.enabled || !this.state) return;
 
     const s = this.state;
-    const audioData = ctx.audioData;
-    const waveform = audioData.waveform;
-    const spectrum = audioData.spectrum;
-    const fftSize = audioData.fftSize || 2048;
-    const sampleCount = fftSize / 2;
 
     const lib = createStdlib({
-      waveform, spectrum, fftSize,
+      waveform: ctx.audioData.waveform,
+      spectrum: ctx.audioData.spectrum,
+      fftSize: ctx.audioData.fftSize,
       time: ctx.time,
     });
 
@@ -91,73 +84,71 @@ export class Triangle extends AvsComponent {
       try { this.onBeatFn(s, lib); } catch {}
     }
 
-    const n = Math.max(0, Math.min(MAX_VERTS, Math.floor(s.n !== undefined ? s.n : 0)));
+    const n = Math.max(0, Math.min(MAX_TRIS, Math.floor(s.n !== undefined ? s.n : 0)));
     if (n === 0) return;
 
-    const color = this._getCurrentColor();
     const positions = this._geometry.attributes.position.array;
     const colorsBuf = this._geometry.attributes.color.array;
-    let vertCount = 0;
+    let triCount = 0;
 
-    for (let i = 0; i < n; i++) {
-      s.i = n > 1 ? i / (n - 1) : 0;
-
-      const sampleIdx = Math.floor(s.i * (sampleCount - 1));
-      if (this.audioSource === 'SPECTRUM') {
-        s.v = spectrum ? Math.max(0, (spectrum[sampleIdx] + 100) / 100) : 0;
-      } else {
-        s.v = waveform ? (waveform[sampleIdx] - 128) / 128 : 0;
-      }
-
-      s.red = color[0];
-      s.green = color[1];
-      s.blue = color[2];
+    for (let t = 0; t < n; t++) {
+      // Reset per-triangle defaults
+      s.i = n > 1 ? t / (n - 1) : 0;
+      s.x1 = 0; s.y1 = 0;
+      s.x2 = 0; s.y2 = 0;
+      s.x3 = 0; s.y3 = 0;
+      s.red1 = 1; s.green1 = 1; s.blue1 = 1;
+      s.red2 = 1; s.green2 = 1; s.blue2 = 1;
+      s.red3 = 1; s.green3 = 1; s.blue3 = 1;
       s.skip = 0;
+      s.z1 = 0;
 
       try { this.perPointFn(s, lib); } catch {}
 
       if (s.skip >= 0.00001) continue;
 
-      const x = s.x || 0;
-      const y = -(s.y || 0);
+      const base = triCount * 9; // 3 verts * 3 components
 
-      positions[vertCount * 3] = x;
-      positions[vertCount * 3 + 1] = y;
-      positions[vertCount * 3 + 2] = 0;
+      // Vertex 1
+      positions[base]     = s.x1;
+      positions[base + 1] = -(s.y1); // Y inverted
+      positions[base + 2] = 0;
+      // Vertex 2
+      positions[base + 3] = s.x2;
+      positions[base + 4] = -(s.y2);
+      positions[base + 5] = 0;
+      // Vertex 3
+      positions[base + 6] = s.x3;
+      positions[base + 7] = -(s.y3);
+      positions[base + 8] = 0;
 
-      colorsBuf[vertCount * 3] = Math.max(0, Math.min(1, s.red || 0));
-      colorsBuf[vertCount * 3 + 1] = Math.max(0, Math.min(1, s.green || 0));
-      colorsBuf[vertCount * 3 + 2] = Math.max(0, Math.min(1, s.blue || 0));
+      // Colors — original APE uses flat shading from red1/green1/blue1
+      // but we support per-vertex colors if set
+      const r1 = Math.max(0, Math.min(1, s.red1));
+      const g1 = Math.max(0, Math.min(1, s.green1));
+      const b1 = Math.max(0, Math.min(1, s.blue1));
+      const r2 = Math.max(0, Math.min(1, s.red2));
+      const g2 = Math.max(0, Math.min(1, s.green2));
+      const b2 = Math.max(0, Math.min(1, s.blue2));
+      const r3 = Math.max(0, Math.min(1, s.red3));
+      const g3 = Math.max(0, Math.min(1, s.green3));
+      const b3 = Math.max(0, Math.min(1, s.blue3));
 
-      vertCount++;
+      colorsBuf[base]     = r1; colorsBuf[base + 1] = g1; colorsBuf[base + 2] = b1;
+      colorsBuf[base + 3] = r2; colorsBuf[base + 4] = g2; colorsBuf[base + 5] = b2;
+      colorsBuf[base + 6] = r3; colorsBuf[base + 7] = g3; colorsBuf[base + 8] = b3;
+
+      triCount++;
     }
-
-    // Round down to multiple of 3 (each triangle needs 3 verts)
-    const triVerts = Math.floor(vertCount / 3) * 3;
 
     this._geometry.attributes.position.needsUpdate = true;
     this._geometry.attributes.color.needsUpdate = true;
-    this._geometry.setDrawRange(0, triVerts);
+    this._geometry.setDrawRange(0, triCount * 3);
 
-    if (triVerts > 0) {
+    if (triCount > 0) {
       ctx.renderer.setRenderTarget(fb.getActiveTarget());
       ctx.renderer.render(this._scene, this._camera);
     }
-  }
-
-  _getCurrentColor() {
-    if (this.colors.length === 0) return [1, 1, 1];
-    if (this.colors.length === 1) return this.colors[0];
-    this.colorPos = (this.colorPos + this.cycleSpeed) % this.colors.length;
-    const idx = Math.floor(this.colorPos);
-    const frac = this.colorPos - idx;
-    const c1 = this.colors[idx];
-    const c2 = this.colors[(idx + 1) % this.colors.length];
-    return [
-      c1[0] + (c2[0] - c1[0]) * frac,
-      c1[1] + (c2[1] - c1[1]) * frac,
-      c1[2] + (c2[2] - c1[2]) * frac,
-    ];
   }
 
   destroy() {
@@ -166,10 +157,6 @@ export class Triangle extends AvsComponent {
   }
 }
 
-function parseHexColor(hex) {
-  if (typeof hex === 'string' && hex[0] === '#') hex = hex.slice(1);
-  const n = parseInt(hex, 16);
-  return [(n >> 16 & 0xff) / 255, (n >> 8 & 0xff) / 255, (n & 0xff) / 255];
-}
-
 AvsComponent.register('Triangle', Triangle);
+// Also register as APE name
+AvsComponent.register('Render: Triangle', Triangle);
