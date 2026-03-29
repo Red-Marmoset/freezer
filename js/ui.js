@@ -453,8 +453,16 @@ function getSliderRange(key, val) {
   if (k === 'numstars' || k === 'numcolors' || k === 'numlayers' || k === 'sides') {
     return { min: 1, max: 4096, step: 1 };
   }
-  // Rotation/angle
-  if (k.includes('rot') || k.includes('angle') || k === 'distance') {
+  // Rotation speed
+  if (k.includes('rot') && k.includes('speed') || k === 'rotspeed') {
+    return { min: -50, max: 50, step: 1 };
+  }
+  // Angle (degrees)
+  if (k === 'angle') {
+    return { min: -90, max: 90, step: 1 };
+  }
+  // Other rotation values (radians)
+  if (k.includes('rot') || k === 'distance') {
     return { min: -6.28, max: 6.28, step: 0.01 };
   }
   // Density
