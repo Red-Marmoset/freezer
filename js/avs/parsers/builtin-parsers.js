@@ -247,7 +247,8 @@ export function parseMovingParticle(r) {
   const enabled = !!(flags & 1);
   const onBeatSizeChange = !!(flags & 2);
   const colorRaw = r.hasBytes(4) ? r.uint32() : 0xffffff;
-  const cr = colorRaw & 0xff, cg = (colorRaw >> 8) & 0xff, cb = (colorRaw >> 16) & 0xff;
+  // File bytes are BGR order: byte0=B, byte1=G, byte2=R
+  const cb = colorRaw & 0xff, cg = (colorRaw >> 8) & 0xff, cr = (colorRaw >> 16) & 0xff;
   const color = '#' + ((1 << 24) | (cr << 16) | (cg << 8) | cb).toString(16).slice(1);
   const maxdist = r.hasBytes(4) ? r.uint32() : 16;
   const size = r.hasBytes(4) ? r.uint32() : 8;
