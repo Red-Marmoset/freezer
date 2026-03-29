@@ -54,6 +54,9 @@ import './components/picture.js';
 import './components/triangle.js';
 import './components/vertex-triangles.js';
 import './components/moving-particle.js';
+import './components/convolution-filter.js';
+import './components/comment.js';
+import './components/multiplier.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object
@@ -118,6 +121,11 @@ class AvsPreset {
   update(ctx) {
     const renderer = this._renderer;
     if (!renderer || !this.framebuffer) return;
+
+    // Resize framebuffer if viewport changed
+    if (ctx.width !== this.framebuffer.width || ctx.height !== this.framebuffer.height) {
+      this.framebuffer.resize(ctx.width, ctx.height);
+    }
 
     const beat = this.beatDetector.update(ctx.audioData.spectrum);
     const avsCtx = this._buildAvsCtx(ctx, renderer);

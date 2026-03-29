@@ -112,8 +112,11 @@ btnLoadPreset.addEventListener('click', () => {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.avs,.json';
+  input.style.display = 'none';
+  document.body.appendChild(input);
   input.onchange = () => {
     if (input.files.length > 0) loadPresetFile(input.files[0]);
+    document.body.removeChild(input);
   };
   input.click();
 });
@@ -158,7 +161,15 @@ const RENDER_TYPES = ['SuperScope','Simple','Ring','Starfield','DotPlane','DotGr
 const TRANS_TYPES = ['FadeOut','Movement','DynamicMovement','Blur','Invert','Mirror','Mosaic',
   'Brightness','FastBrightness','ColorModifier','ChannelShift','ColorClip','Grain','Interleave',
   'ColorFade','UniqueTone','Scatter','BlitterFeedback','RotoBlitter','Water','WaterBump','Bump',
-  'Interferences','DynamicShift','DynamicDistanceModifier','ColorMap'];
+  'Interferences','DynamicShift','DynamicDistanceModifier','ColorMap',
+  'Holden03: Convolution Filter'];
+
+// Display name overrides for APE components with long IDs
+const DISPLAY_NAMES = {
+  'Holden03: Convolution Filter': 'Convolution Filter',
+  'Acko.net: Texer II': 'Texer II',
+  'Render: Triangle': 'Triangle',
+};
 
 // Known select-type fields and their options
 // Pretty display names for enum values
@@ -167,15 +178,22 @@ const PRETTY_NAMES = {
   MAXIMUM: 'Maximum', MINIMUM: 'Minimum', MULTIPLY: 'Multiply',
   SUB_DEST_SRC: 'Sub (Dst-Src)', SUB_SRC_DEST: 'Sub (Src-Dst)',
   EVERY_OTHER_LINE: 'Every Other Line', EVERY_OTHER_PIXEL: 'Every Other Pixel',
-  XOR: 'XOR', ADJUSTABLE: 'Adjustable', IGNORE: 'Ignore', BUFFER: 'Buffer',
+  XOR: 'XOR (TODO)', ADJUSTABLE: 'Adjustable', IGNORE: 'Ignore', BUFFER: 'Buffer (TODO)',
   WAVEFORM: 'Waveform', SPECTRUM: 'Spectrum',
   LEFT: 'Left', RIGHT: 'Right', CENTER: 'Center',
   DOTS: 'Dots', LINES: 'Lines', SOLID: 'Solid',
   TOP: 'Top', BOTTOM: 'Bottom', CARTESIAN: 'Cartesian', POLAR: 'Polar',
+  // Line blend modes (integer keys for SetRenderMode)
+  0: 'Replace', 1: 'Additive', 2: 'Maximum', 3: '50/50',
+  4: 'Sub (Dst-Src)', 5: 'Sub (Src-Dst)', 6: 'Multiply',
+  7: 'Adjustable', 8: 'XOR (TODO)', 9: 'Minimum',
 };
 
 const BLEND_OPTIONS = ['REPLACE', 'ADDITIVE', 'FIFTY_FIFTY', 'MAXIMUM', 'MINIMUM', 'MULTIPLY', 'SUB_DEST_SRC', 'SUB_SRC_DEST', 'EVERY_OTHER_LINE', 'EVERY_OTHER_PIXEL', 'XOR', 'ADJUSTABLE'];
 const BLEND_IO_OPTIONS = ['IGNORE', ...BLEND_OPTIONS, 'BUFFER'];
+
+// Line blend mode options for SetRenderMode (integer indices matching AVS)
+const LINE_BLEND_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const SELECT_FIELDS = {
   drawMode: ['DOTS', 'LINES'],
@@ -239,8 +257,9 @@ const DEFAULTS = {
   DynamicDistanceModifier: { type: 'DynamicDistanceModifier', enabled: true, code: { init: '', perFrame: '', onBeat: '', perPoint: '' }, blendMode: 'REPLACE', bilinear: true },
   EffectList: { type: 'EffectList', enabled: true, input: 'IGNORE', output: 'REPLACE', clearFrame: true, components: [] },
   BufferSave: { type: 'BufferSave', enabled: true, action: 0, buffer: 0, blendMode: 'REPLACE' },
-  SetRenderMode: { type: 'SetRenderMode', enabled: true },
+  SetRenderMode: { type: 'SetRenderMode', enabled: true, blend: 0, alpha: 128, lineSize: 1 },
   Comment: { type: 'Comment', enabled: true, text: '' },
+  'Holden03: Convolution Filter': { type: 'Holden03: Convolution Filter', enabled: true, kernel: (() => { const k = new Array(49).fill(0); k[17]=-1; k[23]=-1; k[24]=5; k[25]=-1; k[31]=-1; return k; })(), scale: 1, bias: 0, wrap: false, absolute: false, twoPass: false },
   ColorMap: { type: 'ColorMap', enabled: true, key: 'RED', output: 'REPLACE', mapCycleMode: 'SINGLE', maps: [] },
 };
 
@@ -296,7 +315,15 @@ function getSliderRange(key, val) {
   }
   // Size/thickness
   if (k === 'thickness' || k === 'linesize' || k === 'squaresize') {
-    return { min: 1, max: 16, step: 1 };
+    return { min: 1, max: 32, step: 1 };
+  }
+  // Particle sizes
+  if (k === 'size' || k === 'size2') {
+    return { min: 1, max: 128, step: 1 };
+  }
+  // Max distance
+  if (k === 'maxdist') {
+    return { min: 1, max: 64, step: 1 };
   }
   // Point count
   if (k === 'numstars' || k === 'numcolors' || k === 'numlayers' || k === 'sides') {
@@ -313,6 +340,13 @@ function getSliderRange(key, val) {
   // Spacing
   if (k === 'spacing' || k === 'bands') {
     return { min: 1, max: 128, step: 1 };
+  }
+  // Convolution bias/scale
+  if (k === 'bias') {
+    return { min: -256, max: 256, step: 1 };
+  }
+  if (k === 'scale' && Math.abs(val) <= 1000) {
+    return { min: -256, max: 256, step: 1 };
   }
   // Brightness offsets
   if (k === 'red' || k === 'green' || k === 'blue') {
@@ -467,7 +501,7 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
     row.innerHTML = `
       <span class="tree-toggle ${hasChildren ? 'open' : 'leaf'}">\u25B6</span>
       <span class="tree-icon ${unsupported ? 'unsupported' : cat}">${icon}</span>
-      <span class="tree-label${disabled ? ' disabled' : ''}">${escHtml(comp.type)}</span>
+      <span class="tree-label${disabled ? ' disabled' : ''}">${escHtml(DISPLAY_NAMES[comp.type] || comp.type)}</span>
       ${(cat !== 'container' && cat !== 'misc') ? `<span class="tree-badge ${cat}">${cat}</span>` : ''}
       ${unsupported ? '<span class="tree-badge misc">N/A</span>' : ''}
       ${comp.drawMode ? `<span class="tree-badge misc">${escHtml(comp.drawMode)}</span>` : ''}
@@ -557,7 +591,9 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
 function buildDetailDom(container, comp, path) {
   container.innerHTML = '';
 
-  const skipKeys = ['type', 'components', 'code', 'group', 'colors'];
+  const skipKeys = ['type', 'components', 'code', 'group', 'colors', 'kernel', 'maps'];
+  // SetRenderMode has a custom UI for these fields
+  if (comp.type === 'SetRenderMode') skipKeys.push('blend', 'alpha', 'lineSize');
   const props = Object.entries(comp).filter(([k]) => !skipKeys.includes(k) && !k.startsWith('_'));
 
   if (props.length > 0) {
@@ -804,6 +840,121 @@ function buildDetailDom(container, comp, path) {
     container.appendChild(section);
   }
 
+  // SetRenderMode: custom dropdowns for blend + linesize
+  if (comp.type === 'SetRenderMode') {
+    const LINE_BLEND_NAMES = [
+      'Replace', 'Additive', 'Maximum', '50/50',
+      'Sub (Dst-Src)', 'Sub (Src-Dst)', 'Multiply',
+      'Adjustable', 'XOR (TODO)', 'Minimum',
+    ];
+
+    const section = document.createElement('div');
+    section.className = 'tree-detail-section';
+    section.innerHTML = '<div class="tree-detail-label">LINE RENDER MODE</div>';
+
+    // Blend mode dropdown
+    const blendRow = document.createElement('div');
+    blendRow.className = 'tree-detail-prop';
+    const blendLabel = document.createElement('span');
+    blendLabel.className = 'key';
+    blendLabel.textContent = 'blend';
+    blendRow.appendChild(blendLabel);
+    const blendSel = document.createElement('select');
+    blendSel.className = 'ed-select';
+    for (let i = 0; i < LINE_BLEND_NAMES.length; i++) {
+      const o = document.createElement('option');
+      o.value = i;
+      o.textContent = LINE_BLEND_NAMES[i];
+      if (i === (comp.blend || 0)) o.selected = true;
+      blendSel.appendChild(o);
+    }
+    blendSel.addEventListener('change', () => {
+      comp.blend = Number(blendSel.value);
+      rebuildPreset();
+    });
+    const blendVal = document.createElement('span');
+    blendVal.className = 'val val-edit';
+    blendVal.appendChild(blendSel);
+    blendRow.appendChild(blendVal);
+    section.appendChild(blendRow);
+
+    // Line size slider
+    const sizeRow = document.createElement('div');
+    sizeRow.className = 'tree-detail-prop';
+    const sizeLabel = document.createElement('span');
+    sizeLabel.className = 'key';
+    sizeLabel.textContent = 'lineSize';
+    sizeRow.appendChild(sizeLabel);
+    const sizeWrap = document.createElement('div');
+    sizeWrap.style.cssText = 'display:flex;gap:6px;align-items:center;width:100%;';
+    const sizeSlider = document.createElement('input');
+    sizeSlider.type = 'range';
+    sizeSlider.className = 'ed-slider';
+    sizeSlider.min = 1; sizeSlider.max = 32; sizeSlider.step = 1;
+    sizeSlider.value = comp.lineSize || 1;
+    const sizeNum = document.createElement('input');
+    sizeNum.type = 'number';
+    sizeNum.className = 'ed-input';
+    sizeNum.value = comp.lineSize || 1;
+    sizeNum.style.width = '55px';
+    sizeSlider.addEventListener('input', () => {
+      sizeNum.value = sizeSlider.value;
+      comp.lineSize = Number(sizeSlider.value);
+      rebuildPreset();
+    });
+    sizeNum.addEventListener('change', () => {
+      sizeSlider.value = sizeNum.value;
+      comp.lineSize = Number(sizeNum.value);
+      rebuildPreset();
+    });
+    sizeWrap.appendChild(sizeSlider);
+    sizeWrap.appendChild(sizeNum);
+    const sizeVal = document.createElement('span');
+    sizeVal.className = 'val val-edit';
+    sizeVal.appendChild(sizeWrap);
+    sizeRow.appendChild(sizeVal);
+    section.appendChild(sizeRow);
+
+    // Alpha slider
+    const alphaRow = document.createElement('div');
+    alphaRow.className = 'tree-detail-prop';
+    const alphaLabel = document.createElement('span');
+    alphaLabel.className = 'key';
+    alphaLabel.textContent = 'alpha';
+    alphaRow.appendChild(alphaLabel);
+    const alphaWrap = document.createElement('div');
+    alphaWrap.style.cssText = 'display:flex;gap:6px;align-items:center;width:100%;';
+    const alphaSlider = document.createElement('input');
+    alphaSlider.type = 'range';
+    alphaSlider.className = 'ed-slider';
+    alphaSlider.min = 0; alphaSlider.max = 255; alphaSlider.step = 1;
+    alphaSlider.value = comp.alpha || 128;
+    const alphaNum = document.createElement('input');
+    alphaNum.type = 'number';
+    alphaNum.className = 'ed-input';
+    alphaNum.value = comp.alpha || 128;
+    alphaNum.style.width = '55px';
+    alphaSlider.addEventListener('input', () => {
+      alphaNum.value = alphaSlider.value;
+      comp.alpha = Number(alphaSlider.value);
+      rebuildPreset();
+    });
+    alphaNum.addEventListener('change', () => {
+      alphaSlider.value = alphaNum.value;
+      comp.alpha = Number(alphaNum.value);
+      rebuildPreset();
+    });
+    alphaWrap.appendChild(alphaSlider);
+    alphaWrap.appendChild(alphaNum);
+    const alphaVal = document.createElement('span');
+    alphaVal.className = 'val val-edit';
+    alphaVal.appendChild(alphaWrap);
+    alphaRow.appendChild(alphaVal);
+    section.appendChild(alphaRow);
+
+    container.appendChild(section);
+  }
+
   // Movement: show builtin effect description + code editor for custom (13)
   if (comp.type === 'Movement') {
     const EFFECT_NAMES = [
@@ -898,6 +1049,199 @@ function buildDetailDom(container, comp, path) {
       section.appendChild(ta);
       container.appendChild(section);
     }
+  }
+
+  // Convolution filter kernel grid (7x7)
+  if (comp.kernel && Array.isArray(comp.kernel) && comp.kernel.length === 49) {
+    const section = document.createElement('div');
+    section.className = 'tree-detail-section';
+    section.innerHTML = '<div class="tree-detail-label">7×7 KERNEL</div>';
+
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin:6px 0;';
+
+    for (let i = 0; i < 49; i++) {
+      const inp = document.createElement('input');
+      inp.type = 'number';
+      inp.className = 'ed-input';
+      inp.value = comp.kernel[i];
+      inp.style.cssText = 'width:100%;text-align:center;padding:2px;font-size:11px;';
+      if (i === 24) inp.style.borderColor = 'var(--accent)'; // center element highlight
+      const idx = i;
+      inp.addEventListener('change', () => {
+        comp.kernel[idx] = Number(inp.value);
+        rebuildPreset();
+      });
+      grid.appendChild(inp);
+    }
+    section.appendChild(grid);
+
+    // Auto-scale button
+    const autoBtn = document.createElement('button');
+    autoBtn.className = 'ed-tool-btn';
+    autoBtn.textContent = 'Auto Scale';
+    autoBtn.style.marginTop = '4px';
+    autoBtn.addEventListener('click', () => {
+      let sum = 0;
+      for (let i = 0; i < 49; i++) sum += comp.kernel[i];
+      if (comp.twoPass) sum *= 2;
+      comp.scale = sum + (comp.bias || 0);
+      if (comp.scale === 0) comp.scale = 1;
+      rebuildPreset();
+      buildDetailDom(container, comp, path);
+    });
+    section.appendChild(autoBtn);
+
+    container.appendChild(section);
+  }
+
+  // ColorMap gradient visualizer
+  if (comp.type === 'ColorMap' && comp.maps && Array.isArray(comp.maps)) {
+    const section = document.createElement('div');
+    section.className = 'tree-detail-section';
+    section.innerHTML = '<div class="tree-detail-label">GRADIENT MAPS</div>';
+
+    function drawGradient(canvas, colors) {
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      if (!colors || colors.length === 0) {
+        // Default: black to white
+        const grad = ctx.createLinearGradient(0, 0, w, 0);
+        grad.addColorStop(0, '#000000');
+        grad.addColorStop(1, '#ffffff');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        return;
+      }
+
+      // Sort stops
+      const stops = colors.slice().sort((a, b) => a.position - b.position);
+
+      // Draw using Canvas gradient
+      const grad = ctx.createLinearGradient(0, 0, w, 0);
+      for (const s of stops) {
+        grad.addColorStop(Math.max(0, Math.min(1, s.position / 255)), s.color);
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    function rebuildMaps() {
+      section.querySelectorAll('.cmap-entry').forEach(el => el.remove());
+
+      comp.maps.forEach((map, mi) => {
+        if (!map.enabled && map.colors && map.colors.length <= 2 &&
+            map.colors[0]?.color === '#000000') return; // skip default empty maps
+
+        const entry = document.createElement('div');
+        entry.className = 'cmap-entry';
+        entry.style.cssText = 'margin:6px 0;';
+
+        // Map header
+        const header = document.createElement('div');
+        header.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:3px;';
+
+        const enableCb = document.createElement('input');
+        enableCb.type = 'checkbox';
+        enableCb.checked = map.enabled !== false;
+        enableCb.addEventListener('change', () => {
+          map.enabled = enableCb.checked;
+          rebuildPreset();
+        });
+        header.appendChild(enableCb);
+
+        const label = document.createElement('span');
+        label.style.cssText = 'font-size:11px;color:var(--text-dim);';
+        label.textContent = `Map ${mi + 1}` + (mi === (comp.currentMap || 0) ? ' (active)' : '');
+        header.appendChild(label);
+
+        entry.appendChild(header);
+
+        // Gradient canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 20;
+        canvas.style.cssText = 'width:100%;height:20px;border-radius:3px;border:1px solid var(--glass-border);cursor:pointer;';
+        drawGradient(canvas, map.colors);
+        entry.appendChild(canvas);
+
+        // Color stops row
+        const stopsRow = document.createElement('div');
+        stopsRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;align-items:center;';
+
+        function rebuildStops() {
+          stopsRow.innerHTML = '';
+          (map.colors || []).forEach((stop, si) => {
+            const stopWrap = document.createElement('div');
+            stopWrap.style.cssText = 'display:flex;align-items:center;gap:2px;';
+
+            const colorInp = document.createElement('input');
+            colorInp.type = 'color';
+            colorInp.value = stop.color;
+            colorInp.style.cssText = 'width:20px;height:20px;padding:0;border:1px solid var(--glass-border);border-radius:2px;cursor:pointer;';
+            colorInp.addEventListener('change', () => {
+              stop.color = colorInp.value;
+              drawGradient(canvas, map.colors);
+              rebuildPreset();
+            });
+            stopWrap.appendChild(colorInp);
+
+            const posInp = document.createElement('input');
+            posInp.type = 'number';
+            posInp.className = 'ed-input';
+            posInp.value = stop.position;
+            posInp.min = 0; posInp.max = 255;
+            posInp.style.cssText = 'width:40px;font-size:10px;padding:1px 3px;';
+            posInp.addEventListener('change', () => {
+              stop.position = Math.max(0, Math.min(255, Number(posInp.value)));
+              drawGradient(canvas, map.colors);
+              rebuildPreset();
+            });
+            stopWrap.appendChild(posInp);
+
+            // Remove stop
+            if (map.colors.length > 1) {
+              const rmBtn = document.createElement('button');
+              rmBtn.textContent = '\u00d7';
+              rmBtn.style.cssText = 'background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:12px;padding:0 2px;';
+              rmBtn.addEventListener('click', () => {
+                map.colors.splice(si, 1);
+                rebuildStops();
+                drawGradient(canvas, map.colors);
+                rebuildPreset();
+              });
+              stopWrap.appendChild(rmBtn);
+            }
+
+            stopsRow.appendChild(stopWrap);
+          });
+
+          // Add stop button
+          const addBtn = document.createElement('button');
+          addBtn.className = 'ed-tool-btn';
+          addBtn.textContent = '+';
+          addBtn.style.cssText = 'padding:1px 6px;font-size:11px;';
+          addBtn.addEventListener('click', () => {
+            const lastPos = map.colors.length > 0 ? map.colors[map.colors.length - 1].position : 0;
+            map.colors.push({ position: Math.min(255, lastPos + 32), color: '#ffffff' });
+            rebuildStops();
+            drawGradient(canvas, map.colors);
+            rebuildPreset();
+          });
+          stopsRow.appendChild(addBtn);
+        }
+        rebuildStops();
+        entry.appendChild(stopsRow);
+
+        section.appendChild(entry);
+      });
+    }
+    rebuildMaps();
+
+    container.appendChild(section);
   }
 }
 
