@@ -13,6 +13,22 @@
       "gridSize": 48
     },
     {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=v*0.5; y=(i*2-1)*0.8"
+      }
+    },
+    {
       "type": "Echo",
       "enabled": true,
       "zoom": 0.999998,

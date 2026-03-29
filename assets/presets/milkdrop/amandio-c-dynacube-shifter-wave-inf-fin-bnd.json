@@ -11,6 +11,22 @@
         "perVertex": ""
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
     }
   ]
 }

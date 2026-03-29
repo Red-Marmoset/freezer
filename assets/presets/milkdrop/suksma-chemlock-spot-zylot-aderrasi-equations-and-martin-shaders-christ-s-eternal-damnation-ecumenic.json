@@ -15,6 +15,22 @@
     {
       "type": "DarkenCenter",
       "enabled": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffa6ff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.8; y=v*0.5"
+      }
     }
   ]
 }

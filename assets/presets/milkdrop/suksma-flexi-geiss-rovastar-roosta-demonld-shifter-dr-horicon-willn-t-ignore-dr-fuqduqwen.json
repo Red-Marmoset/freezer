@@ -11,6 +11,22 @@
         "perVertex": "dx = if(((x) > (q1)), dx + .2*sin(time/2), dx - .2*cos(time/2));;\ndy = if(((y) > (q2)), dy + .1*sin(time/2), dy - .1*cos(time/2));;\nrot = rot + .8*tan(rad);"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=v*0.5; y=(i*2-1)*0.8"
+      }
     }
   ]
 }

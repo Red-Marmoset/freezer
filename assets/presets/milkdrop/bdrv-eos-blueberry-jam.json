@@ -11,6 +11,22 @@
         "perVertex": "zoom = if(((rad) < (.64)),.41*(-rad +1),zoom);;\nzoom=zoom+0.07*sin(rad*20+time*2.5);;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\n//zoom = zoom + 0.2*abs(0.3*cos(4*rad))*cos(12*ang);;\nsx = sx - 13*dx_r*sin(2*sin(6*rad)*2*cos(6*rad));;\n//sy = sy - 13*dy_r*sin(2*cos(6*rad)*2*sin(6*rad));;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\n//dx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\n//dy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\ntg1 = abs(sin(time));;\ntg2 = 12*((tg1) > (0.8)) + 4*((tg1) < (0.2)) +;\n6*((tg1) > (0.2))*((tg1) < (0.4)) + 8*((tg1) > (0.4))*((tg1) < (0.6)) +;\n10*((tg1) > (0.6))*((tg1) < (0.8));;\ntg3 = if(((thresh) == (2)),tg2,tg3);;\nzoom = zoom + 0.6-(1.5*abs( 25*dx_r*cos(tg3*ang) - sin(22*dy_r*rad)*0.2-rad));;\nzoom= sin(zoom*8)/3+1.6;"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#80664d"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
     }
   ]
 }

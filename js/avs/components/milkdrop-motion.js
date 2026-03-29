@@ -41,7 +41,9 @@ export class MilkDropMotion extends AvsComponent {
     const code = opts.code || {};
     this.initFn = compileEEL(code.init || '');
     this.perFrameFn = compileEEL(code.perFrame || '');
-    this.perVertexFn = compileEEL(code.perVertex || '');
+    const perVertexCode = code.perVertex || '';
+    this.perVertexFn = compileEEL(perVertexCode);
+    this._hasPerVertex = perVertexCode.trim().length > 0;
 
     this.gridSize = opts.gridSize || 48;
     this.state = null;
@@ -170,46 +172,44 @@ export class MilkDropMotion extends AvsComponent {
       s.rad = Math.sqrt(dcx * dcx + dcy * dcy);
       s.ang = Math.atan2(dcy, dcx);
 
-      // Run per-vertex code (if any)
-      if (this.perVertexFn) {
+      // Always apply default MilkDrop motion first, then let per-vertex
+      // code override. This matches MilkDrop's behavior where per-vertex
+      // code receives the already-transformed coordinates.
+
+      // 1. Zoom toward center
+      let nx = (origX - cxVal) / zoom + cxVal;
+      let ny = (origY - cyVal) / zoom + cyVal;
+
+      // 2. Scale x,y
+      nx = (nx - cxVal) / sxVal + cxVal;
+      ny = (ny - cyVal) / syVal + cyVal;
+
+      // 3. Rotate around center
+      if (rot !== 0) {
+        const dx2 = nx - cxVal;
+        const dy2 = ny - cyVal;
+        const cosR = Math.cos(rot);
+        const sinR = Math.sin(rot);
+        nx = dx2 * cosR - dy2 * sinR + cxVal;
+        ny = dx2 * sinR + dy2 * cosR + cyVal;
+      }
+
+      // 4. Translate
+      nx -= dxVal;
+      ny -= dyVal;
+
+      // If per-vertex code exists, set x,y to transformed coords
+      // and let the code modify them further
+      if (this._hasPerVertex) {
+        s.x = nx;
+        s.y = ny;
         try { this.perVertexFn(s, lib); } catch {}
+        nx = s.x;
+        ny = s.y;
       }
 
-      // Apply MilkDrop default motion if no per-vertex code overwrites x,y:
-      // The per-vertex code may have modified x,y directly.
-      // If not, we compute the default MilkDrop motion from per-frame vars.
-      // We detect this by checking if perVertex code was empty.
-      let u, v;
-      if (!this.perVertexFn || this.perVertexFn.toString().includes('return')) {
-        // No per-vertex code — apply default MilkDrop motion
-        // 1. Zoom toward center
-        let nx = (origX - cxVal) / zoom + cxVal;
-        let ny = (origY - cyVal) / zoom + cyVal;
-
-        // 2. Scale x,y
-        nx = (nx - cxVal) / sxVal + cxVal;
-        ny = (ny - cyVal) / syVal + cyVal;
-
-        // 3. Rotate around center
-        if (rot !== 0) {
-          const dx2 = nx - cxVal;
-          const dy2 = ny - cyVal;
-          const cosR = Math.cos(rot);
-          const sinR = Math.sin(rot);
-          nx = dx2 * cosR - dy2 * sinR + cxVal;
-          ny = dx2 * sinR + dy2 * cosR + cyVal;
-        }
-
-        // 4. Translate
-        nx -= dxVal;
-        ny -= dyVal;
-
-        u = nx;
-        v = ny;
-      } else {
-        u = s.x;
-        v = s.y;
-      }
+      let u = nx;
+      let v = ny;
 
       // Clamp UVs
       u = Math.max(0, Math.min(1, u));

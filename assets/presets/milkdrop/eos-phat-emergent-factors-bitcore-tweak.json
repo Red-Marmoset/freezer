@@ -11,6 +11,22 @@
         "perVertex": "rd=sqrt( sqr( (x-0.5-q4)*1.7) + sqr( (y-0.5+q5)*1.2 ) );;\ncx=0.5+q4;;\ncy=0.5-q5;;\nzoom=(rd/rd)-.05;;\nrot=(rd/rd)+sin(time/5);"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
     }
   ]
 }

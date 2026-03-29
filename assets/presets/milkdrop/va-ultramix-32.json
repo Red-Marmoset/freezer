@@ -11,6 +11,22 @@
         "perVertex": "cr1=0.2;;\ncr2=.81;;\ncrx=cr2-cr1;;\nci=x*1.5+.25;;\ncb=.25 ;//   +sin(time/5)/6;;\ncrs=11;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nzoom=crr;;\ndx=sin(time/3) /9;;\ndy=sin(time/7) /7;"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
     }
   ]
 }

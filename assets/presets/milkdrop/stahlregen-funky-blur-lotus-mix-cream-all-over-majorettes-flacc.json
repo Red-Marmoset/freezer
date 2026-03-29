@@ -11,6 +11,22 @@
         "perVertex": "w= -time*0.4; // direction (0: left; asin(1): top; (+/-)2*asin(1): right; -asin(1): bottom);\nX2 = x-0.5; // needed to rotate around center;\nY2 = y-0.5; // (if you add a strong shift, it may appear not turning around the center, but find out yourself);\nX1 = sin(w)*X2 -cos(w)*Y2; // these 2 lines first rotate the x/y pane;\nY1 = cos(w)*X2 +sin(w)*Y2;;\nx = X1; // so you can use x and y as usually below;\ny = Y1;;\nrad = sqrt(x*x + y*y)*2; // had to replace rad and ang, because of the translation by -.5,-.5;\nang = atan2(x,y);;\ndx1=-0.05*sin(1.15+(rad*2-1)*5)+mid/999; // hey this is your code! ;-);\ndy1=-0.05*sin(1.+(ang*2-1)*1);;\ndx2 = sin(-w)*dx1 - cos(-w)*dy1; // and finally the dx/dy pane is rotated to match the x/y pane;\ndy2 = cos(-w)*dx1 + sin(-w)*dy1;;\ndx = dx2;;\ndy = dy2;;\nzoom=1555+sin(time/20) *150;"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
     }
   ]
 }

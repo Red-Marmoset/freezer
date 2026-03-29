@@ -11,6 +11,22 @@
         "perVertex": "warp=10*sqr(abs(x-.5))"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.8; y=v*0.5"
+      }
     }
   ]
 }

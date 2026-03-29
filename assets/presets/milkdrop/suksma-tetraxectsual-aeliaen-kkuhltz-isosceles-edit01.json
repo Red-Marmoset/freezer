@@ -11,6 +11,22 @@
         "perVertex": "//dx=0.003*(bass*bass+bass_att)*sin((sin(sqrt(4)-rad))*5+(rad*5*sin(q1)))*y*ang;;\n//dy=0.003*(bass*bass+bass_att)*cos((sin(sqrt(4)-rad))*5+(-rad*5*sin(q1)))*x*rad*ang;;\n//tm=12 + sin(time/2)*0.7;;\ntmm=time*rad*rad;;\nrot=(sin(tmm/2)*x)/(atan(tmm*2)/ang/x);;\n//rot=rot + (x/y)*0.1;;\nzoom=-1.00* ( x  / y ) ;;\nsy=sx"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#80ffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
     }
   ]
 }

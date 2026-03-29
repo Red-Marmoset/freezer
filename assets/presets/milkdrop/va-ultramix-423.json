@@ -11,6 +11,22 @@
         "perVertex": "kdx=dx;;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;;\nmyy = (y-(0.5+sin(time/4) /3));;\nmyx = x-0.5;;\nzoom= pow(abs((myx*myy))+.02,0.2);;\n//dy =dy+ 4 *((myy*myy) - (myx*myx));;\ncr1=99*.01;;\ncr2=99*.01;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
     }
   ]
 }
