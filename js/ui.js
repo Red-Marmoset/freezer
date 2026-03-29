@@ -34,7 +34,7 @@ const DEFAULT_PRESET = {
         init: 'n=200',
         perFrame: 't=t+0.03',
         onBeat: '',
-        perPoint: 'r=0.4+v*0.15; a=i*$PI*2+t; x=cos(a)*r; y=sin(a)*r; hue=i+t*0.1; red=sin(hue*$PI*2)*0.5+0.5; green=sin((hue+0.333)*$PI*2)*0.5+0.5; blue=sin((hue+0.666)*$PI*2)*0.5+0.5',
+        perPoint: 'asp=h/w; r=0.4+v*0.15; a=i*$PI*2+t; x=cos(a)*r*asp; y=sin(a)*r; hue=i+t*0.1; red=sin(hue*$PI*2)*0.5+0.5; green=sin((hue+0.333)*$PI*2)*0.5+0.5; blue=sin((hue+0.666)*$PI*2)*0.5+0.5',
       },
     },
   ],
