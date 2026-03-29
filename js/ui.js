@@ -36,7 +36,7 @@ const DEFAULT_PRESET = {
         init: 'n=200',
         perFrame: 't=t+0.03',
         onBeat: '',
-        perPoint: 'r=0.4+v*0.15; a=i*$PI*2+t; x=cos(a)*r; y=sin(a)*r; hue=i+t*0.1; red=sin(hue*$PI*2)*0.5+0.5; green=sin((hue+0.333)*$PI*2)*0.5+0.5; blue=sin((hue+0.666)*$PI*2)*0.5+0.5',
+        perPoint: 'asp=h/w; r=0.4+v*0.15; a=i*$PI*2+t; x=cos(a)*r*asp; y=sin(a)*r; hue=i+t*0.1; red=sin(hue*$PI*2)*0.5+0.5; green=sin((hue+0.333)*$PI*2)*0.5+0.5; blue=sin((hue+0.666)*$PI*2)*0.5+0.5',
       },
     },
   ],
@@ -210,7 +210,18 @@ const DISPLAY_NAMES = {
   'Holden03: Convolution Filter': 'Convolution Filter',
   'Acko.net: Texer II': 'Texer II',
   'Render: Triangle': 'Triangle',
+  'Picture II': 'Picture II',
+  'EelTrans': 'AVSTrans Automation',
 };
+
+// Components confirmed as finished/working by the user.
+// Everything NOT in this set gets a yellow "under construction" marker in the editor.
+// Add component type names here as they are verified.
+const FINISHED_COMPONENTS = new Set([
+  'Comment',
+  'FadeOut',
+  'EelTrans',
+]);
 
 // Known select-type fields and their options
 // Pretty display names for enum values
@@ -230,7 +241,7 @@ const PRETTY_NAMES = {
 
 // Context-aware pretty names for numeric dropdown values
 const NUMERIC_PRETTY = {
-  action: { 0: 'Save', 1: 'Restore', 2: 'Restore Alt. Lines' },
+  action: { 0: 'Save', 1: 'Restore', 2: 'Alt. Save/Restore', 3: 'Alt. Restore/Save' },
   clearMode: { 0: 'Clear', 1: 'No Clear' },
   mode: { 0: 'Mode 0', 1: 'Mode 1', 2: 'Mode 2', 3: 'Mode 3' },
   colorFilter: { 0: 'Off', 1: 'On (Multiply)' },
@@ -256,7 +267,7 @@ const SELECT_FIELDS = {
   sourceChannel: ['ZERO', 'RED', 'GREEN', 'BLUE'],
   coordinates: ['POLAR', 'CARTESIAN'],
   coord: ['POLAR', 'CARTESIAN'],
-  action: [0, 1, 2],
+  action: [0, 1, 2, 3],
   clearMode: [0, 1],
   key: ['RED', 'GREEN', 'BLUE', '(R+G+B)/2', 'MAX', '(R+G+B)/3'],
   mapCycleMode: ['NONE', 'BEAT_RANDOM', 'BEAT_SEQUENTIAL'],
@@ -544,6 +555,7 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
     const indent = depth * 16;
     const disabled = comp.enabled === false;
     const unsupported = comp._unsupported;
+    const wip = !unsupported && !FINISHED_COMPONENTS.has(comp.type);
     const isSelected = selectedPath && selectedPath.join(',') === pathStr;
 
     const node = document.createElement('div');
@@ -556,12 +568,16 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
     row.dataset.path = pathStr;
     row.draggable = true;
 
+    const labelClass = disabled ? ' disabled' : unsupported ? ' unsupported-label' : wip ? ' wip-label' : '';
+    const iconContent = unsupported ? '\u26A0' : wip ? '\u{1F6A7}' : icon;
+    const iconClass = unsupported ? 'unsupported' : cat;
+
     row.innerHTML = `
       <span class="tree-toggle ${hasChildren ? 'open' : 'leaf'}">\u25B6</span>
-      <span class="tree-icon ${unsupported ? 'unsupported' : cat}">${icon}</span>
-      <span class="tree-label${disabled ? ' disabled' : ''}">${escHtml(DISPLAY_NAMES[comp.type] || comp.type)}</span>
-      ${(cat !== 'container' && cat !== 'misc') ? `<span class="tree-badge ${cat}">${cat}</span>` : ''}
-      ${unsupported ? '<span class="tree-badge misc">N/A</span>' : ''}
+      <span class="tree-icon ${iconClass}">${iconContent}</span>
+      <span class="tree-label${labelClass}">${escHtml(DISPLAY_NAMES[comp.type] || comp.type)}</span>
+      ${(cat !== 'container' && cat !== 'misc' && !unsupported) ? `<span class="tree-badge ${cat}">${cat}</span>` : ''}
+      ${unsupported ? '<span class="tree-badge unsupported-badge">UNSUPPORTED</span>' : ''}
       ${comp.drawMode ? `<span class="tree-badge misc">${escHtml(comp.drawMode)}</span>` : ''}
       ${comp.type === 'EffectList' ? `<span class="tree-badge misc">${(comp.input||'IGN').slice(0,3)}/${(comp.output||'IGN').slice(0,3)}</span>` : ''}
     `;
@@ -964,10 +980,24 @@ function buildDetailDom(container, comp, path) {
     const section = document.createElement('div');
     section.className = 'tree-detail-section';
     section.innerHTML = '<div class="tree-detail-label">COMMENT</div>';
+
+    // "AVS Comment View" button
+    const viewBtn = document.createElement('button');
+    viewBtn.className = 'ed-tool-btn';
+    viewBtn.textContent = 'AVS Comment View';
+    viewBtn.style.marginBottom = '6px';
+    viewBtn.addEventListener('click', () => {
+      const overlay = document.getElementById('comment-overlay');
+      const textEl = document.getElementById('comment-overlay-text');
+      textEl.textContent = comp.text || '(empty)';
+      overlay.classList.remove('hidden');
+    });
+    section.appendChild(viewBtn);
+
     const ta = document.createElement('textarea');
     ta.className = 'ed-textarea';
     ta.value = comp.text || '';
-    ta.rows = 3;
+    ta.rows = 5;
     ta.addEventListener('change', () => {
       comp.text = ta.value;
       rebuildPreset();
@@ -1614,6 +1644,14 @@ document.addEventListener('keydown', (e) => {
 window.loadPresetJSON = loadPresetJSON;
 window.loadDefaultPreset = () => { currentPresetJSON = DEFAULT_PRESET; viz.setPreset(loadAvsPreset(DEFAULT_PRESET)); setActivePreset('Freezer Default'); };
 window.currentPresetJSON = () => currentPresetJSON;
+
+// --- Comment overlay ---
+document.getElementById('btn-comment-close').addEventListener('click', () => {
+  document.getElementById('comment-overlay').classList.add('hidden');
+});
+document.querySelector('.comment-overlay-backdrop').addEventListener('click', () => {
+  document.getElementById('comment-overlay').classList.add('hidden');
+});
 
 // --- Drag and drop ---
 

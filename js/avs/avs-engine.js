@@ -6,6 +6,7 @@ import * as THREE from 'https://esm.sh/three@0.171.0';
 import { Framebuffer } from './framebuffer.js';
 import { AvsComponent } from './avs-component.js';
 import { BeatDetector } from './beat-detect.js';
+import { setEelPrefix } from './eel/nseel-compiler.js';
 
 // Import components to register them
 import './components/clear-screen.js';
@@ -57,6 +58,7 @@ import './components/moving-particle.js';
 import './components/convolution-filter.js';
 import './components/comment.js';
 import './components/multiplier.js';
+import './components/eeltrans.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object
@@ -92,7 +94,11 @@ class AvsPreset {
     this.framebuffer = new Framebuffer(renderer, width, height);
     this.framebuffer.clear(0x000000);
 
-    // Parse and instantiate components
+    // Collect EelTrans #define prefixes before compiling any EEL code
+    const eelTransCode = this._collectEelTransCode(this.json.components || []);
+    setEelPrefix(eelTransCode);
+
+    // Parse and instantiate components (EEL code will use the prefix)
     this.components = AvsComponent.createComponents(this.json.components || []);
 
     // Check if any top-level component is a FadeOut (suppresses clearFrame)
@@ -196,6 +202,20 @@ class AvsPreset {
     }
     this.components = [];
     this.framebuffer = null;
+  }
+
+  _collectEelTransCode(comps) {
+    const parts = [];
+    for (const c of comps) {
+      if (c.type === 'EelTrans' && c.enabled !== false && c.code) {
+        parts.push(c.code);
+      }
+      if (c.components) {
+        const nested = this._collectEelTransCode(c.components);
+        if (nested) parts.push(nested);
+      }
+    }
+    return parts.join('\n');
   }
 
   _checkForFadeOut(comps) {
