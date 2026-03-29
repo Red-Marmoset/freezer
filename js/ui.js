@@ -212,18 +212,20 @@ function loadPresetFile(file) {
 
 // --- Preset Library ---
 
+let _loadedViaUrl = false;
+
 initPresetBrowser((bufferOrJson, filename, presetId) => {
   try {
     let json;
     if (filename === null && typeof bufferOrJson === 'object' && !(bufferOrJson instanceof ArrayBuffer)) {
-      // JSON preset (MilkDrop/Geiss) — already parsed
       json = bufferOrJson;
     } else {
-      // Binary .avs preset — parse it
       json = parseAvsFileWithName(bufferOrJson, filename);
     }
     loadPresetJSON(json, presetId);
-    dismissSplash();
+    // Don't dismiss splash on URL auto-load — user still needs to do screen share
+    if (!_loadedViaUrl) dismissSplash();
+    _loadedViaUrl = false;
   } catch (err) {
     console.error('Failed to load library preset:', err);
   }
@@ -243,6 +245,7 @@ btnPresets.addEventListener('click', () => {
   const params = new URLSearchParams(window.location.search);
   const presetParam = params.get('preset');
   if (presetParam) {
+    _loadedViaUrl = true;
     loadPresetById(presetParam);
   }
 }
