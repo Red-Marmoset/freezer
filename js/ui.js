@@ -190,7 +190,7 @@ const DEFAULTS = {
   OnBeatClear: { type: 'OnBeatClear', enabled: true, color: '#000000', blendMode: 'REPLACE', nBeats: 1 },
   Texer: { type: 'Texer', enabled: true, imageSrc: '', input: 0, output: 0 },
   FadeOut: { type: 'FadeOut', enabled: true, speed: 7, color: '#000000' },
-  Movement: { type: 'Movement', enabled: true, builtinEffect: 10, bilinear: true, wrap: false },
+  Movement: { type: 'Movement', enabled: true, builtinEffect: 13, code: 'd=d*0.9', bilinear: true, wrap: false, coordinates: 'POLAR', sourceMapped: false },
   DynamicMovement: { type: 'DynamicMovement', enabled: true, code: { init: '', perFrame: '', onBeat: '', perPoint: '' }, bilinear: true, wrap: false, coordinates: 'CARTESIAN', gridW: 16, gridH: 16, blend: false, buffer: 0 },
   Blur: { type: 'Blur', enabled: true, mode: 0 },
   Invert: { type: 'Invert', enabled: true },
@@ -745,17 +745,20 @@ function buildDetailDom(container, comp, path) {
     container.appendChild(section);
   }
 
-  // Movement code (string)
-  if (comp.type === 'Movement' && typeof comp.code === 'string') {
+  // Movement code (custom effect, builtinEffect=13)
+  // Always show for Movement so users can write custom code
+  if (comp.type === 'Movement') {
     const section = document.createElement('div');
     section.className = 'tree-detail-section';
-    section.innerHTML = '<div class="tree-detail-label">CODE</div>';
+    section.innerHTML = '<div class="tree-detail-label">CUSTOM CODE (effect 13)</div>';
     const ta = document.createElement('textarea');
     ta.className = 'ed-textarea';
-    ta.value = comp.code || '';
+    ta.value = (typeof comp.code === 'string' ? comp.code : '') || '';
     ta.rows = 4;
+    ta.placeholder = 'd=d*0.9; // polar: modify d (distance) and r (rotation)';
     ta.addEventListener('change', () => {
       comp.code = ta.value;
+      comp.builtinEffect = 13; // switch to User Defined when code is entered
       rebuildPreset();
     });
     section.appendChild(ta);
