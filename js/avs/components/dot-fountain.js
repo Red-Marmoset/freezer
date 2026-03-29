@@ -1,34 +1,29 @@
-// AVS DotFountain component (code 0x13) — r_dotfnt.cpp
-// 256x30 particle grid with 3D projection, gravity, and radial expansion.
-// New particles spawn from audio data each frame.
+// AVS DotFountain component (code 0x13)
+// 256 generations x 30 angular positions, particles launch upward from audio,
+// spread outward with radial acceleration, and fall back down under gravity.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 
-const GRID_W = 256;
-const GRID_H = 30;
-const MAX_PARTICLES = GRID_W * GRID_H;
-const GRADIENT_SIZE = 64;
+const NUM_DIV = 30;    // angular divisions per ring
+const NUM_HEIGHT = 256; // number of generations (rings)
+const MAX_DOTS = NUM_DIV * NUM_HEIGHT;
 
 export class DotFountain extends AvsComponent {
   constructor(opts) {
     super(opts);
     this.rotSpeed = opts.rotSpeed != null ? opts.rotSpeed : 16;
-    this.color = opts.color ? parseHexColor(opts.color) :
-                 (opts.colors ? parseHexColor(opts.colors) : [1, 0.5, 0]);
-    this.angle = opts.angle || 0;
-    this.style = opts.style || 0;
-
-    // Particle state arrays
-    this._heights = null;  // current height of each column in each ring
-    this._dh = null;       // vertical velocity (gravity accumulates here)
+    this.angle = opts.angle != null ? opts.angle : -20;
+    this.colors = opts.colors || ['#1c6b18', '#ff0a23', '#2a1d74', '#9036d9', '#6b88ff'];
     this._rotation = 0;
-    this._gradient = null;
-
-    this._scene = null;
-    this._camera = null;
-    this._geometry = null;
-    this._material = null;
-    this._points = null;
+    this._colorMap = null;
+    // Per-particle state: radius, deltaRadius, height, deltaHeight, ax, ay, color
+    this._radius = null;
+    this._deltaRadius = null;
+    this._height = null;
+    this._deltaHeight = null;
+    this._ax = null;
+    this._ay = null;
+    this._pcolor = null; // Uint32 per particle (packed RGB)
   }
 
   init(ctx) {
@@ -36,136 +31,128 @@ export class DotFountain extends AvsComponent {
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     this._camera.position.z = 1;
 
-    // Initialize particle arrays
-    this._heights = new Float32Array(MAX_PARTICLES);
-    this._dh = new Float32Array(MAX_PARTICLES);
-    this._heights.fill(0);
-    this._dh.fill(0);
+    // Build 64-entry color gradient from 5 colors
+    this._colorMap = buildColorMap(this.colors);
 
-    // Build 64-entry color gradient from base color to black
-    this._gradient = new Array(GRADIENT_SIZE);
-    for (let i = 0; i < GRADIENT_SIZE; i++) {
-      const t = i / (GRADIENT_SIZE - 1);
-      this._gradient[i] = [
-        this.color[0] * (1 - t),
-        this.color[1] * (1 - t),
-        this.color[2] * (1 - t),
-      ];
+    // Initialize particle arrays
+    const n = MAX_DOTS;
+    this._radius = new Float32Array(n);
+    this._deltaRadius = new Float32Array(n);
+    this._height = new Float32Array(n).fill(250);
+    this._deltaHeight = new Float32Array(n);
+    this._ax = new Float32Array(n);
+    this._ay = new Float32Array(n);
+    this._pcolor = new Uint32Array(n);
+
+    // Set initial angular positions
+    for (let g = 0; g < NUM_HEIGHT; g++) {
+      for (let a = 0; a < NUM_DIV; a++) {
+        const idx = g * NUM_DIV + a;
+        const ang = a * Math.PI * 2 / NUM_DIV;
+        this._ax[idx] = Math.sin(ang);
+        this._ay[idx] = Math.cos(ang);
+        this._radius[idx] = 1;
+      }
     }
 
     // Geometry
     this._geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(MAX_PARTICLES * 3);
-    const colors = new Float32Array(MAX_PARTICLES * 3);
-    this._geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    this._geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    this._geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(MAX_DOTS * 3), 3));
+    this._geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(MAX_DOTS * 3), 3));
     this._geometry.setDrawRange(0, 0);
 
-    this._material = new THREE.PointsMaterial({
-      size: 2,
-      vertexColors: true,
-      sizeAttenuation: false,
-    });
-    this._material.depthTest = false;
-
+    this._material = new THREE.PointsMaterial({ size: 2, vertexColors: true, sizeAttenuation: false, depthTest: false });
     this._points = new THREE.Points(this._geometry, this._material);
     this._scene.add(this._points);
   }
 
   render(ctx, fb) {
-    if (!this.enabled || !this._heights) return;
+    if (!this.enabled || !this._radius) return;
+    const spectrum = ctx.audioData.spectrum;
+    const isBeat = ctx.beat;
 
-    const waveform = ctx.audioData.waveform;
-    if (!waveform) return;
-
-    // Shift all particle rings down by one row (age them)
-    // Row 0 = newest, Row GRID_H-1 = oldest
-    for (let row = GRID_H - 1; row > 0; row--) {
-      for (let col = 0; col < GRID_W; col++) {
-        const dst = row * GRID_W + col;
-        const src = (row - 1) * GRID_W + col;
-        this._heights[dst] = this._heights[src];
-        this._dh[dst] = this._dh[src];
+    // Step 1: Shift generations (oldest = NUM_HEIGHT-1, newest = 0)
+    for (let g = NUM_HEIGHT - 2; g >= 0; g--) {
+      const accelR = 1.3 / (g + 100);
+      for (let a = 0; a < NUM_DIV; a++) {
+        const dst = (g + 1) * NUM_DIV + a;
+        const src = g * NUM_DIV + a;
+        this._radius[dst] = this._radius[src] + this._deltaRadius[src];
+        this._deltaRadius[dst] = this._deltaRadius[src] + accelR;
+        this._deltaHeight[dst] = this._deltaHeight[src] + 0.05; // gravity
+        this._height[dst] = this._height[src] + this._deltaHeight[dst];
+        this._ax[dst] = this._ax[src];
+        this._ay[dst] = this._ay[src];
+        this._pcolor[dst] = this._pcolor[src];
       }
     }
 
-    // Spawn new ring (row 0) from waveform data
-    for (let col = 0; col < GRID_W; col++) {
-      const sampleIdx = Math.floor(col * waveform.length / GRID_W);
-      const val = ((waveform[sampleIdx] || 128) - 128) / 128;
-      this._heights[col] = val * 0.5;
-      this._dh[col] = 0;
+    // Step 2: Inject new ring at generation 0 from spectrum data
+    for (let a = 0; a < NUM_DIV; a++) {
+      let audio = 0;
+      if (spectrum) {
+        const raw = Math.max(0, (spectrum[a] + 100) / 100) * 255; // dB to 0-255
+        audio = Math.min(255, raw * 5 / 4 - 64 + (isBeat ? 128 : 0));
+      }
+      audio = Math.max(0, audio);
+
+      const dr = Math.abs(audio) / 200 + 1;
+      const ang = a * Math.PI * 2 / NUM_DIV;
+      const idx = a; // generation 0
+
+      this._radius[idx] = 1;
+      this._deltaRadius[idx] = 0;
+      this._height[idx] = 250;
+      this._deltaHeight[idx] = -dr * 2.8;
+      this._ax[idx] = Math.sin(ang);
+      this._ay[idx] = Math.cos(ang);
+
+      const colorIdx = Math.min(63, Math.max(0, Math.floor(audio / 4)));
+      this._pcolor[idx] = this._colorMap[colorIdx];
     }
 
-    // Apply gravity to all particles
-    for (let i = GRID_W; i < MAX_PARTICLES; i++) {
-      this._dh[i] += 0.05;
-      this._heights[i] -= this._dh[i] * 0.01;
-    }
+    // Step 3: Build transform matrix
+    const rotRad = this._rotation * Math.PI / 180;
+    const angRad = this.angle * Math.PI / 180;
+    const cosR = Math.cos(rotRad), sinR = Math.sin(rotRad);
+    const cosA = Math.cos(angRad), sinA = Math.sin(angRad);
 
-    // Advance rotation
-    this._rotation += (this.rotSpeed / 256) * 0.02;
-    const cosR = Math.cos(this._rotation);
-    const sinR = Math.sin(this._rotation);
-
-    // Tilt
-    const tiltAngle = 0.4 + (this.angle / 256) * 0.6;
-    const cosT = Math.cos(tiltAngle);
-    const sinT = Math.sin(tiltAngle);
+    const zoom = Math.min(ctx.width * 440 / 640, ctx.height * 440 / 480);
+    const hw = ctx.width / 2, hh = ctx.height / 2;
 
     const positions = this._geometry.attributes.position.array;
     const colorsBuf = this._geometry.attributes.color.array;
     let drawCount = 0;
 
-    const viewDist = 5.0;
+    for (let i = 0; i < MAX_DOTS && drawCount < MAX_DOTS; i++) {
+      const wx = this._ax[i] * this._radius[i];
+      const wy = this._height[i];
+      const wz = this._ay[i] * this._radius[i];
 
-    for (let row = 0; row < GRID_H; row++) {
-      // Radial expansion — older rings expand outward
-      const ringRadius = 0.1 + (row / GRID_H) * 0.8;
+      // Rotate Y (rotation), then Rotate X (angle), then translate
+      let x = wx * cosR - wz * sinR;
+      let z = wx * sinR + wz * cosR;
+      let y = wy;
+      const y2 = y * cosA - z * sinA;
+      const z2 = y * sinA + z * cosA;
+      y = y2 - 20;
+      const zf = z2 + 400;
 
-      // Gradient index based on ring age
-      const gradIdx = Math.min(GRADIENT_SIZE - 1, Math.floor((row / GRID_H) * GRADIENT_SIZE));
-      const gc = this._gradient[gradIdx];
+      if (zf <= 1) continue;
+      const persp = zoom / zf;
+      const sx = (x * persp + hw) / ctx.width * 2 - 1;
+      const sy = -((y * persp + hh) / ctx.height * 2 - 1);
 
-      for (let col = 0; col < GRID_W; col++) {
-        const idx = row * GRID_W + col;
-        const angle = (col / GRID_W) * Math.PI * 2;
+      if (sx < -1.5 || sx > 1.5 || sy < -1.5 || sy > 1.5) continue;
 
-        // 3D position — radial ring with height
-        const px = Math.cos(angle) * ringRadius;
-        const pz = Math.sin(angle) * ringRadius;
-        const py = this._heights[idx];
-
-        // Rotate around Y
-        const rx = px * cosR - pz * sinR;
-        const rz = px * sinR + pz * cosR;
-
-        // Tilt around X
-        const ry = py * cosT - rz * sinT;
-        const rz2 = py * sinT + rz * cosT;
-
-        // Perspective
-        const depth = viewDist + rz2;
-        if (depth <= 0.1) continue;
-
-        const projScale = 2.0 / depth;
-        const screenX = rx * projScale;
-        const screenY = ry * projScale;
-
-        if (screenX < -1.2 || screenX > 1.2 || screenY < -1.2 || screenY > 1.2) continue;
-
-        positions[drawCount * 3] = screenX;
-        positions[drawCount * 3 + 1] = screenY;
-        positions[drawCount * 3 + 2] = 0;
-
-        colorsBuf[drawCount * 3] = gc[0];
-        colorsBuf[drawCount * 3 + 1] = gc[1];
-        colorsBuf[drawCount * 3 + 2] = gc[2];
-
-        drawCount++;
-        if (drawCount >= MAX_PARTICLES) break;
-      }
-      if (drawCount >= MAX_PARTICLES) break;
+      const c = this._pcolor[i];
+      positions[drawCount * 3] = sx;
+      positions[drawCount * 3 + 1] = sy;
+      positions[drawCount * 3 + 2] = 0;
+      colorsBuf[drawCount * 3] = ((c >> 16) & 0xff) / 255;
+      colorsBuf[drawCount * 3 + 1] = ((c >> 8) & 0xff) / 255;
+      colorsBuf[drawCount * 3 + 2] = (c & 0xff) / 255;
+      drawCount++;
     }
 
     this._geometry.attributes.position.needsUpdate = true;
@@ -174,26 +161,37 @@ export class DotFountain extends AvsComponent {
 
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
     ctx.renderer.render(this._scene, this._camera);
+
+    // Update rotation
+    this._rotation = (this._rotation + this.rotSpeed / 5) % 360;
   }
 
   destroy() {
     if (this._geometry) this._geometry.dispose();
     if (this._material) this._material.dispose();
-    this._heights = null;
-    this._dh = null;
-    this._gradient = null;
-    this._scene = null;
-    this._camera = null;
   }
 }
 
-function parseHexColor(hex) {
-  if (typeof hex === 'string' && hex[0] === '#') hex = hex.slice(1);
-  if (typeof hex === 'number') {
-    return [(hex >> 16 & 0xff) / 255, (hex >> 8 & 0xff) / 255, (hex & 0xff) / 255];
+// DotPlane uses the same color map builder
+export function buildColorMap(hexColors) {
+  const colors = hexColors.map(h => {
+    if (typeof h === 'string' && h[0] === '#') h = h.slice(1);
+    const n = parseInt(h, 16) || 0;
+    return [(n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff];
+  });
+  while (colors.length < 5) colors.push([255, 255, 255]);
+  const map = new Uint32Array(64);
+  for (let interval = 0; interval < 4; interval++) {
+    const c1 = colors[interval], c2 = colors[interval + 1];
+    for (let step = 0; step < 16; step++) {
+      const t = step / 16;
+      const r = Math.round(c1[0] + (c2[0] - c1[0]) * t);
+      const g = Math.round(c1[1] + (c2[1] - c1[1]) * t);
+      const b = Math.round(c1[2] + (c2[2] - c1[2]) * t);
+      map[interval * 16 + step] = (r << 16) | (g << 8) | b;
+    }
   }
-  const n = parseInt(hex, 16);
-  return [(n >> 16 & 0xff) / 255, (n >> 8 & 0xff) / 255, (n & 0xff) / 255];
+  return map;
 }
 
 AvsComponent.register('DotFountain', DotFountain);
