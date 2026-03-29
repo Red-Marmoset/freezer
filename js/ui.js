@@ -61,7 +61,10 @@ function loadPresetJSON(json) {
     const preset = loadAvsPreset(json);
     viz.setPreset(preset);
     setActivePreset(preset.name);
-    console.log('Loaded preset:', preset.name, json);
+    // Refresh editor tree if open
+    if (!document.getElementById('editor').classList.contains('hidden')) {
+      buildEditorTree();
+    }
   } catch (e) {
     console.error('Failed to load preset:', e);
   }
@@ -115,24 +118,192 @@ btnLoadPreset.addEventListener('click', () => {
   input.click();
 });
 
-// --- Editor ---
+// --- Editor Panel ---
+
+const editor = document.getElementById('editor');
+const editorTree = document.getElementById('editor-tree');
+const btnEditorClose = document.getElementById('btn-editor-close');
 
 btnEditor.addEventListener('click', () => {
+  editor.classList.toggle('hidden');
+  if (!editor.classList.contains('hidden')) {
+    buildEditorTree();
+  }
+});
+
+btnEditorClose.addEventListener('click', () => {
+  editor.classList.add('hidden');
+});
+
+// Component category classification
+const RENDER_TYPES = ['SuperScope','Simple','Ring','Starfield','DotPlane','DotGrid','DotFountain',
+  'BassSpin','RotatingStars','Timescope','ClearScreen','OnBeatClear','Texer','Acko.net: Texer II'];
+const TRANS_TYPES = ['FadeOut','Movement','DynamicMovement','Blur','Invert','Mirror','Mosaic',
+  'Brightness','FastBrightness','ColorModifier','ChannelShift','ColorClip','Grain','Interleave',
+  'ColorFade','UniqueTone','Scatter','BlitterFeedback','RotoBlitter','Water','WaterBump','Bump',
+  'Interferences','DynamicShift','DynamicDistanceModifier','ColorMap'];
+
+function getCategory(type) {
+  if (type === 'EffectList') return 'container';
+  if (RENDER_TYPES.includes(type)) return 'render';
+  if (TRANS_TYPES.includes(type)) return 'trans';
+  return 'misc';
+}
+
+function getIcon(type, cat) {
+  if (cat === 'container') return '\u25A3'; // filled square with square
+  if (cat === 'render') return '\u25CF'; // filled circle
+  if (cat === 'trans') return '\u25C6'; // filled diamond
+  if (type === 'Comment') return '\u2759'; // bar
+  if (type === 'SetRenderMode') return '\u2699'; // gear
+  if (type === 'BufferSave') return '\u29C9'; // two squares
+  return '\u25CB'; // open circle
+}
+
+function buildEditorTree() {
   if (!currentPresetJSON) {
-    console.log('No AVS preset loaded — load a preset first');
+    editorTree.innerHTML = '<div class="editor-empty">Load a preset to see its component tree</div>';
     return;
   }
-  // For now, dump the parsed preset JSON to console and show in a new window
-  const jsonStr = JSON.stringify(currentPresetJSON, null, 2);
-  console.log('Current preset JSON:', jsonStr);
-  const win = window.open('', '_blank', 'width=700,height=800');
-  win.document.title = 'Preset Editor — ' + (currentPresetJSON.name || 'Untitled');
-  win.document.body.style.cssText = 'margin:0;background:#0a0e14;color:#c8dce8;font-family:monospace;';
-  const pre = win.document.createElement('pre');
-  pre.style.cssText = 'padding:20px;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
-  pre.textContent = jsonStr;
-  win.document.body.appendChild(pre);
-});
+
+  const json = currentPresetJSON;
+  let html = '';
+
+  // Preset header
+  html += `<div class="tree-row" style="padding-left:12px;">
+    <span class="tree-icon container">\u25A3</span>
+    <span class="tree-label" style="color:var(--accent);font-weight:700;">${json.name || 'Preset'}</span>
+    <span class="tree-badge misc">${json.clearFrame ? 'CLR' : 'NO CLR'}</span>
+  </div>`;
+
+  html += buildTreeNodes(json.components || [], 1);
+  editorTree.innerHTML = html;
+
+  // Wire up toggle clicks
+  editorTree.querySelectorAll('.tree-row[data-toggle]').forEach(row => {
+    row.addEventListener('click', () => {
+      const children = row.nextElementSibling;
+      const toggle = row.querySelector('.tree-toggle');
+      if (children && children.classList.contains('tree-children')) {
+        children.classList.toggle('collapsed');
+        toggle.classList.toggle('open');
+      }
+    });
+  });
+
+  // Wire up detail clicks
+  editorTree.querySelectorAll('.tree-row[data-detail]').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('[data-toggle]')) return;
+      const detail = row.parentElement.querySelector('.tree-detail');
+      if (detail) {
+        detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+        row.classList.toggle('selected');
+      }
+    });
+  });
+}
+
+function buildTreeNodes(components, depth) {
+  let html = '';
+  for (const comp of components) {
+    const cat = getCategory(comp.type);
+    const icon = getIcon(comp.type, cat);
+    const hasChildren = comp.components && comp.components.length > 0;
+    const hasDetail = comp.code || comp.builtinEffect !== undefined || comp._unsupported;
+    const indent = depth * 16;
+    const disabled = comp.enabled === false;
+    const unsupported = comp._unsupported;
+
+    html += '<div class="tree-node">';
+
+    // Row
+    html += `<div class="tree-row${hasDetail ? ' selected' : ''}" style="padding-left:${indent}px;" ${hasChildren ? 'data-toggle' : ''} ${hasDetail ? 'data-detail' : ''}>`;
+    html += `<span class="tree-toggle ${hasChildren ? 'open' : 'leaf'}">\u25B6</span>`;
+    html += `<span class="tree-icon ${unsupported ? 'unsupported' : cat}">${icon}</span>`;
+    html += `<span class="tree-label${disabled ? ' disabled' : ''}">${comp.type}</span>`;
+
+    // Badges
+    if (cat !== 'container' && cat !== 'misc') {
+      html += `<span class="tree-badge ${cat}">${cat}</span>`;
+    }
+    if (unsupported) {
+      html += `<span class="tree-badge misc">N/A</span>`;
+    }
+    if (comp.drawMode) {
+      html += `<span class="tree-badge misc">${comp.drawMode}</span>`;
+    }
+    if (comp.type === 'EffectList') {
+      const io = `${(comp.input||'IGN').slice(0,3)}/${(comp.output||'IGN').slice(0,3)}`;
+      html += `<span class="tree-badge misc">${io}</span>`;
+    }
+
+    html += '</div>';
+
+    // Detail pane (hidden by default)
+    if (hasDetail) {
+      html += '<div class="tree-detail" style="display:none;">';
+      html += buildDetail(comp);
+      html += '</div>';
+    }
+
+    // Children
+    if (hasChildren) {
+      html += '<div class="tree-children">';
+      html += buildTreeNodes(comp.components, depth + 1);
+      html += '</div>';
+    }
+
+    html += '</div>';
+  }
+  return html;
+}
+
+function buildDetail(comp) {
+  let html = '';
+
+  // Properties
+  const skipKeys = ['type','components','code','colors','_unsupported','enabled','group'];
+  const props = Object.entries(comp).filter(([k]) => !skipKeys.includes(k) && !k.startsWith('_'));
+  if (props.length > 0) {
+    html += '<div class="tree-detail-section">';
+    html += '<div class="tree-detail-label">PROPERTIES</div>';
+    for (const [key, val] of props) {
+      const display = typeof val === 'object' ? JSON.stringify(val) : String(val);
+      html += `<div class="tree-detail-prop"><span class="key">${key}</span><span class="val">${escHtml(display)}</span></div>`;
+    }
+    html += '</div>';
+  }
+
+  // Colors
+  if (comp.colors && comp.colors.length > 0) {
+    html += '<div class="tree-detail-section">';
+    html += '<div class="tree-detail-label">COLORS</div>';
+    html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
+    for (const c of comp.colors) {
+      html += `<span style="width:18px;height:18px;border-radius:3px;background:${c};border:1px solid rgba(255,255,255,0.15);display:inline-block;" title="${c}"></span>`;
+    }
+    html += '</div></div>';
+  }
+
+  // Code sections
+  if (comp.code && typeof comp.code === 'object') {
+    for (const [section, code] of Object.entries(comp.code)) {
+      if (code && typeof code === 'string' && code.trim()) {
+        html += '<div class="tree-detail-section">';
+        html += `<div class="tree-detail-label">${section.toUpperCase()}</div>`;
+        html += `<div class="tree-detail-code">${escHtml(code.trim())}</div>`;
+        html += '</div>';
+      }
+    }
+  }
+
+  return html;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
 // Expose for console
 window.loadPresetJSON = loadPresetJSON;
