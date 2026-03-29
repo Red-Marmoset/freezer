@@ -1,0 +1,7 @@
+{
+  "name": "Geiss - Radial Zoom (Scope)",
+  "clearFrame": false,
+  "components": [
+    { "type": "GeissEffect", "enabled": true, "mode": 1, "waveform": 1 }
+  ]
+}

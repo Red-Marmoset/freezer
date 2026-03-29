@@ -1,0 +1,27 @@
+{
+  "name": "suksma - jesus never fogives god no one will ever care unless i sacrifice everything and boy, do i still have my doubts",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nq4=sin(atime*.03);;\nq5=cos(atime*.030383824);;\nq6=tan(atime*.029384834);;\nwave_r = 0.5 + 0.5*sin(6*time);;\nwave_g = 0.5 + 0.5*sin(4.1*time);;\nwave_b = -1 + (1-wave_r + 1-wave_g);;\nwarp = 0;;\nob_r = 1-abs(wave_r);;\nob_g = 1-abs(wave_g);;\nob_b = 1-abs(wave_b);;\nib_r = abs(wave_r);;\nib_b = abs(wave_b);;\nib_g = abs(wave_g);;\n;;\nq30=(bass+treb+mid)*2;",
+        "perVertex": "mekdx=dx;//////////////////////////////////////////;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nxy = ((sin(time)) > (0))*x + ((sin(1.34*time)) < (0))*y + (((bass_att)) > (1.1))*-1;;\ndx = dx + dx_r;;\ndy = dy + dy_r;;\nsx = sx - abs(12*dx_r*(xy*sin(xy*bass_att*1.25)));;\nsy = sy - abs(12*dy_r*(xy*sin(xy*bass_att*1.25)));;\nrot = rot + 22*dx_r*(xy*cos(4*xy*treb_att));;\ncx = cx + 8*dx_r*(xy*sin(xy*mid_att*1.1));;\ncy = cy + 8*dy_r*(xy*sin(xy*mid_att*1.1));;\n///////////////////////////////////////;\ncr1=7*.01;;\ncr2=20*.01;;\ncrx=cr2-cr1;;\nci=(1-(1-abs(-2*(x+y)/2+1)+(1-abs(-2*(1-(x+(1-y))/2)+1)))/2)*4-1;;\ncb=.25  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);////////////////////////////////////////////////////"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.104,
+      "alpha": 0.5,
+      "orient": 3
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

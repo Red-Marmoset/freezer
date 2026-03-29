@@ -1,0 +1,16 @@
+{
+  "name": "BDRV Aderrasi - Potion of Resurrection BDRV et  AL  rmx2 [flexis quasi-psychose mix]",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.35*sin(1.14*time) + 0.16*sin(1.5*time);;\nwave_g = wave_g + 0.36*sin(1.27*time) + 0.15*sin(1.11*time);;\nwave_b = wave_b + 0.37*sin(1.284*time) + 0.15*sin(1.3*time);;\nwarp = 0;;\nob_r = wave_g;;\nob_b = wave_r;;\nob_g = wave_b;;\nib_r = wave_r;;\nib_b = wave_g;;\nib_g = wave_r;;\nt = t+.2/fps;;\nt= if(((t) > (2)),t-2,t);;\nq12 = -t;",
+        "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.15*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.165*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nsix = sin(x);;\ndx = dx + 0.01*sin(abs(12*y))*sin(time);;\ndy = dy + 0.01*sin(abs(12*x))*cos(time);;\nzoom = zoom + 0.0095*(sin(8+4*sin(0.2*time)*ang) + sin(sin(time*2*sin(time)*rad))*0.3 - cos(rad)*0.1);;\nrot = rot + 0.08*abs(0.746-rad)*sin(2.2*(0.5-rad)+5.7*sin(0.1*time));;\nsx = sx + 0.01*(0.99*1-rad)*sin(0.733*time)*((sin(time)) < (0));;\nsy = sy + 0.01*(0.99*1-rad)*cos(0.953*time)*((sin(time)) > (0));;\nzoom = zoom - 0.015*(0.5*abs(3)-rad)*((rad) < (1.5));;\ndx = if(((y) > (.93)),.01,if(((y) < (.01)),if(((x) < (.3)),if(((y) < (.5)),0,-.01),-.01),0));;\ndy = if(((x) < (.05)),.01,if(((x) > ((0.94 - q7))),-.01,0));;\nzoom = if(((x) > (.09)),if(((x) < (.85)),if(((y) > (.09)),if(((y) < (.85)),.95,1),1),1),1);;\ndy = if(((y) < (.5)),if(((x) < (.3)),.01,dy),dy);;\nrot = if(((x) > (.09)),if(((x) < (.85)),if(((y) > (.09)),if(((y) < (.85)),0.1*sin(sin(ang*0.1*ang)+rad*6+q8*.444),0),0),0),0);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

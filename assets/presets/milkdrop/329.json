@@ -1,0 +1,23 @@
+{
+  "name": "329",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 13.29089;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nvol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=.9;;\nmusictime=musictime+vol;;\nq4=0.5;;\nq5=0.5;;\n//dx=sin(musictime*0.1)*0.07;;\n//dy=cos(musictime*0.069)*0.07;;\nmonitor=rot;",
+        "perVertex": "rd=sqrt( sqr( (x-0.5-q4)*1.7) + sqr( (y-0.5+q5)*1.2 ) );;\ncx=0.5+q4;;\ncy=0.5-q5;;\nzoom=(rd/rd);;\nrot=(rd/rd)+sin(time/5);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

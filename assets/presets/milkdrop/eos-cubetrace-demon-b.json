@@ -1,0 +1,16 @@
+{
+  "name": "EoS - cubetrace demon B",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nvol=pow( (bass+mid+treb)*0.25,2 );;\ndecay=0.98;;\nzoom=1.001 + 0.005*vol;;\nmonitor=512/8;;\nwarp=0;;\nmtime=mtime+vol*0.1;;\nq1=mtime*0.15;;\nq2=(sin(mtime*0.15)*0.5 +0.5)*24 +3; //cubesize",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

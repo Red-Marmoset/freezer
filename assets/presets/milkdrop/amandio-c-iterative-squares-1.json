@@ -1,0 +1,32 @@
+{
+  "name": "amandio c - iterative - squares 1",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.0099;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.86;\nwave_a=0;   warp=0;        decay=0;;\nzoom=1;     q6=aspecty;    t=2*time;;\n/// iterative equations;\nx=0;   y=0;   i=0;;\nloop(1024,             sample=i/1024;;\ns = 5.5*6.28*sample;     p=(20*sample)%20;;\nx = x + p*p*sin(s+t)* p%2 ;;\ny = y + p*p*cos(s+t)* (1-p%2) ;;\ngmegabuf(2*i)=x;       gmegabuf(2*i+1)=y;;\ni=i+1;);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

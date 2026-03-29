@@ -1,0 +1,16 @@
+{
+  "name": "Halfbreak - Timeless Mechanic",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.00499;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.24952;\ncx = 0.5;\ncy = 0.5;\nq1 = 0.0003*(pow(1+1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,6));;\nmonitor = q1;;\nwave_r = wave_r + 0.5*sin(time*0.565);;\nwave_g = wave_g + 0.5*sin(time*0.615);;\nwave_b = wave_b + 0.5*sin(time*0.665);",
+        "perVertex": "zoom = zoom + 0.025;;\nrot = rot + 0.05*sin(fps*100)*q1;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

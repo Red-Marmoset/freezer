@@ -1,0 +1,23 @@
+{
+  "name": "Goody on mushrooms + Hexcollie n Fyornulis - Cellsmosis (acid angelated)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99979;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1.0017;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nsx=1;;\nsy=1;;\nvol=(bass+mid+treb_att)*.3333;;\nredsine=.5+.15*bass*sin(time*3);;\ngreensine=.5+.15*mid*sin(time*2);;\nbluesine=.5+.15*treb*sin(time);;\nredif=if(((bass) > (1.2)),redsine,if(((redif) > (.95)),0,redif*.85));;\ngreenif=if(((mid) > (1.2)),greensine,if(((greenif) > (.95)),0,greenif*.85));;\nblueif=if(((treb) > (1.2)),bluesine,if(((blueif) > (.95)),0,blueif*.85));;\nib_r=redif;;\nib_g=greenif;;\nib_b=blueif;;\nwave_r=redif*abs(sin(redif));;\nwave_g=greenif*abs(sin(greenif));;\nwave_b=blueif*abs(sin(blueif));;\nzoom=zoom+.01*treb_att",
+        "perVertex": "//dx=dx+.01*sin(x*40+time);;\n//dy=dy+.01*sin(y*40+time*.972);;\nrot=rot+.01*sin(rad*time);;\ncx=cx+.1*sin(time*.9);;\ncy=cy+.1*sin(time*.9);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

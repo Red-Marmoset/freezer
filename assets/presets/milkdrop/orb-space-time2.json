@@ -1,0 +1,16 @@
+{
+  "name": "ORB - Space Time2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.92",
+        "perFrame": "zoom = 1.0599;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nbass_clip = ((bass_att) > (bass_clip))*2 + (1-((bass_att) > (bass_clip)))*((bass_clip-1.3)*0.96+1.3);;\nbasstime = basstime + (bass_att*0.03);;\ntime2 = time2 + (bass_att*0.09);;\n//punlish;\nq1 = state;;\nq2 = basstime;;\nq3 = bass_clip;;\nq4 = time2;;\nob_r = ob_r + 0.5*sin(time*1.22);;\nob_g = ob_g + 0.5*sin(time*1.307);;\nob_b = ob_b + 0.5*sin(time*1.959);;\nmonitor = bass_clip;",
+        "perVertex": "//use simple fuzzy logic to model zooming;\n//rules;\nfuzzy1 = x*0.1*rad;;\nfuzzy3 = (x-1)*0.1*rad;;\nfuzzy2 = y*0.1*rad;;\nfuzzy4 = (y-1)*0.1*rad;;\n//activations approx sawtooth with sin curve;\nf1 = sin(q4 - 1.5707);;\nf2 = sin(q4);;\nf3 = sin(q4 + 1.5707);;\nf4 = sin(q4 + 3.14);;\n//take only values above zero;\nf1 = f1*((f1) > (0));;\nf2 = f2*((f2) > (0));;\nf3 = f3*((f3) > (0));;\nf4 = f4*((f4) > (0));;\n//sum rule ativations;\nsum_fuzzy = fuzzy1*f1 + fuzzy2*f2 - fuzzy3*f3 - fuzzy4*f4;;\nzoom = 0.975 - (rad- 0.5)*0.05 + sum_fuzzy*0.5;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

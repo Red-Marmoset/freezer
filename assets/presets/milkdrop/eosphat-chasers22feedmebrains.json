@@ -1,0 +1,23 @@
+{
+  "name": "Eosphat-chasers22feedmebrains",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.033004;\ncx = 0.5;\ncy = 0.5;\ndecay=0.975;;\nvol=(bass+mid+treb)*0.25;;\nvol=vol*vol;;\nmtime=mtime+0.01*((sin(time)) < (0.95));;\nq1=mtime*0.5;;\ngamma=1 + min(vol*0.8,1)*0.7",
+        "perVertex": "zm=1.00;;\nsx=zm;;\nsy=-zm;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.192115,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

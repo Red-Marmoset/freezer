@@ -1,0 +1,23 @@
+{
+  "name": "EoS - rename 2b - shf fab psychomonk mantra",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nzoom=1.00;;\nvol=(bass+mid+treb)*0.25;;\nvol=vol*vol;;\nmtime=mtime+vol*0.01;;\nq1=mtime*0.7 + vol*0.35;;\nq2=vol;;\nwarp=0;;\nsx=1.00 + max(sin(mtime)*0.005,0);;\nsy=1.00 + max(sin(mtime+3.14)*0.005,0);;\nr1=sin(time/2)*0.5+0.5;;\ng1=sin(time/2+2.1)*0.5+0.5;;\nb1=sin(time/2+4.2)*0.5+0.5;;\nq6=r1;q7=g1;q8=b1;;\ngamma=1.5 + min(vol*0.5,0.5);",
+        "perVertex": "rot=sin(time*0.5)*0.01;;\nrot=if ( ((x) > (0.5)) , rot , -rot);;\nctr = if ( ((x) > (0.5)) , x , 1-x);;\nctr=ctr-0.45;;\nctr=ctr/0.1;;\nctr=max(ctr,0);;\nctr=1-ctr;;\nrot=rot*ctr"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.847,
+      "alpha": 0.41,
+      "orient": 2
+    }
+  ]
+}

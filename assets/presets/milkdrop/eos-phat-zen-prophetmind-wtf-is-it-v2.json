@@ -1,0 +1,23 @@
+{
+  "name": "EoS + Phat - zen prophetmind WTF is it_v2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 13.290894;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.985;;\nvol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nq1=ypos;;\nq2=xpos;;\nwave_a = 0;;\nzoom=.91;;\nmusictime=musictime+vol*0.5;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;",
+        "perVertex": "rd=sqrt( sqr( (x-0.5-q4)*1.7) + sqr( (y-0.5+q5)*1.2 ) );;\ncx=0.5+q4;;\ncy=0.5-q5;;\nzm =-5.5*log(sqrt(2)-rd) -0.24;;\nzm = max(abs(zm),.99) * sign(zm);;\norb=((rd) < (0.4));;\nzm=zm*((1-orb)+rd*rd*rd*1.52) + orb*(1-rd*rd*rd*1.52);;\nsx=zm;sy=zm;;\nsx=1.06;sy=1.06"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.999996,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

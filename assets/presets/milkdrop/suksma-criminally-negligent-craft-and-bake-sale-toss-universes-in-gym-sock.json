@@ -1,0 +1,43 @@
+{
+  "name": "suksma - criminally negligent craft and bake sale - toss universes in gym sock",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.995",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1.44772;\ncx = 0.5;\ncy = 0.5;\nwave_mystery = wave_mystery + .3*sin(time*.999);;\nib_r = ib_r + .177*sin(time*.555);;\nib_g = ib_g + .177*sin(time*.333);;\nib_b = ib_b + .177*sin(time*.444);;\nob_r = ib_r;;\nob_g = ib_g;;\nob_b = ib_b;;\nmv_r=.5;;\nmv_a=.2;;\nmv_dx=.1*sin(time)+.12233*sin(time*.439382);;\nmv_dy=.20114*cos(time*.857)+.12233*sin(time*.3982);;\nmv_b=mv_dx/mv_dy*2;;\nmonitor=mv_b;;\nmv_l=(bass+treb+mid)*.7;",
+        "perVertex": "zoom = zoom - rad*.1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6ff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.405,
+      "alpha": 0.56,
+      "orient": 0
+    }
+  ]
+}

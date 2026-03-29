@@ -1,0 +1,39 @@
+{
+  "name": "Telek-goodoldcollingwoodforever",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.999514;\nrot = 0;\ndx = 0.002;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.02;\ndy = 1;;\nwave_r=((treb_att) > (1.5));;\nwave_g=wave_r;;\nwave_b=wave_r;;\ndx=(bass_att-1.0)*.01;;\nmv_x = mv_x - dx*80;;\n//mv_r = 0;  to see the vectors;\nmonitor = mv_x;;\nmv_a = if(((bass+mid+treb) < (0.1)),0,1);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.216077,
+      "alpha": 1,
+      "orient": 0
+    }
+  ]
+}

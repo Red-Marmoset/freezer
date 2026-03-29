@@ -1,0 +1,39 @@
+{
+  "name": "Serge circles004",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nq4=sin(atime*.03);;\nq5=cos(atime*.030383824);;\nq6=tan(atime*.029384834);;\nwave_r = wave_r + 0.35*sin(0.4*time) + 0.16*sin(0.5*time);;\nwave_g = wave_g + 0.36*sin(0.7*time) + 0.15*sin(0.11*time);;\nwave_b = wave_b + 0.37*sin(0.84*time) + 0.15*sin(0.3*time);;\nwarp = 0;;\n//ob_r = wave_r;;\n//ob_g = wave_g;;\n//ob_b = wave_b;;\n//ib_r = wave_g;;\n//ib_b = wave_r;;\n//ib_g = wave_b;",
+        "perVertex": "myx = y-.5;;\nmyy = x-0.25;;\ndy = 2*(2*myx*myy);;\ndx = 2*((myy*myy) - (myx*myx))+mid/1.52 +sin(time/2) /2 ;;\nit = 0.3*sin(time*0.2);;\nradm = rad*0.5;;\nrot = 0.02*sin((radm+it)*30)/((rad+0.1)*((sin(time)*0.4+0.5)*20));;\nmod = sin(ang*5);;\nmod = mod*mod;;\nzoom = .99 - abs(0.01*mod);;\nmx = (x-.5)*1.33;;\nmy = y - .5;;\nckdx=dx;//////////////////////////////////////////;\nckdy=dy;;\ncksx=sx;;\ncksy=sy;;\nckrt=rot;;\nckzm=zoom;;\nckcx=cx;;\nckcy=cy;;\nckwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\nrf=if( ((x) > (.5)),1,0);;\nvt=(x-.5)*2;;\ndx=rf*vt+dx*(1-rf);;\nrf=1-rf;;\nrot=rf*rot;;\nzoom=rf*zoom+1*(1-rf);;\ndy=dy*rf;;\nsx=rf*sx+1*(1-rf);;\nrf=if( ((y) > (.5)),1,0);;\nvt=(y-.5)*2;;\ndy=rf*vt+dy*(1-rf);;\nrf=1-rf;;\nrot=rf*rot;;\nzoom=rf*zoom+1*(1-rf);;\n//dy=dy*rf;;\nsx=rf*sx+1*(1-rf);;\n//flip= (-2 * ((sin(time)) > (-0.9)) )+1;;\n//var=(bass+mid+treb)/3;;\n//dx = ((seg) == (1))*(x - .5)*2;;\n///////////////////////////////////////;\ncr1=(int(sin(treb*4+mid*2)/2+.5+.99));;\ncr2=cr1;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\ncjdx=dx;;\ncjdy=dy;;\ncjsx=sx;;\ncjsy=sy;;\ncjrt=rot;;\ncjzm=zoom;;\ncjcx=cx;;\ncjcy=cy;;\ncjwp=warp;;\ndx=(jx1*cjdx+kx1*ckdx);;\ndy=(jx1*cjdy+kx1*ckdy);;\nsx=(jx1*cjsx+kx1*cksx);;\nsy=(jx1*cjsy+kx1*cksy);;\nrot=(jx1*cjrt+kx1*ckrt);;\nzoom=(jx1*cjzm+kx1*ckzm);;\ncx=(jx1*cjcx+kx1*ckcx);;\ncy=(jx1*cjcy+kx1*ckcy);;\nwarp=(jx1*cjwp+kx1*ckwp);////////////////////////////////////////////////////"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

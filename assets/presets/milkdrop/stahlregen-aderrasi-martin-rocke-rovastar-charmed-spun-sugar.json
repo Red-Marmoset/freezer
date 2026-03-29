@@ -1,0 +1,16 @@
+{
+  "name": "Stahlregen & aderrasi + martin + rocke + rovastar - Charmed Spun Sugar",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.985",
+        "perFrame": "zoom = 0.9619;\nrot = -0.01;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.1*(0.6*sin(0.933*time) + 0.4*sin(1.072*time));;\nwave_g = wave_g + 0.1*(0.6*sin(0.888*time) + 0.4*sin(0.918*time));;\nwave_b = wave_b + 0.2*(0.6*sin(0.335*time) + 0.4*sin(0.4*time));;\nwave_mystery = 0.5*sin(0.35*bass);;\ndecay = decay - 0.01*((frame%50) == (0));;\nmv_b = mv_b + 0.2*sin(time*1.411);;\ncx = cx + 0.08*sin(time*1.315);;\ncy = cy + 0.08*sin(time*1.127);;\nq1 = sin(sin(1.211*time)+ cos(0.887*time)-sin(1.453*time));",
+        "perVertex": "zoom = zoom + (0.1*rad);;\nrot = rot - 0.15*sin(q1-ang);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

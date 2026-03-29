@@ -1,0 +1,32 @@
+{
+  "name": "suksma - never poo",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 13.29089;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nvol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=1;;\nmusictime=musictime+vol;;\n//=sin(musictime*0.02)*0.3;;\n//q5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.07;;\ndy=cos(musictime*0.069)*0.07;;\nq8=musictime;;\nq4=sin(musictime*0.03*0.5)*0.1;;\nq5=cos(musictime*0.03*2)*0.1;;\nmonitor=rot;",
+        "perVertex": "rd=sqrt( sqr( (x-0.5-q4)*1.7) + sqr( (y-0.5+q5)*1.2 ) )+0.001;;\ncx=0.5+q4;;\ncy=0.5-q5;;\nzm=pow(rd,sin(q8*0.02)+2.5)*2;;\nzm=max(zm,0.5);;\nsx=zm;;\nsy=zm"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

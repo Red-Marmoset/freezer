@@ -1,0 +1,23 @@
+{
+  "name": "shifter - orthoganal light CC niobium beta6",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.000495;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\ntic = min(time-tin,.1);;\ntin = time;;\nvol = (bass_att + treb_att + mid_att)*.333333;;\nra = 1/tic*.25;;\ntreb_avg = tic*(treb_avg*(1/tic - ra) + ra*treb);;\nmid_avg = tic*(mid_avg*(1/tic - ra) + ra*mid);;\nbass_avg = tic*(bass_avg*(1/tic - ra) + ra*bass);;\nvav = tic*(vav*(1/tic - ra) + ra*(bass+treb+mid)*.33333);;\ntt = tt + tic*treb;;\nmt = mt + tic*mid;;\nbt = bt + tic*bass;;\nvt = vt + tic*vav;;\nq1 = tt*4;;\nq2 = mt*4;;\nq3 = bt*4;;\nst = .5;;\nq4 = treb_avg*treb_avg*st;;\nq5 = mid_avg*mid_avg*st;;\nq6 = bass_avg*bass_avg*st;;\nq4 = treb_avg*st;;\nq5 = mid_avg*st;;\nq6 = bass_avg*st;;\n//ob_r = .5 + .5*sin(time);;\n//ob_g = .5 + .5*sin(time + 1.0472);;\n//ob_b = .5 + .5*sin(time + 2.0944);",
+        "perVertex": "ti = time*.3;;\nmx = x - .5 + .5*sin(ti*1.1278);;\nmy = y - .5 + .5*sin(ti*.9454);;\nmod = (1-2*((-mx) > (my)))*(1-2*((mx) > (my)));;\ndx = .5*(1-mod)*mx*sin(mx*6.2832*4 - sign(mx)*q1)*q4*(1-2*((-mx) > (my)));;\ndy = .5*(mod+1)*my*sin(my*6.2832*4 - sign(my)*q1)*q4*(1-2*((-mx) > (my)));;\nmx = x - .5 + .5*sin(ti*1.3488);;\nmy = y - .5 + .5*sin(ti*.7366);;\nmod = (1-2*((-mx) > (my)))*(1-2*((mx) > (my)));;\ndx = dx + .5*(1-mod)*mx*sin(mx*6.2832*4 - sign(mx)*q2)*q5*(1-2*((-mx) > (my)));;\ndy = dy + .5*(mod+1)*my*sin(my*6.2832*4 - sign(my)*q2)*q5*(1-2*((-mx) > (my)));;\nmx = x - .5 + .5*sin(ti*1.3544);;\nmy = y - .5 + .5*sin(ti*.9021);;\nmod = (1-2*((-mx) > (my)))*(1-2*((mx) > (my)));;\ndx = dx + .5*(1-mod)*mx*sin(mx*6.2832*4 - sign(mx)*q3)*q6*(1-2*((-mx) > (my)));;\ndy = dy + .5*(mod+1)*my*sin(my*6.2832*4 - sign(my)*q3)*q6*(1-2*((-mx) > (my)));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.047468,
+      "alpha": 0.5,
+      "orient": 0
+    }
+  ]
+}

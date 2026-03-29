@@ -1,0 +1,20 @@
+{
+  "name": "$$$ Royal - Mashup (509)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.79968;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01678;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.400*( 0.60*sin(0.933*time) + 0.40*sin(1.045*time) );;\nwave_g = wave_g + 0.100*( 0.60*sin(0.900*time) + 0.40*sin(0.956*time) );;\nwave_b = wave_b + 0.100*( 0.60*sin(0.910*time) + 0.40*sin(0.920*time) );;\nmv_r = wave_r;;\nmv_b = wave_b;;\nmv_g = wave_g;;\nq1 = 0.05*(pow(1+1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,6)/fps);;\n//q1 = 0.6*(bass+bass_att);;\nmv_a = if(((bass-1.2) > (1)),1,bass-1.2);",
+        "perVertex": "zoom = 1.01 + rad*0.15*q1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    }
+  ]
+}

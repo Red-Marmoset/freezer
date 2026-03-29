@@ -1,0 +1,23 @@
+{
+  "name": "Hexcollie, Idiot n Inventive Software - Another alien to add to the list",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.999",
+        "perFrame": "zoom = 1.09351;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1.9504;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 1*( 0.60*sin(0.933*treb) + 0.40*sin(1.045*time) );;\nwave_b = wave_b + 1*( 1.60*sin(1.900*bass) + 0.40*sin(0.956*time) );",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

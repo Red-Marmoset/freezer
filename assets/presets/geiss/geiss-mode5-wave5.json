@@ -1,0 +1,7 @@
+{
+  "name": "Geiss - Super Perspective (Circle)",
+  "clearFrame": false,
+  "components": [
+    { "type": "GeissEffect", "enabled": true, "mode": 5, "waveform": 5 }
+  ]
+}

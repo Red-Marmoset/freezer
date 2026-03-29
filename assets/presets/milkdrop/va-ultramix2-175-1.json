@@ -1,0 +1,32 @@
+{
+  "name": "va ultramix2 - 175_1",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 13.290894;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\n//vol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=1;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;",
+        "perVertex": "cc=y*y*y*y*y*y*y*y*y*y*y*y*sin(x*48+time/5)/2 +1;;\nzoom=cc;;\ndy=-1.012;;\nsx=1-y/8;;\ncrx=.5;;\ncra=.37;;\nci=1-rad;;\ncr=pow(sin(ci*5.9)/2+.5,10)*crx+cra;;\ncrr=if( ((ci) > (.25)),cr,crx+cra);;\ndy=0;;\n//zoom=cr;;\n//cx=1-cx;;\n//rot=sin(time/19)/1.2 ;;\nzoom=crr;;\nnkdx=dx;//////////////////////////////////////////;\nnkdy=dy;;\nnksx=sx;;\nnksy=sy;;\nnkrt=rot;;\nnkzm=zoom;;\nnkcx=cx;;\nnkcy=cy;;\nnkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\ndu = (x*2-1) - q1;;\ndv = (y*2-1) - q2;;\ndist = sqrt(du*du+dv*dv);;\nang2 = atan2(du,dv) + time*0.15;;\nmult = 0.65*sin(dist*0.05);;\ndx = mult*sin(ang2*2-1.5);;\ndy = mult*cos(ang2*2-1.5);;\n///////////////////////////////////////;\ncr1=99*.01;;\ncr2=0*.01;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25  ;;\ncrs=7;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nnjdx=dx;;\nnjdy=dy;;\nnjsx=sx;;\nnjsy=sy;;\nnjrt=rot;;\nnjzm=zoom;;\nnjcx=cx;;\nnjcy=cy;;\nnjwp=warp;;\ndx=(jx1*njdx+kx1*nkdx);;\ndy=(jx1*njdy+kx1*nkdy);;\nsx=(jx1*njsx+kx1*nksx);;\nsy=(jx1*njsy+kx1*nksy);;\nrot=(jx1*njrt+kx1*nkrt);;\nzoom=(jx1*njzm+kx1*nkzm);;\ncx=(jx1*njcx+kx1*nkcx);;\ncy=(jx1*njcy+kx1*nkcy);;\nwarp=(jx1*njwp+kx1*nkwp);////////////////////////////////////////////////////"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

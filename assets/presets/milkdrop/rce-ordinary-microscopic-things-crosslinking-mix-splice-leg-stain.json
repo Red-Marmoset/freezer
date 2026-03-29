@@ -1,0 +1,32 @@
+{
+  "name": "rce-ordinary - microscopic things (crosslinking mix) - splice leg stain",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.97",
+        "perFrame": "zoom = 0.5033;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nq4=sin(atime*.03);;\nq5=cos(atime*.030383824);;\nq6=tan(atime*.029384834);;\nnum0=numbeat*(abs(num-num_att)+pump)+bnot(numbeat)*num0;;\npump=numbeat*(sin(t)*.1+.1)+bnot(numbeat)*pump;;\npump=pump*.98;;\nnum_b0=num_b;;\nnum=abs((bass-bass_att)+(mid-mid_att)+(treb-treb_att));;\nnum_att=num_att*.95+num*.05;;\nnum_b=((num) > (1-pump))*((abs(num-num_att)) > (num0));;\nnumbeat=bnot(((num_b0) == (num_b)));;\nt=t+num*.1;;\nbc=bc+numbeat;;\nnum_effect=max(max(num,num_att)-1,0);;\nwave_a=0;;\nob_r=.5+.5*sin(.02*bc+.1*time+.05*t);;\nob_g=.5+.5*sin(.04*bc+.31*time+.05*t);;\nob_b=.5+.5*sin(.08*bc+.2*time+.05*t);;\nrot=1+.25*sin(t*0.14);;\ncx=.5+.5*sin(t*.031);;\ncy=.5+.5*sin(t*.028);;\nq1=t;;\nq2=bc;;\nq3=num_effect;;\nq4=oq4+num_effect;;\noq4=q4;",
+        "perVertex": "rot=if(((sin(q1*.04+q2*.13)) > (0)),rot,0.5+rad*.2*sin(.06*q1+.1*time));;\nsx=sx+sin(rad*1.57*sin(.21*q1+q2*.08)+y-0.5+q4)*.1;;\nsy=sy+sin(rad*1.57*sin(.11*q1+q2*.12)+x-0.5+q4)*.1;;\nzoom=zoom-.1*(1-rad);;\ndx=sin(y*3.14*sin(.12*q1+.09*q2+.2*q4))*(.1+.1*q3);;\ndy=sin(x*3.14*sin(.18*q1+.12*q2+.3*q4))*(.1+.1*q3)"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=v*0.5; y=(i*2-1)*0.8"
+      }
+    }
+  ]
+}

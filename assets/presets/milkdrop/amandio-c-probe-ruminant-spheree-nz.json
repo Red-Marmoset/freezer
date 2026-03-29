@@ -1,0 +1,32 @@
+{
+  "name": "amandio c - probe - ruminant spheree nz",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//martin no religion / my omniversal absence for changing the background light;\nvb = vb*0.95 + (1-vb)*pow(abs(bass-bass_att),2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(abs(mid-mid_att),2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(abs(treb-treb_att),2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nrunbass=runbass+vvb;;\nrunmids=runmids+vvm ;;\nruntreb=runtreb+vvt;;\npi23=4*asin(-1)*.33333333333333;;\natime=(runtreb+runmids+runbass)*1.85;;\nq8= (sin(atime-0*pi23)+1)*.4;;\nq9= (sin(atime-1*pi23)+1)*.4;;\nq10=(sin(atime-2*pi23)+1)*.4;;\nvb = vb*0.95 + (1-vb)*pow(abs(bass-bass_att),2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(abs(mid-mid_att),2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(abs(treb-treb_att),2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = (vvt+vvm+vvb)*100;;\nq2 = (vvt+vvm+vvb)*100;;\nq3 = (vvt+vvm+vvb)*100;;\nq4 =(vvt+vvm+vvb)*100;;\nq5 =(vvt+vvm+vvb)*100;;\nq6 =(vvt+vvm+vvb)*100;;\nq4 =(vvt+vvm+vvb)*100;;\nq5 =(vvt+vvm+vvb)*100;;\nq6 =(vvt+vvm+vvb)*100;;\nq7 =(vvt+vvm+vvb)*100;;\nq11=(vvt+vvm+vvb)*100;;\nq12=(vvt+vvm+vvb)*100;;\nq13=(vvt+vvm+vvb)*100;;\nq14=(vvt+vvm+vvb)*100;;\nq15=(vvt+vvm+vvb)*100;;\nq16=(vvt+vvm+vvb)*100;;\nq17=(vvt+vvm+vvb)*100;;\nq18=(vvt+vvm+vvb)*100;;\nq19=(vvt+vvm+vvb)*100;;\nq20=(vvt+vvm+vvb)*100;;\nq21=(vvt+vvm+vvb)*100;;\nq22=(vvt+vvm+vvb)*100;;\nq23=(vvt+vvm+vvb)*100;;\nq24=(vvt+vvm+vvb)*100;;\nq25=(vvt+vvm+vvb)*100;;\nq26=(vvt+vvm+vvb)*100;;\nq27=(vvt+vvm+vvb)*100;;\nq28=(vvt+vvm+vvb)*100;;\nq29=(vvt+vvm+vvb)*100;;\nq30=(vvt+vvm+vvb)*100;;\nq31=(vvt+vvm+vvb)*100;;\nq32=(vvt+vvm+vvb)*100;;\nwarp=0;;\nwave_a=0;;\nzoom=1;;\n//// Flexi's beat counter;\nbt1 = bt1*0.95 + sqr(bass*3)*30/fps;;\nmt1 = mt1*0.95 + sqr(mid*3)*30/fps;;\ntt1 = tt1*0.95 + sqr(treb*3)*30/fps;;\nbt2 = bt2 + bt1*0.002;;\nmt2 = mt2 + mt1*0.002;;\ntt2 = tt2 + tt1*0.002;;\nq1 = bt2 *0.02;;\nq2 = mt2 *0.02;;\nq3 = tt2 *0.02;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    }
+  ]
+}

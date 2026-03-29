@@ -1,0 +1,32 @@
+{
+  "name": "suksma - superprison - occulted by massive orbiting conglomerations of tomatoes",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1.00049;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//per frame less reactive volume for all unused q vars, put before other q vars are set for cop out mashing;\nvb = vb*0.95 + (1-vb)*pow(bass_att*treb_att*mid_att,2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(mid_att,2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(treb_att,2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = vvb*2;//0.5 + vb - vvb;;\nq2 = vvm*2;//0.5 + vm - vvm;;\nq3 = vvt*2;//0.5 + vt - vvt;;\nv=2;;\nbb = bb - vvb*v;;\nmm = mm - vvm*v;;\ntt = tt - vvt*v;;\nq4 = -bb;;\nq5 = -mm;;\nq6 = -tt;;\nq4=(q1+q2+q3)*5;;\nq5=(q1+q2+q3)*5;;\nq6=(q1+q2+q3)*5;;\nq7=(q1+q2+q3)*5;;\nq8=(q1+q2+q3)*5;;\nq9=(q1+q2+q3)*5;;\nq10=(q1+q2+q3)*5;;\nq11=(q1+q2+q3)*5;;\nq12=(q1+q2+q3)*5;;\nq13=(q1+q2+q3)*5;;\nq14=(q1+q2+q3)*5;;\nq15=(q1+q2+q3)*5;;\nq16=(q1+q2+q3)*5;;\nq17=(q1+q2+q3)*5;;\nq18=(q1+q2+q3)*5;;\nq19=(q1+q2+q3)*5;;\nq20=(q1+q2+q3)*5;;\nq21=(q1+q2+q3)*5;;\nq22=(q1+q2+q3)*5;;\nq23=(q1+q2+q3)*5;;\nq24=(q1+q2+q3)*5;;\nq25=(q1+q2+q3)*5;;\nq26=(q1+q2+q3)*5;;\nq27=(q1+q2+q3)*5;;\nq28=(q1+q2+q3)*5;;\nq29=(q1+q2+q3)*5;;\nq30=(q1+q2+q3)*5;;\nq31=(q1+q2+q3)*5;;\nq32=(q1+q2+q3)*5;",
+        "perVertex": "ti = time*.3;;\nmx = x - .5 + .25*(sin(ti*1.1278) + sin(ti*.7458));;\nmy = y - .5 + .25*(sin(ti*.9454) + sin(ti*1.2378));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q1)*q4;;\ndx = zm*(x-mx);;\ndy = zm*(y-my);;\nmx = x - .5 + .25*(sin(ti*1.3185) + sin(ti*.9105));;\nmy = y - .5 + .25*(sin(ti*.8113) + sin(ti*1.0287));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q1)*q4;;\ndx = dx + zm*(x-mx);;\ndy = dy + zm*(y-my);;\nmx = x - .5 + .25*(sin(ti*1.3488) + sin(ti*.8552));;\nmy = y - .5 + .25*(sin(ti*.7366) + sin(ti*1.1447));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q2)*q5;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;;\nmx = x - .5 + .25*(sin(ti*1.1385) + sin(ti*.9901));;\nmy = y - .5 + .25*(sin(ti*.7028) + sin(ti*1.3548));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q2)*q5;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;;\nmx = x - .5 + .25*(sin(ti*1.3544) + sin(ti*.8926));;\nmy = y - .5 + .25*(sin(ti*.9021) + sin(ti*1.2468));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q3)*q6;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;;\nmx = x - .5 + .25*(sin(ti*1.5416) + sin(ti*.7852));;\nmy = y - .5 + .25*(sin(ti*.7436) + sin(ti*1.3266));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q3)*q6;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.8; y=v*0.5"
+      }
+    }
+  ]
+}

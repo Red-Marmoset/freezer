@@ -1,0 +1,16 @@
+{
+  "name": "amandio c - living boxes 5",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.86;\ndecay=0;;\nq6=aspecty;;\np+=bass;;\nq1=10*sin(.15*time+.001*p);;\n//q1=3.15;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

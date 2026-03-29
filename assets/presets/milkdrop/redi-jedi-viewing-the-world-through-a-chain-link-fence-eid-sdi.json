@@ -1,0 +1,16 @@
+{
+  "name": "Redi Jedi - viewing the world through a chain link fence - eid (-sdi)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndb=(bass-lbass)*fps*.1;;\nlbass=bass;;\navgdb=avgdb*.99+abs(db)*.01;;\ndt=(treb-ltreb)*fps*.06;;\nltreb=treb;;\navgdt=avgdt*.99+abs(dt)*.01;;\npitch=(sin(avgdt)+cos(avgdb))*.5+.5;;\navgvol=avgvol*.99+(avgdb+avgdt)*.005;;\nmonitor=avgvol;;\nfc=(30/fps)*avgvol*.01;;\nbb=((abs(db)) > (avgdb*6));;\nbt=((abs(dt)) > (avgdt*6));;\nt1=t1+(avgdb*.01*(1.5-pitch)+bb*db)*fc;;\nt2=t2+(avgdt*.01*pitch+bt*dt)*fc;;\nt3=t3+abs(db)*.1*avgvol*fc;;\nt4=t4+abs(dt)*.1*-avgvol*fc;;\nwave_r = 0.5 + 0.5*sin((t1-t4)*2);;\nwave_g = 0.4 + 0.4*sin((t3-t2)*2);;\nwave_b = -1 + (1-wave_r + 1-wave_g);;\nwave_a = min(bass_att,1);;\nwarp = 0;;\nwave_x = wave_x + 0.4*cos(12*t2)*sin(11*t3);;\nwave_y = wave_y + 0.4*sin(12*t1)*cos(11*t4);;\nob_r = 1-abs(wave_g);;\nob_b = 1-abs(wave_r);;\nob_g = 1-abs(wave_b);;\nob_a=1;;\nib_a=.5;;\ndx_r=avgdt*.001;;\ndy_r=avgdb*.001;;\nq1=dx_r;;\nq2=dy_r;;\nq3=t1;;\nq4=t2;;\nq5=t3;;\nq6=t4;;\nq7=pitch-.5;;\nq8=avgvol;;\nwrap=1;;\ndecay=.99+min(max((avgdt-avgdtb)*.004,-.01),.01);;\ncx=.5+.5*sin(q5);;\ncy=.5+.5*sin(q6);",
+        "perVertex": "//c3=0;;\nc1=((sin((x-y)*5*q8+q3)-.5) > (0));;\nc2=((sin((x-y)*q7+q6)-.5) > (0));;\nc3=((sin((y+x)*5*q7+q5)-.5) > (0));;\nc4=((sin((y+x)*q8+q4)-.5) > (0));;\nrot=sin(c3*q5-c4*q3+c1*q6-c2*q5)*q8;;\nzoom=1+(c1+c3-c2-c4)*.05*q8;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

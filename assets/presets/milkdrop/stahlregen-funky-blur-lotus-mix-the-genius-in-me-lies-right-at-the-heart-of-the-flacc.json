@@ -1,0 +1,32 @@
+{
+  "name": "Stahlregen - funky Blur (lotus mix) the genius in me lies right at the heart of the flacc",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 13.29089;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\n//vol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=1;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;;\nvol2=bass+mid+treb;;\nq30=vol2*4;;\nq3=vol2*4;",
+        "perVertex": "inside = if (((abs(x-0.5)) < (0.5)),if (((abs(y-0.5)) < (0.25)),1,0),0);;\noutsidex = if(((abs(16*x%2)) < (0.25)),0,1);;\noutsidey = if(((abs(12*y%2)) < (0.25)),0,1);;\nwarp = 0.6*warp*abs(1-inside);;\ndy = if(outsidex,0,0.03*(q1-1)*log(2-(abs(y*2 - 1.8))) + 0.01*(sin((x*q2*0.483) + (y*q2*1.238)) + sin((x*q2*1.612) + (y*q2*0.648))));;\ndx = if(outsidey,0,0.04*(q1-1)*log(2-(abs(x*2 - 1.8))) + 0.01*(cos((y*q2*0.483) + (x*q2*1.238)) + cos((y*q2*1.612) + (x*q2*0.648))));;\nzoom = if(((rad) < (.4)),.1*(-rad +1),zoom);;\n//rot = rot + if(((tan(ang*2)) == (0)),-rot,rad)*q1;;\nzoom=zoom+.10*sin(rad+.+15.15);;\nmx= x-.5;;\nmy = y-.5;;\nzoom= zoom - ((rad-0.18) > (0))*0.05*rad*.9;;\ndx = ((rad-(2-bass_att)*.2) > (0))*0.015*(mx/if(((rad) > (0)),rad,.1));;\ndy = ((rad-(2-bass_att)*.2) > (0))*0.015*(my/if(((rad) > (0)),rad,.1));;\nzoom = zoom + if(((sin(ang*6+1.6)) > (0.4)), if(((sin(ang*6)) < (1)), +0.04, 0), 0);;\nfifth;\nkdx=dx;;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;;\nmyy = y-(0.250025);;\nmyx = x-0.5;;\ndx =dx+ 2*(2*myx*myy);;\ndy =dy+ 2*((myy*myy) - (myx*myx));;\ncr1=0*.01;;\ncr2=80*.01;;\ncrx=cr2-cr1;;\nci=y;;\ncb=.025  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);;\nkdx=dx;//////////////////////////////////////////;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\nda=8+sin(time/17) /10;;\nnh=2;;\nnh2=1;;\nmyx=(-int(x*nh)+x*nh-.4);;\nmyy=(-int(y*nh2)+y*nh2-.95+sin(time/11) /22);;\nmyx=sin(x*6.28);;\nmyy = y-.5;;\nmyx = x*1-.5;;\ndx = -da*(2*myx*myy);;\ndy = da*((myy*myy) - (myx*myx));;\n///////////////////////////////////////;\ncr1=0;;\ncr2=1;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.0;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);////////////////////////////////////////////////////"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

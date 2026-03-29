@@ -1,0 +1,23 @@
+{
+  "name": "Phat+fiShbRaiN_Looker",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.965",
+        "perFrame": "zoom = 0.998162;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.001828;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=.999;;\nwrap=sin(time*10);;\nmv_dx=bass;;\nmusictime=musictime+(mid*mid*mid)*0.01;;\nxpos=sin(musictime*0.6)*0.3;;\nypos=sin(musictime*0.4)*0.3;;\nq4=xpos;;\nq5=ypos;\n//ib_a=.005;",
+        "perVertex": "cx=0.5+q4;;\ncy=0.5-q5;;\nrd=sqrt( sqr( (x-0.5-q4)*2) + sqr( (y-0.5+q5)*1.5 ) );;\nzm=(1.1-(rd/4));;\nsx=zm;;\nsy=zm;;\nrot=((rd) > (0.7))*(rd-0.7)*sin(time*0.3);;\nzoom=1.01-(rad/100)+(bass*0.01);;\nrot=rad/600;;\nsy=1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.006581,
+      "alpha": 0.5,
+      "orient": 2
+    }
+  ]
+}

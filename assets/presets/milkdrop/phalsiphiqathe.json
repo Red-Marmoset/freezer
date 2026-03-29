@@ -1,0 +1,23 @@
+{
+  "name": "phalsiphiqathe",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\ndecay = .92;",
+        "perVertex": "zoom = zoom + .1;;\nrot = rot + rad*.1;;\nrot = rot + 0.01*(0.5*cos(ang*5*bass*time));;\ndx = dx + 0.1*((rad) > (0.25))*dx_r;;\ndy = dy + 0.1*((rad) > (0.25))*dy_r;;\nrot=0.1*pow(-ang,3)-1.18*sin(ang);;\nzoom=1.45*sin(-rad)+1.3+ sin(rad);;\ndx = dx + 0.09*sin(q8*0.785);;\ndy = dy + 0.09*sin(q8*0.675);;\n//zoom = zoom +q7;;\nzoom = -0.0251+zoom + 1*abs(0.1*tan((1.9)-rad));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

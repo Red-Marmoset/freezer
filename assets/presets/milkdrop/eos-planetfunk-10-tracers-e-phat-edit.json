@@ -1,0 +1,23 @@
+{
+  "name": "EoS planetfunk-10 - tracers E_phat_edit",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.0201;\nsy = 1.0201;\nwarp = 0.080814;\ncx = 0.5;\ncy = 0.5;\ndecay=0.97;;\n//zoom=1.008;;\nms=sin(time*0.6)*0.15;;\nmss=mss+ms*0.001;;\nq1=ms;;\n//rot=sin(time)*0.01;;\n//echo_zoom=1 + ( sin(time*0.6)*0.5+0.5 )*3;;\ndx=0;dy=0",
+        "perVertex": "it = 0.3*sin(time*0.2);;\nradm = rad*0.5;;\nrot = 0.02*sin((radm+it)*30)/((rad+0.1)*((sin(time)*0.4+0.5)*20));;\nmod = sin(ang*5);;\nmod = mod*mod;;\nzoom = -1 + abs(0.01*mod);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.996629,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "EoS - heater core C_Phat's_on route_mix",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.999902;\nrot = 0;\ndx = 0;\ndy = -1;\nsx = 0.999998;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//This Preset is based on Geiss - Feedback and Geiss - Feedback 2;\n//Ever since Geiss made those presets I've made slight changes;\n//to them and saved them. They were so cool, I used to watch;\n//them for hours. This preset is then one that flowed from;\n//changing and tweaking those.;\n//Almost everything is changed, but the one shape, (shape 4);\n//feeding back into the two bigger ones (shape 2 and 3) is;\n//obtained from the Feedback presets.;\n//I've added a 4th shape (shape 1) that is the big 'filter';\n//to change colours etc.  It is also textured, so thats why;\n//the 'triple' feedback is for.;\n//Shapes 3 and 2 can have their borders displayed in a strobe;\n//like fashion on beats. They also change amount of sides.;\n//-Reenen;\ndecay=1;;\nvol=(bass+mid+treb)*0.25;;\nvol=vol*vol;;\nq8=vol",
+        "perVertex": "zoom=-1.02 + ((rad*(treb*10))*(bass*bass));"
+      },
+      "gridSize": 48
+    }
+  ]
+}

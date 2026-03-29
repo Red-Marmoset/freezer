@@ -1,0 +1,32 @@
+{
+  "name": "va ultramix - 48",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 13.300894;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\n//vol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=1;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;",
+        "perVertex": "cr1=0.65+sin(time/5.31) /3;;\ncr2=.66+sin(time/4) /3;;\ncrx=cr2-cr1;;\nci=x*1.5+.25;;\ncb=.25 ;//   +sin(time/5)/6;;\ncrs=11;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nzoom=crr;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

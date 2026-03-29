@@ -1,0 +1,39 @@
+{
+  "name": "Serge circles000",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.98;;\nzoom=1.003;;\nvol=(bass_att+mid_att+treb_att)*0.25;;\nvol=vol*vol;;\nq7=vol;;\nvol=(bass+mid+treb)*0.25;;\nvol=vol*vol;;\nq8=vol;;\nmtime=mtime+vol*0.02;;\nq6=mtime;;\nob_a = min(vol,1);",
+        "perVertex": "zoom=1.001 + sin(ang*3 + time*0.5)*0.005"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "xtramartin (201)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq30=if(((chng) > (cthr)),rand(1)*.3,mq30);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q30=mq30;;\nmonitor=mq1;;\ndec_med = pow (0.85, 30/fps);;\ndec_slow = pow (0.95, 30/fps);;\nbeat = mid;;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (1.2*avg)) * ((time) > (t0+.1));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %32;;\nindex2 = (index2 + is_beat*bnot(index))%8;;\nspb = min(t0-t0a + .01,2); t0a = t0;;\nspb_ = if(is_beat,spb_ *.9 +.1*spb, spb_);;\nmindev = min(min(abs(spb-spb_),abs(spb*2-spb_)),abs(spb-spb_*2));;\nsdev = if(is_beat,sdev * .96 + .04*pow(mindev+.01,2),sdev);;\nq20 = avg;;\nq21 = beat;;\nq22 = peak+.01;;\nq24 = is_beat;;\nq27 = index;;\nq28 = index2;;\npuls = puls*dec_med + (1-dec_med)*q24*16*bnot(index%4);;\nq23 = min(1,puls);;\ntest = test + ((beat) > (avg*1.2)) * (beat-avg)/fps*30*4;;\ntic = q27/2;;\nl1angz = tic*0+ test;;\nl1angy = (1+sin(2*test))*1.6/2;;\nsw1 = (q28%2) * ((avg) > (1));;\nl1angy = l1angy-1/q22*sw1+ (1-sw1)*q22/8;;\nl1angy = l1angy+((avg) > (1.2))*2*sin(q22);;\nl1angz = l1angz+((avg) > (1.2))*(q22)*((q28) > (4));;\nq10 = cos(l1angz)*sin(l1angy);;\nq11 = sin(l1angz)*sin(l1angy);;\nq12 = abs(cos(l1angy)*cos(l1angy));;\ntrig = q24 * bnot(index%2);;\nran1 = if (trig,rand(100)/100-.5, ran1);;\nran2 = if (trig,rand(100)/100-.5, ran2);;\nq13 = ran1/2;;\nq14 = ran2/2;;\npp =  4*avg*q13/fps;;\npp = 1/fps;;\ncrit= int(q27/8);;\npx = px + ((crit) == (0))*pp;;\npy = py + ((crit) == (1))*pp;;\npz = pz + ((crit) == (2))*pp;;\ntrel = trel + 1/spb_/fps;;\njump = int(trel) * ((sdev) < (.004*avg));;\nq15 = px+jump;;\nq16 = py+jump;;\nq17 = pz+jump;;\nq30 = ((q28) > (5));;\nmonitor = avg;;\nq29 = q22/16*(((q22) > (1.5))+.8-avg)+(sin(time/5)-.8)*.1;;\nzoom = 1;;\nwarp = 0.0; rot = 0;;\ndx = 0;;\ndy = -.02;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.952,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

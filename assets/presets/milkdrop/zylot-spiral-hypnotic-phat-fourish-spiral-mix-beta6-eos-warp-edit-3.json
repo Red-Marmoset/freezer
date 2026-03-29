@@ -1,0 +1,23 @@
+{
+  "name": "Zylot - Spiral (Hypnotic)_Phat_Fourish_Spiral_Mix_Beta6 EoS warp edit 3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.997",
+        "perFrame": "zoom = 0.999514;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\ndecay = .93;;\necho_zoom=1.078+(bass*0.01);;\nq1=1-(sin(time)*0.2+0.5);;\nq2=1-(cos(time)*0.2+0.5);;\nmonitor = q2;",
+        "perVertex": "pxa = q1;;\npya = q2;;\ndtoa = sqrt( pow( x-pxa,2 ) + pow( y-pya,2 ) );;\n//dtoa = 0;//abs( x );;\npxb = -q1;;\npyb = -q2;;\ndistanceToB = sqrt( sqr( x-pxb ) + sqr( y-pxb ) );;\n//zoom = 1 + max( 1 - (dtoa)*6 , 0 );;\nzoom = 1;;\nspot = (1 - min(dtoa*6,1));;\ndx = (x - pxa)*2.5 * spot;;\ndy = (y - pya)*2.5 * spot;;\n//rot = (1 - min(dtoa*6,1))*0.5;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.079205,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

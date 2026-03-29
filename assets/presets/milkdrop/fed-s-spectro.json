@@ -1,0 +1,16 @@
+{
+  "name": "fed's spectro",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 0.97058;\nrot = 0;\ndx = 0.005;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.0102;\ncx = 0.5;\ncy = 0.5;\ndx=cos(time*3)*0.015;;\ndy=cos(time*1.5)*0.015-0.003;;\nrot=(dx+dy)*0.4;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

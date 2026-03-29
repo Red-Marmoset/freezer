@@ -1,0 +1,32 @@
+{
+  "name": "EoS+Phat Cool Bug v2 + (Krash's beat detection)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 13.290894;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nvol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=.9;;\nmusictime=musictime+vol*(75/fps);;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;;\n//krash's beat detection code;\nvolume = 0.3*(bass+mid+att);;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate);;\nlastbeat = lastbeat + ((lastbeat) == (0))*time;;\nmeanbass_att = 0.1*(meanbass_att*9 + bass_att);;\npeakbass_att = max(bass_att,peakbass_att);;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\npeakbass_att = beat*bass_att + (1-beat)*peakbass_att*(((time - lastbeat) > (2*beatrate))*0.95 + (1-((time - lastbeat) > (2*beatrate)))*0.995);;\nlastbeat = beat*time + (1-beat)*lastbeat;;\npeakbass_att = max(peakbass_att,1.1*meanbass_att);;\nbeat = ((volume) > (0.8))*((peakbass_att - bass_att) < (0.05*peakbass_att))*((time - lastbeat) > (0.1 + 0.5*(beatrate - 0.1)));;\nbeatcounter = beatcounter + beat;;\nmode = if(beat*((beatcounter%2) == (0)),1-mode,mode);;\nflip = 2*mode-1;;\nflip = flip*0.5+0.5;;\nrot = -time/4 * flip;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

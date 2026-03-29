@@ -1,0 +1,16 @@
+{
+  "name": "suksma - gee zeus ov gaellilee",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9995;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.1005;\ncx = 0.5;\ncy = 0.5;\n//martin no religion / my omniversal absence for changing the background light;\nrunbass=runbass+bass;;\nruntreb=runtreb+treb;;\nrunmids=runmids+mid ;;\npi23=4*asin(-1)*.33333333333333;;\nvol=(runtreb+runmids+runbass)*.05;;\nq8= (sin(vol-0*pi23)+1)*.5;;\nq9= (sin(vol-1*pi23)+1)*.5;;\nq10=(sin(vol-2*pi23)+1)*.5;;\n//per frame less reactive volume for all unused q vars, put before other q vars are set for cop out mashing;\nvb = vb*0.95 + (1-vb)*pow(bass_att*treb_att*mid_att,2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(mid_att,2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(treb_att,2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = vvb*2;//0.5 + vb - vvb;;\nq2 = vvm*2;//0.5 + vm - vvm;;\nq3 = vvt*2;//0.5 + vt - vvt;;\nv=2;;\nbb = bb - vvb*v;;\nmm = mm - vvm*v;;\ntt = tt - vvt*v;;\nq4 = -bb;;\nq5 = -mm;;\nq6 = -tt;;\nq4=(q1+q2+q3)*5;;\nq5=(q1+q2+q3)*5;;\nq6=(q1+q2+q3)*5;;\nq7=(q1+q2+q3)*5;;\nq11=(q1+q2+q3)*5;;\nq12=(q1+q2+q3)*5;;\nq13=(q1+q2+q3)*5;;\nq14=(q1+q2+q3)*5;;\nq15=(q1+q2+q3)*5;;\nq16=(q1+q2+q3)*5;;\nq17=(q1+q2+q3)*5;;\nq18=(q1+q2+q3)*5;;\nq19=(q1+q2+q3)*5;;\nq20=(q1+q2+q3)*5;;\nq21=(q1+q2+q3)*5;;\nq22=(q1+q2+q3)*5;;\nq23=(q1+q2+q3)*5;;\nq24=(q1+q2+q3)*5;;\nq25=(q1+q2+q3)*5;;\nq26=(q1+q2+q3)*5;;\nq27=(q1+q2+q3)*5;;\nq28=(q1+q2+q3)*5;;\nq29=(q1+q2+q3)*5;;\nq30=(q1+q2+q3)*5;;\nq31=(q1+q2+q3)*5;;\nq32=(q1+q2+q3)*5;;\n//vol = min(((5*bass + 3*mid_att + 2*treb)/10+0.15),2.15);;\n//wave_r = wave_r + 0.05*sin(3.23*time)+ 0.05*sin(0.46*time);;\n//wave_g = wave_g + 0.2*sin(2.71*time)+ 0.05*sin(0.76*time);;\n//wave_b = wave_b + 0.15*sin(1.132*time)+ 0.05*sin(0.546*time);;\n//wave_g = if(((wave_r+wave_g+wave_b) < (0.1)),wave_g+0.5,wave_g);;\n//wave_x = wave_x + 0.03*vol*sin(0.727*time);;\n//wave_y = wave_y + 0.04*vol*sin(0.777*time);;\n//zoom = vol*0.3 + 0.06*sin(0.54*time) + 0.97;;\n//dx = dx + 0.0075*sin(1.23*time);;\n//dy = dy + 0.0075*sin(1.43*time);;\n//rot = rot + 0.05*sin(time);;\nq2=bass+treb+mid;",
+        "perVertex": "//zoom = zoom - rad*0.9;;\nzoom=0;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

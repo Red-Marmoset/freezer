@@ -1,0 +1,23 @@
+{
+  "name": "Inside A Black Whole AdamFX 2 martin - another kind of groove (Ati Fix)Ft Raron Flexi and Rovastar (AdamFX Remix)3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.907;\nrot = 0.14;\ndx = 0;\ndy = 0;\nsx = 1.0099;\nsy = 1.2571;\nwarp = 0.238;\ncx = 0.53;\ncy = 0.5;\nwave_r = wave_r + 0.4*sin(time*3.14) + (0.2*mid);;\nwave_b = wave_b + 0.2*sin(time*1.5);;\nwave_g = wave_g + 0.2*mid;;\ncx = cx + 0.1*sin(time);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.952,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

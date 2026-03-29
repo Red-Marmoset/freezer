@@ -1,0 +1,23 @@
+{
+  "name": "shadowharlequin, goody - woven beads (ps2-0) [outlined]",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.98989;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1.0017;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nq1=.91*(treb_att*.52)+(treb_att*.13);;\nq2=.4*(bass_att*.61)+(mid_att*.03);;\nq3=.96*(mid_att*.14)+(bass_att*.05);;\nq4=.555*(treb_att*.13)+(treb_att*.16);;\nwarp = sin(treb_att * .45);;\ndecay = sin(treb_att * .35);;\nmv_l = 1 + (treb_Att * .35);;\nmv_a = (mid_att * .45);;\ngamma = sin(treb_Att * mid_att);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "amandio c - the green machine 4 - radial nature sludge ngastraiq tendwrill i want to love everything",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.86;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nq4=sin(atime*.03);;\nq5=cos(atime*.030383824);;\nq6=tan(atime*.029384834);;\nwave_a=0;     warp=0;   decay=.1;;\nq6=aspecty;   t=t+.05/fps;   q1=t;;\ni=0;     x=0;     y=0;     p=0;;\nloop(2048,       sample=i/2048;;\np = .9*p*(1+.1*sin(2*t*sample+t)) +  2*cos(-sample-t);;\nx=x+sin(p);      y=y+cos(p);;\ngmegabuf(2*i)=x;      gmegabuf(2*i+1)=y;;\ni=i+1;);;\nmonitor=t;;\nq2=.1+.1*sqrt(t);  ///zoom;\nzoom=1+(bass+treb+mid)*.003;;\nq30=(bass+treb+mid)*1;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

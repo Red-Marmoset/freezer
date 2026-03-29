@@ -1,0 +1,39 @@
+{
+  "name": "xtramartin (90)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_m = pow (0.95, 30/fps); dec_s = pow (0.99, 30/fps);;\nbeat = bass+mid+treb;;\navg = avg*dec_s + beat*(1-dec_s);;\navg_ = avg_*dec_s + avg*(1-dec_s);;\nis_beat = ((beat) > (4+avg+peak)) * ((time) > (t0+1));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_m;;\nindex = (index + is_beat) %16;;\n//index2 = (index2 + is_beat*bnot(index))%8;;\nq20 = avg_/3;;\nq22 = max(0,peak-.0)+.01;;\nq24 = is_beat;;\nq27 = index +1;;\npush = (avg-2.5)/3;;\nax = -(xang + min(max(push,-.7),.7))/3; //Divisor: 1/Frequenz;\nax = if (((ax) < (0)),ax*2,ax);;\nvx = vx *(1-1/fps)+ ax/fps; //1/fps: Daempfung;\nxang = xang + vx/fps;;\n// WINKEL;\nzang = 0;;\nyang = - .5*sin(time/16);;\n//yang = .7;;\n//BEWEGUNG;\nmovz= if(((avg_/3) > (1.2)),1,movz);;\nmovz = if(((avg_/3) < (.9)),-1,movz);;\nproxy = proxy + movz/fps/4;;\nproxy = min(max(proxy,1.1),4);;\nproxy = 4-3*abs(sin(time/24));;\npos_z = dec_s * pos_z + (1-dec_s)*proxy*100;;\ntrelx = trelx + .1*sin(time/11)/fps*yang;;\nq5 = trelx;;\ntrely = trely + xang*.2/fps; q6 = trely;;\n//q6 = time*.03;;\nvleaf = vleaf + (avg/64)/fps;;\nq29 = vleaf;;\nlrot = lrot + bass_att/fps*.2;;\nq32 = lrot;;\nox = 0; oy = 0; oz = pos_z;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;oz = mz;;\nq11=ox; q12 = oy; q13 = oz; //Position;\n//Vektor x nach rechts;\nox = 1; oy = 0; oz = 0;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;oz = mz;;\nq14=ox; q15 = oy; q16 = oz;;\n//Vektor z nach hinten;\nox = 0; oy = 0; oz = 1;;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;;\noz = mz;;\nq17=ox; q18 = oy; q19 = oz;;\nq31 = 20/pos_z;;\nq32 = pos_z;",
+        "perVertex": "zoom = .995;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

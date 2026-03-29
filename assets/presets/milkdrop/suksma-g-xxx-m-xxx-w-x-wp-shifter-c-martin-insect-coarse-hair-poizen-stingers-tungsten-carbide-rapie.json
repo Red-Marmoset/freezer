@@ -1,0 +1,39 @@
+{
+  "name": "suksma - g-xxx m-xxx+ w-x wp-shifter c-martin - insect coarse hair poizen stingers - tungsten carbide rapier elder roam hog rot2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.995",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//per frame less reactive volume for all unused q vars, put before other q vars are set for cop out mashing;\nvb = vb*0.95 + (1-vb)*pow(bass_att,2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(mid_att,2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(treb_att,2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1   = (vvb+vvm+vvt)*100;;\nq2   = (vvb+vvm+vvt)*10;;\nq3   = (vvb+vvm+vvt)*10;;\nq4   = (vvb+vvm+vvt)*10;;\nq5   = (vvb+vvm+vvt)*10;;\nq6   = (vvb+vvm+vvt)*10;;\nq7   = (vvb+vvm+vvt)*10;;\nq8   = (vvb+vvm+vvt)*10;;\nq9   = (vvb+vvm+vvt)*10;;\nq10  = (vvb+vvm+vvt)*10;;\nq11  = (vvb+vvm+vvt)*10;;\nq12  = (vvb+vvm+vvt)*10;;\nq13  = (vvb+vvm+vvt)*10;;\nq14  = (vvb+vvm+vvt)*10;;\nq15  = (vvb+vvm+vvt)*10;;\nq16  = (vvb+vvm+vvt)*10;;\nq17  = (vvb+vvm+vvt)*10;;\nq18  = (vvb+vvm+vvt)*10;;\nq19  = (vvb+vvm+vvt)*10;;\nq20  = (vvb+vvm+vvt)*10;;\nq21  = (vvb+vvm+vvt)*10;;\nq22  = (vvb+vvm+vvt)*10;;\nq23  = (vvb+vvm+vvt)*10;;\nq24  = (vvb+vvm+vvt)*10;;\nq25  = (vvb+vvm+vvt)*10;;\nq26  = (vvb+vvm+vvt)*10;;\nq27  = (vvb+vvm+vvt)*10;;\nq28  = (vvb+vvm+vvt)*10;;\nq29  = (vvb+vvm+vvt)*10;;\nq30  = (vvb+vvm+vvt)*10;;\nq31  = (vvb+vvm+vvt)*10;;\nq32  = (vvb+vvm+vvt)*10;;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nnatr=bass_att+thresh*treb_att;;\ncha=abs(batr-natr);;\nspik=((abs(cha-addict)) > (addict));;\naddict=(addict+cha)/2;;\n//effects here;\nzoom=zoom+if((((bass*2) > (treb))-1),-1,1)*((cha*thresh) > (2))*0.1;;\n//added the rotation effect with the same code just to offer some possibilities, activate it if you dare - goody;\n//rot=rot+if((((bass*2) > (treb))-1),-1,1)*((cha*thresh) > (2))*0.1;;\n//zoomexp=2/zoom;;\nmv_r=log(thresh)*spik;;\nmv_b=abs(spik*cha-1);;\nmv_g=sin(time+thresh);;\n//mv_a=spik*.75;;\n//end.;\nbatr=natr;;\nmonitor=log(thresh);;\nwave_r = wave_r + 0.35*sin(3*time) + 0.15*sin(2.5*time);;\nwave_g = wave_g + 0.35*sin(2.7*time) + 0.15*sin(2.11*time);;\nwave_b = wave_b + 0.35*sin(2.84*time) + 0.15*sin(2.3*time);;\nwave_mystery=wave_mystery*(addict);;\ncog = ocog+0.005*(bass+bass_att+(bass*bass_att)-2);;\nocog = ((cog) < (30000))*cog;;\nq1=batr*.1;;\nq2=spik;;\nq3=sin(time+q1)*.1;;\nq26=(bass+treb+mid)*.3;;\n//Hai guiz, you found the secret message. What are you gonna do now?;\n//suicide",
+        "perVertex": "w= -time*0.3; // direction (0: left; asin(1): top; (+/-)2*asin(1): right; -asin(1): bottom);\nX2 = x-0.5;;\nY2 = y-0.5;;\nX1 = sin(w)*X2 -cos(w)*Y2; // these 2 lines first rotate the x/y pane;\nY1 = cos(w)*X2 +sin(w)*Y2;;\nx = X1; // so you can use x and y as usually below;\ny = Y1;;\n//Tiles-;\n//movement first:;\ndxm=.01*sin(time*.41);;\ndym=.01*sin(time*.36);;\n//Now the tiles themselves:;\ndx1=dxm+.01*sin(x*80+sin(time))+.005*sin(q1*(y*sin(time*.94)));;\ndy1=dym+.01*sin(y*80+sin(time))+.005*sin(q1*(x*sin(time*.97)));;\n//end tiles;\ndx = sin(-w)*dx1 - cos(-w)*dy1; // and finally the dx/dy pane is rotated back to match the x/y pane;\ndy = cos(-w)*dx1 + sin(-w)*dy1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.8; y=v*0.5"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.405,
+      "alpha": 0.56,
+      "orient": 0
+    }
+  ]
+}

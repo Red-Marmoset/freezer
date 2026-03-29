@@ -1,0 +1,16 @@
+{
+  "name": "Mig_022_version2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nq1 = (bass_att + mid_att + treb_att) /3;;\nq2 = time + 1000;;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.4)*0.95+1.4);;\ntreb_thresh = ((treb_att) > (treb_thresh))*2 + (1-((treb_att) > (treb_thresh)))*((treb_thresh-1.5)*0.85+1.2);;\nbass_on = ((bass_thresh) > (1.9));;\ntreb_on = ((treb_thresh) > (1.9));;\nswapcolour = bass_on - treb_on;;\nred_aim = if(((swapcolour) == (1)),1,if(((swapcolour) == (0)),0.9,0.7));;\ngreen_aim = if(((swapcolour) == (1)),0.7,if(((swapcolour) == (0)),0.3,0.6));;\nblue_aim = if(((swapcolour) == (1)),0,if(((swapcolour) == (0)),0.2,0.8));;\nred = red + (red_aim - red)*0.5;;\ngreen = green + (green_aim - green)*0.5;;\nblue = blue + (blue_aim - blue)*0.5;;\nwave_r = red;;\nwave_g = green;;\nwave_b = blue;",
+        "perVertex": "dy = -0.1*(q1-1)*log(2-(abs(y*2 - 1.8)));;\ndy = ((dy) < (0.02))*dy - 0.02;;\ndy = dy + 0.01*(sin((x*q2*0.483) + (y*q2*1.238)) + sin((x*q2*1.612) + (y*q2*0.648)));"
+      },
+      "gridSize": 48
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "Dbleja - Rings Of Saturn",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 1.046;\nrot = 1;\ndx = 1.0999;\ndy = 1.045;\nsx = 0.6141;\nsy = 0.5504;\nwarp = 0.01;\ncx = -0.1;\ncy = 0.38;\nib_size=.07+((2*bass)+mid_att)*0.021;;\nob_size=(mid+bass+treb)*0.00243;;\nob_b=.088+((bass+mid+treb)*0.075);;\nib_b=.2+(bass*0.12);;\nob_r=.088+((bass+mid+treb)*0.014);;\nob_g=((bass+treb+mid)*0.069);;\nib_g=.2;;\nib_r=.015+(bass*0.122);;\nwarp=16*(sin(bass_att)/5.8);;\ndx=dx+((cos(time)/10.3)*sin(time)+1000);;\ndy=dy+((4+(sin(time)/45.2))*cos(time)/14);;\nzoom=zoom+(bass*0.027);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#0d2124"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.8; y=v*0.5"
+      }
+    }
+  ]
+}

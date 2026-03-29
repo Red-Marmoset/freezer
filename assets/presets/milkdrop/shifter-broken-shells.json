@@ -1,0 +1,16 @@
+{
+  "name": "Shifter - Broken Shells",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.89588;\nrot = -0.12;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a = 0;;\nvol = .1*(vol*9 + (bass_att+mid_att+treb_att)*.333333);;\n//bt = bt+(.1+bass*bass*bass)*tic;;\nbt = bt*((bt) < (5000))+(mavg*mavg+bass*bass+mid*mid*mid+treb*treb*treb)*tic;;\nq1 = bt;;\ntic = time-tin; tin = time; tic = min(1,tic);;\nsd = 5;;\nq5 = ((it) > (sd));;\nit = it*((it) < (sd)) + tic;;\nmavg = (bass*tic+mavg*(5-tic))/5;;\nmvar = (pow(bass-mavg,2)*tic+mvar*(5-tic))/5;;\nd = (bass-mavg)/pow(mvar,.5);;\ntrig = ((d) > (3))*((lag) > (.1));;\nlag = lag*(1-trig) + tic;;\nq2 = mavg;;\nq5 = trig;;\nmonitor=mvar;;\nm2 = if(trig,1.25+floor(rand(5))/2,m2); q10=m2;;\nmonitor = m2;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

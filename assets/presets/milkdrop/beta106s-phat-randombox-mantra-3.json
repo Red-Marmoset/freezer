@@ -1,0 +1,23 @@
+{
+  "name": "beta106S - Phat - randombox - mantra 3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nzoom=1.001;;\nsx= sin(time*2)*0.1+0.9;;\nsy=-sx;;\nflip=flip+0.01;;\nvol= (bass+mid+treb)*0.25;;\nvol= vol*vol;;\nmtime = mtime + vol * 0.01;;\nq1= sin(mtime);;\nq2= cos(mtime*1.3);;\nq3= sin(mtime*3.3);;\nwarp=0;;\nrot = rot + ((sin(mtime/2) ) > (0 ))*0.1;;\nrot= sin(mtime*0.3);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.99663,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

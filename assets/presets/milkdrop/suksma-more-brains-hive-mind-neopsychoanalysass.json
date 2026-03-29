@@ -1,0 +1,32 @@
+{
+  "name": "suksma - more brains - hive mind neopsychoanalysass",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.0201;\nsy = 1.0201;\nwarp = 0.08081;\ncx = 0.5;\ncy = 0.5;\nvb = vb*0.95 + (1-vb)*pow(bass*treb*mid,2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(mid,2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(treb,2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = vvb*2;//0.5 + vb - vvb;;\nq2 = vvm*2;//0.5 + vm - vvm;;\nq3 = vvt*2;//0.5 + vt - vvt;;\nv=2;;\nbb = bb - vvb*v;;\nmm = mm - vvm*v;;\ntt = tt - vvt*v;;\nq4 = -bb;;\nq5 = -mm;;\nq6 = -tt;;\nq4=(q1+q2+q3)*5;;\nq5=(q1+q2+q3)*5;;\nq6=(q1+q2+q3)*5;;\nq7=(q1+q2+q3)*5;;\nq8=(q1+q2+q3)*5;;\nq9=(q1+q2+q3)*5;;\nq10=(q1+q2+q3)*5;;\nq11=(q1+q2+q3)*5;;\nq12=(q1+q2+q3)*5;;\nq13=(q1+q2+q3)*5;;\nq14=(q1+q2+q3)*5;;\nq15=(q1+q2+q3)*5;;\nq16=(q1+q2+q3)*5;;\nq17=(q1+q2+q3)*5;;\nq18=(q1+q2+q3)*5;;\nq19=(q1+q2+q3)*5;;\nq20=(q1+q2+q3)*5;;\nq21=(q1+q2+q3)*5;;\nq22=(q1+q2+q3)*5;;\nq23=(q1+q2+q3)*5;;\nq24=(q1+q2+q3)*5;;\nq25=(q1+q2+q3)*5;;\nq26=(q1+q2+q3)*5;;\nq27=(q1+q2+q3)*5;;\nq28=(q1+q2+q3)*5;;\nq29=(q1+q2+q3)*5;;\nq30=(q1+q2+q3)*5;;\nq31=(q1+q2+q3)*5;;\nq32=(q1+q2+q3)*5;;\ndecay=.997;;\n//zoom=1.008;;\nms=sin(time*0.6)*0.15;;\nmss=mss+ms*0.001;;\nq1=ms;;\n//rot=sin(time)*0.01;;\n//echo_zoom=1 + ( sin(time*0.6)*0.5+0.5 )*3;;\ndx=0;dy=0;;\nsx=-1.02;;\nmv_x=14+sin(time)*16;;\nmv_y=32+cos(time)*16",
+        "perVertex": "it = 0.3*sin(time*0.2);;\nradm = rad*0.5;;\nrot = 0.02*sin((radm+it)*30)/((rad+0.1)*((sin(time)*0.4+0.5)*20));;\nmod = sin(ang*5);;\nmod = mod*mod;;\nzoom = .99 - abs(0.01*mod);;\nfade=sin(time*0.4)*0.5+0.5;;\nrot=(x/y*0.02*fade) + (y/x*0.02*(1-fade))"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6ff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

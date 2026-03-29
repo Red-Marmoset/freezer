@@ -1,0 +1,32 @@
+{
+  "name": "va ultramix - 421",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 13.290894;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\ndy=0;;\n//vol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=1;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;",
+        "perVertex": "kdx=dx;;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;;\nmyy = (y-(0.5));;\nmyx = x-0.5;;\nzoom= pow(abs((myx*myy))+.02,0.2);;\n//dy =dy+ 4 *((myy*myy) - (myx*myx));;\ncr1=99*.01;;\ncr2=99*.01;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);;\nykdx=dx;//////////////////////////////////////////;\nykdy=dy;;\nyksx=sx;;\nyksy=sy;;\nykrt=rot;;\nykzm=zoom;;\nykcx=cx;;\nykcy=cy;;\nykwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\nkdx=dx;;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;;\ncr1=0.2;;\ncr2=.81;;\ncrx=cr2-cr1;;\nci=x*1.5+.25;;\ncb=.25 ;//   +sin(time/5)/6;;\ncrs=11;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nzoom=crr;;\ncr1=45*.01;;\ncr2=90*.01;;\ncrx=cr2-cr1;;\nci=rad;;\nci=y*3-.5;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);;\n///////////////////////////////////////;\ncr1=.5+sin(time/5)*.4;;\ncr2=cr1;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nyjdx=dx;;\nyjdy=dy;;\nyjsx=sx;;\nyjsy=sy;;\nyjrt=rot;;\nyjzm=zoom;;\nyjcx=cx;;\nyjcy=cy;;\nyjwp=warp;;\ndx=(jx1*yjdx+kx1*ykdx);;\ndy=(jx1*yjdy+kx1*ykdy);;\nsx=(jx1*yjsx+kx1*yksx);;\nsy=(jx1*yjsy+kx1*yksy);;\nrot=(jx1*yjrt+kx1*ykrt);;\nzoom=(jx1*yjzm+kx1*ykzm);;\ncx=(jx1*yjcx+kx1*ykcx);;\ncy=(jx1*yjcy+kx1*ykcy);;\nwarp=(jx1*yjwp+kx1*ykwp);////////////////////////////////////////////////////"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

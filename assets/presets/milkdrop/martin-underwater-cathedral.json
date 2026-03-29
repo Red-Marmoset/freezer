@@ -1,0 +1,39 @@
+{
+  "name": "Martin - underwater cathedral",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.8, 30/fps);;\ndec_slow = pow (0.98, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.2+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %64;;\nindex2 = (index2 + is_beat*bnot(index))%3;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nps = dec_slow*ps + (1-dec_slow)*q22;;\nq23 = ps;;\nq24 = is_beat;;\nq26 = bass_att + mid_att + treb_att;;\nq27 = index +1;;\nq28 = index2;;\nk1 =  is_beat*bnot(index%20);;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_med * p2+ (1-dec_med)*p1;;\np3 = dec_med * p3+ (1-dec_med)*p2;;\nrott = p3 * 3.1416/4;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\ndirx = dirx*dec_med + (1-dec_med)*(index2);;\nmovx = movx + .02*dirx/fps;;\nmovy = movy + .04*q1/fps;;\nq15= movx;;\nq16 = movy;;\nmovp = movp +.02*q23/fps;;\nq17 = movp;;\ntrig1 = q24* bnot(index%4) * ((t1) > (1.9));;\nt1 = if(trig1,0,t1+.3/fps);;\nt1 = min(t1,2);;\nradi = .7;;\nq10 = (-1 + t1)*radi*1.5;;\nq11 = (1 - 2*sqr(t1-1))*radi-.4;;\nq12 = 0;;\nq5 = .03 + .1*(1+sin(time/27+rand1)); //dia;\nq6 = 2 + sin(time/27+rand2*2.5);;\nq8 = sin(time/16);;\nq19 = rand2*.002;;\nmonitor = index;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

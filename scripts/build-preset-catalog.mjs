@@ -123,6 +123,7 @@ const AUTHOR_DISPLAY = {
   'framesof': 'frames.of.reality', 'mztpack': 'MZTPACK',
   'track13': 'Track 13', 'uudet': 'Uudet pressut', 'microd': 'micro.D\u00b0',
   'tomylobo': 'TomyLobo',
+  'geiss': 'Geiss',
 };
 
 /**
@@ -640,6 +641,50 @@ for (const mp of MANUAL_PRESETS) {
     packIds: [mp.packId],
     file: mp.file,
   });
+}
+
+// ── JSON presets (MilkDrop conversions, Geiss, etc.) ────────────────
+// Scan assets/presets/ for .json preset files not already in the catalog.
+
+const JSON_PRESET_DIRS = [
+  { dir: 'milkdrop', authorId: null, packId: 'milkdrop', packName: 'MilkDrop' },
+  { dir: 'geiss', authorId: 'geiss', packId: 'geiss', packName: 'Geiss' },
+];
+
+for (const jpd of JSON_PRESET_DIRS) {
+  const scanDir = join(OUT_PRESETS, jpd.dir);
+  try { await stat(scanDir); } catch { continue; }
+
+  if (jpd.authorId) ensureAuthor(jpd.authorId);
+  if (!seenPackIds.has(jpd.packId)) {
+    seenPackIds.add(jpd.packId);
+    packsArr.push({ id: jpd.packId, name: jpd.packName, authorId: jpd.authorId });
+  }
+
+  let jsonFiles;
+  try {
+    jsonFiles = (await readdir(scanDir)).filter(f => f.endsWith('.json'));
+  } catch { continue; }
+
+  for (const file of jsonFiles.sort()) {
+    const relPath = join(jpd.dir, file).replace(/\\/g, '/');
+    // Read the JSON to get the preset name
+    let title = file.replace(/\.json$/, '').replace(/-/g, ' ');
+    try {
+      const content = JSON.parse(await readFile(join(scanDir, file), 'utf-8'));
+      if (content.name) title = content.name;
+    } catch {}
+
+    presetCounter++;
+    presets.push({
+      id: `${jpd.packId}-${String(presetCounter).padStart(4, '0')}`,
+      title,
+      authorId: jpd.authorId,
+      packIds: [jpd.packId],
+      file: relPath,
+      format: 'json',
+    });
+  }
 }
 
 // ── Sort presets by title ───────────────────────────────────────────

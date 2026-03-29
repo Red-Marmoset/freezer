@@ -1,0 +1,39 @@
+{
+  "name": "martin - beamer code 22h - lines - rhythmic and fast",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//Martins resonant beat detection - use as it is;\n//NOTE: uses megabuf (0) - megabuf (1600);\n//output: is_beat1 and is_beat2; 2:1 or 1:2;\n//-------------- Start ----------------------------;\ndt = min (1/fps,0.1) ; //Stability !;\ndec_m = 1 - 4*dt; dec_s = 1 - 1.25*dt;;\nvol =  max(0.5,bass+mid);;\nvol_ = vol_*dec_m + (1-dec_m)*vol; excite = (vol-vol_)/vol_;;\nindex=0; ratio = log(maxbpm/minbpm); sum_res = 0.01;;\nloop (num_res,;\nn = index*8;;\nomega      =   megabuf(n) * 6.2832/60;;\nmegabuf (n+1) *= 1-0.25*dt; //damping;\nEC_Steps = int (10*omega*dt)+1;;\nloop (EC_Steps, // Euler-Cauchy steps;\nmegabuf (n+1) += (excite - sqr(omega)*megabuf(n + 2)) * dt/EC_Steps;;\nmegabuf (n+2) += megabuf(n+1) * dt/EC_Steps);;\nbeatcos  = megabuf(n+1);  beatsin = megabuf(n+2)*omega; //2pi/60;\nquad     = sqrt (pow(beatsin,2) + pow(beatcos,2)) ;;\nmegabuf (n+3) = megabuf(n+3) *dec_s +  quad* (1-dec_s);;\nmegabuf (n+4) = megabuf(n+3);;\nstage = 2; //Addition d. Harmonischen;\nloop (2,;\nind2     = int (0.5 + index + (num_res-1)/ratio*log(stage));;\nif ((ind2 <= num_res),;\nn2 = ind2*8;;\nA2     = max(max(megabuf(n2+3),megabuf(n2-8+3)),megabuf(n2+8+3));;\nmegabuf(n+4) *= 1 + 2/(stage*stage)*A2/(A2+megabuf(n+3)),0);;\nstage *= 2;;\n);;\nHyst = 1 + min (0.25, abs (index-maxind)*0.02);;\nif (megabuf(n+4) > megabuf (maxind*8+4)*Hyst, maxind = index,0);;\nsum_res += megabuf (n+3);;\nindex += 1;;\n);;\ncertain = megabuf(maxind*8+3)/(sum_res/num_res);;\n//Doppelten oder, falls nicht moeglich, halben beat indizieren;\nmaxind2     = int (0.5 + maxind + (num_res-1)/ratio*log(2));;\nif (maxind2 > num_res, maxind2 = int (0.5 + maxind + (num_res-1)/ratio*log(0.5)),0);;\nsig1 = (sig1 + megabuf(maxind*8+1))/2 + excite * 0; //check ######;\nis_beat1  = (sig1 > 0) && (sig1_ <= 0);;\nsig2 = (sig2 + megabuf(maxind2*8+1))/2 + excite * 0; //check ######;\nis_beat2  = (sig2 > 0) && (sig2_ <= 0);;\nfastpace = if (maxind > maxind2, sig1 * sig1_ < 0, sig2 * sig2_ < 0);;\nsig1_ = sig1;;\nsig2_ = sig2;;\n//-------------- End ----------------------------;\ntog1 = sig1 > 0;;\ntog2 = sig2 > 0;;\nsbeat1 = (sbeat1 + is_beat1)/2;;\nsbeat2 = (sbeat2 + is_beat2)/2;;\n//fastpace = if (maxind > ind2, is_beat1,is_beat2);;\nprog1 = (prog1 + is_beat1) %512;;\nprog2 = (prog2 + is_beat2) %512;;\nprog3 = (prog3 + fastpace) %512;;\nmaxi = min (maxind, maxind2);;\n//maxi = maxind; //#####???;\ntrunner = trunner + dt*megabuf (maxi*8)/60*2*pi;;\ncorr = if (push, 0.5*corr + 0.5*cos (trunner), corr*dec_s);;\ntrunner -= corr * dt;;\ntrunner_ = dec_s * trunner_ + (1-dec_s)*trunner/2;;\nq14 = trunner_;;\nq15 = cos(trunner_);;\nq16 = sin(trunner_);;\nq32 = aspecty;;\n//--------------------------------------------------------;\nchange  = is_beat1 && (prog1%20 == 0);;\nschange = bnot (oldind == maxind) * (t1 > 8) || (t1>15);;\nt1 = if (schange, 0, t1+dt);;\noldind = maxind;;\nif (start || schange,;\nran1 = rand (100)/100;;\nran2 = rand (100)/100;;\nran3 = rand (100)/100;;\nran4 = rand (100)/100;;\nran5 = rand (100)/100;;\nran6 = rand (100)/100;;\nran7 = rand (100)/100;, 0);;\nran1_ = ran1_ + max(min(ran1-ran1_,0.02),-0.02)*dt*12;;\nran2_ = ran2_ + max(min(ran2-ran2_,0.02),-0.02)*dt*12;;\nran3_ = ran3_ + max(min(ran3-ran3_,0.02),-0.02)*dt*12;;\nran4_ = ran4_ + max(min(ran4-ran4_,0.02),-0.02)*dt*12;;\nscale = sqrt (certain/4);;\nq1 = prog1;;\nq2 = prog2;;\nq3 = prog3;;\nq4 = 1;;\nscheme = if (schange, int (rand(3)), scheme) ;;\nif (scheme == 2, scheme = if (schange, int (rand(3)), scheme), 0) ;;\nsc = if (ran1 > 0.5, q14/pi/1, q14/pi/2);;\nsc = 1*(sc - int (sc));;\nblank = sc > sc_;;\nsc_ = sc;;\nm = 0;;\nloop (num_shapes * (vol_> 0.7),;\nn = m*recsize;;\nif (scheme ==0,;\nk1 = m/num_shapes-0.5;;\nx0 = k1*3;;\nlim = pi/8*pow (2,int (ran4*2));;\nang = max(min(ran3*3*sin(ran1_*pi+q14),lim),-lim) + ran2*3;;\narg = q14/pi/(1 + pow(2, int(ran4*3))) ;;\ny0 =  (abs(arg-int(arg)-0.5)-0.25)*4;;\ndelta = int((x0+1)*4)/4;;\nif (ran5 > 0.7, y0 *= sin(pi*ran1*delta) ,0);;\nif (ran7 > 0.7, x0 -= delta/2-0.5,0);;\nsa = sin (ang); ca = cos (ang);;\nx = x0*ca  + y0*sa;;\ny = x0*-sa + y0*ca;;\nif (ran6 > 0.6, x *=  ((m%2==0)-0.5)*2+(0*q15), 0);;\ngmegabuf (n+3) = 0.015 * q32 ;;;\ngmegabuf (n+4) = bnot(schange);;\n,0); //end if scheme ==0;\nif (scheme ==1,;\nk1 = m/num_shapes-0.5;;\nx0 = k1*3;;\nang = (q14-q15*q16*2*(ran4_-0.5))/4;;\narg = ang/pi;;\ny0 = (abs(arg-int(arg)-0.5)-0.25) ;;\ny0 *= (m%2-.5)*8;;\ndelta = int((x0+1)*4)/4;;\nif (ran5 > 0.7, y0 *= sin(pi*ran1*delta) ,0);;\nsa = sin (ang); ca = cos (ang/2 * pow(2,int(3*ran3_)));;\nsa = sign (sa) * pow (abs(sa),ran1*4);;\nca = sign (ca) * pow (abs(ca),ran1*4);;\nx = x0*ca  + y0*sa;;\ny = x0*-sa + y0*ca;;\nif (ran6 > 0.7, y *=  ((m%2==0)-0.5)*(2+q15),0);;\ngmegabuf (n+3) = 0.015 * q32;;;\ngmegabuf (n+4) = bnot(schange);;;\n,0); //end if scheme ==1;\nif (scheme == 2,;\nk1 = m/num_shapes-0.5;;\nx0 = min (max( cos(k1*pi*2)*1.4,-1),1)*sc;;\ny0 = min (max( sin(k1*pi*2)*1.4,-1),1)*sc;;\nind = int (k1*4-0.5 +prog3) %4;;\nang = 0;;\nsa = sin (ang); ca = cos (ang*3);;\nx = x0*ca  + y0*sa;;\ny = x0*-sa + y0*ca;;\ngmegabuf (n+3) = 0.015 * q32;;\ngmegabuf (n+4) = bnot(schange) * blank;; * (fastpace);;;\n,0); //end if scheme ==2;\ngmegabuf (n) =   x * 0.48 + 0.5;;\ngmegabuf (n+1) = y * 0.48 + 0.5;;\nm += 1);;\nq10 = ran6-ran5;;\nmonitor = q10;;\nstart = 0;;\n//n = 0; loop (2000, gmegabuf(n+5000) = megabuf(n); n += 1);",
+        "perVertex": "zoom = .99; rot = 0; warp = 0; dy = -0.00;  dx = 0.00;;\nzoom = 1; dx = 0; dy = 0;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#cc7dff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

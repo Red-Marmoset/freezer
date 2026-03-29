@@ -1,0 +1,16 @@
+{
+  "name": "Cope-WIP - Strange Attractor 2 hack3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\n//keep q1 negative, that's where the interesting shape is;\nq1= (0.2*sin(time*0.3));;\nq2= abs(0.8*sin(time*0.45));;\nq3= 1*sin(time*0.6);;\nq4= 0.7*sin(time*0.51);;\nq5= 1*cos(time*0.45);;\nmonitor=q5;;\nwave_r = wave_r + 0.45*(0.6*sin(time*1.3) + 0.4*sin(0.98*time));;\nwave_b = wave_b + 0.45*(0.6*sin(time*1.1) + 0.4*sin(0.78*time));;\nwave_g = wave_g + 0.45*(0.6*sin(time*1.2) + 0.4*sin(0.6*time));;\n//q8=wave_r;;\n//q7=wave_g;;\n//q6=wave_b;;\nq8=1;;\nq7=1;;\nq6=1;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

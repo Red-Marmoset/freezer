@@ -1,0 +1,39 @@
+{
+  "name": "Rovastar-naturalfrequency --- Isosceles edit",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.999",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.0101;\ncx = 0.5;\ncy = 0.5;\nmv_l = 3000;;\nmv_r = 0.499+0.5*sin(0.987*time);;\nmv_b = 0.799+0.2*sin(0.6453*time);;\nmv_g = 0.099+0.1*sin(0.567*time);;\nbass_effect = max(max(bass,bass_att)-1.3,0);;\ndecay = if(((bass_effect) > (0)),0.97-0.15*(bass_effect),0.9995);;\nq1 = bass_effect;;\nwarp =0;;\nwave_b = 0.499+0.5*sin(0.987*time);;\nwave_r = 0.799+0.2*sin(0.6453*time);;\nwave_g = 0.499+0.1*sin(0.567*time);",
+        "perVertex": "rot = 0.02*sin(1-rad)+ 0.05*q1;;\nwarp = 0.012*sin(ang);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=v*0.5; y=(i*2-1)*0.8"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

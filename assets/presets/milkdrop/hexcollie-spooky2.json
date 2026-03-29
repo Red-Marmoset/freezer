@@ -1,0 +1,16 @@
+{
+  "name": "Hexcollie - Spooky2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.004;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.99967;\nsy = 0.9999;\nwarp = 0.19788;\ncx = 0.5;\ncy = 0.5;\n//mv_r = mv_r + 0.2*( 0.60*sin(0.980*time) + 0.40*sin(1.047*time) );;\nmv_g = mv_g + 0.2*( 0.60*sin(0.835*time) + 0.40*sin(1.081*time) );;\nmv_b = mv_b + 0.2*( 0.60*sin(0.814*time) + 0.40*sin(1.011*time) );;\nq1 = (cx*2-1) + 0.6*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );;\nq2 = (cy*2-1) + 0.6*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );;\nob_r = 1- 0.4*abs(q1);;\nob_g = 0.3*abs(q2);;\nob_b = 0.4*abs(q1);;\nwave_x = 1-abs(q2)-0.05;;\nwave_y = 1-abs(q1)-0.06;;\nwave_r = wave_r + 0.4*( 0.60*sin(0.514*time) + 0.40*sin(1.211*time) );;\nwave_b = wave_b + 0.4*( 0.60*sin(0.714*time) + 0.40*sin(q2) );;\nwave_g = wave_g + 0.4*( 0.60*sin(10*q1) + 0.40*sin(10*q2) );",
+        "perVertex": "du = (x*2-1) - q1;;\ndv = (y*2-1) - q2;;\ndist = sqrt(du*du+dv*dv);;\nang2 = atan2(du,dv) + time*0.15;;\nmult = 0.6*sin(dist*0.05);;\n//dx = mult*sin(ang2*2-1.5)*aspectx;;\n//dy = mult*cos(ang2*2-1.5)*aspecty;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

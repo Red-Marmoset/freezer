@@ -1,0 +1,23 @@
+{
+  "name": "shifter + Flexi - liquid circuitry from the hive i have ideas average people bawl out their associates bog is thick here",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//begin beat code;\nvolume = 0.3*(bass+mid);;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate);;\nlastbeat = lastbeat + ((lastbeat) == (0))*time;;\nmeanbass_att = 0.05*(meanbass_att*19 + bass_att);;\npeakbass_att = max(bass_att,peakbass_att);;\nbeat = ((volume) > (0.8))*((peakbass_att - bass_att) < (0.05*peakbass_att))*((time - lastbeat) > (0.1 + 0.5*(beatrate - 0.1)));;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\n//Adjust responsiveness: To increase responsiveness, set the \"0.96 and \"0.996\" on the next line to slightly lower values. Higher values decrease responsiveness.;\npeakbass_att = beat*bass_att + (1-beat)*peakbass_att*(((time - lastbeat) > (2*beatrate))*0.96 + (1-((time - lastbeat) > (2*beatrate)))*0.996);;\nlastbeat = beat*time + (1-beat)*lastbeat;;\npeakbass_att = max(peakbass_att,1.1*meanbass_att);;\n//end beat code;\nzoom = 1;;\ndecay = 1;;\nwarp = 0;;\nwave_a = 0;;\ntic = min(time-tin,.1);;\ntin = time;;\nq2 = 1;;\nq1=1;;\nvol = vol + ((alt + bass + mid)/3-vol)*tic*1;;\nq5 = vol*vol*vol*2;;\nq8 = sin(time)*.5;;\nq9 = sin(time*.75)*.5;;\nsw = abs(sw - beat);;\nan = an + tic*.5*(1-2*sw);;\nq7 = 1+(pow(q8,2) + pow(q9,2))*1;;\nq10 = sin(an);;\nq11 = cos(an);;\nsp = sp + tic*vol*vol*.5;;\nq12 = sp;;\nmonitor = q12;",
+        "perVertex": "//zoom = pow(rad,2)+.01;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 0
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "fiShbRaiN - blueprint",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.989618;\nrot = 0;\ndx = 1;\ndy = 0.02;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\neo=((time*.1)+(bass_att*4))%4;;\necho_orient=eo;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.006596,
+      "alpha": 0.5,
+      "orient": 0
+    }
+  ]
+}

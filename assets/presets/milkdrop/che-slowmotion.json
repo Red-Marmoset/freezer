@@ -1,0 +1,39 @@
+{
+  "name": "Che-slowmotion",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.995253;\nrot = 0.72;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0;\ncx = 0.5;\ncy = 0.5;\n// timed sidon sensor;\n// le = signal level; desired average value = 2;\nle=1.4*bass_att+.1*bass+.5*treb;;\npulse=((le) > (th));;\n// pulsefreq = running average of interval between last 5 pulses;\npulsefreq=if(((pulsefreq) == (0)),2,;\nif(pulse,.8*pulsefreq+.2*(time-lastpulse),pulsefreq));;\nlastpulse=if(pulse,time,lastpulse);;\n// bt = relative time; 0 = prev beat; 1 = expected beat;\nbt=(time-lastbeat)/(.5*beatfreq+.5*pulsefreq);;\n// hccp = handcicap for th driven by bt;\nhccp=(.03/(bt+.2))+.5*if(band(((bt) > (.8)),((bt) < (1.2))),;\n(pow(sin((bt-1)*7.854),4)-1),0);;\nbeat=band(((le) > (th+hccp)),btblock);;\nbtblock=1-((le) > (th+hccp));;\nlastbeat=if(beat,time,lastbeat);;\nbeatfreq=if(((beatfreq) == (0)),2,;\nif(beat,.8*beatfreq+.2*(time-lastbeat),beatfreq));;\n// th = threshold;\nth=if(((le) > (th)),le+114/(le+10)-7.407,;\nth+th*.07/(th-12)+((th) < (2.7))*.1*(2.7-th));;\nth=if(((th) > (6)),6,th);;\nthccl=thccl+(th-2.5144);;\ntm=time+.01*thccl;;\nzoom=.95+.05*sin(.1*tm);;\nrot=.62+.36*sin(tm*0.048)*sin(tm*0.04);;\ncx=.5+.5*sin(tm*.027);;\ncy=.5+.5*sin(tm*.032);;\ndx=sin(tm*.026);;\ndy=sin(tm*.018);;\ndecay=.995+.005*sin(tm*.031);;\nccl=ccl+beat+.005*le;;\nib_r=sqr(sin(.02*ccl));;\nob_r=1-ib_g;;\nib_g=sqr(sin(.02*ccl+3.141*.33));;\nob_g=1-ib_b;;\nib_b=sqr(sin(.02*ccl+3.141*.66));;\nob_b=1-ob_r;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 2.98927,
+      "alpha": 0.13,
+      "orient": 3
+    }
+  ]
+}

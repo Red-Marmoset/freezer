@@ -1,0 +1,23 @@
+{
+  "name": "Halfbreak - Time Machine is Runtime Error",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.9, 30/fps);;\ndec_slow = pow (0.99, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %4;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nmonitor = index2;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = (bass + mid + treb)/16;;\nk1 =  is_beat*bnot(index)*bnot(index2);;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_med * p2+ (1-dec_med)*p1;;\np3 = dec_med * p3+ (1-dec_med)*p2;;\nrott = p3 * 3.1416/4;;\npos = pos + q20/140;;\nq28 = pos;;\nq27 = index+1;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\ntrel = time/10;;\nq5 = cos(trel);;\nq6 = sin(trel);;\nq7 = -q6;;\nq8 = q5;;\ntrig = q24 * (index%4);;\nmox = bnot(trig)*mox + trig * (rand (100)/100-.5);;\nmoy = bnot(trig)*moy + trig * (rand (100)/100-.5);;\nq15 = mox/2;;\nq16 = moy/2;;\n//speed;\nspeed = speed * bnot(trig) + trig * q26;;\nmovz = movz + speed/fps;;\nq9 = movz;;\nq30 = (1.2 + sin(time/7))*3;;\nzoom = 1;;\nrot = -0.00;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

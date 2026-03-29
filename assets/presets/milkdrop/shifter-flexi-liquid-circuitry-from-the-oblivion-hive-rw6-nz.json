@@ -1,0 +1,23 @@
+{
+  "name": "shifter + Flexi - liquid circuitry from the oblivion hive rw6 nz",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.78752;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.033;\ncx = 0.5;\ncy = 0.5;\nvol=(bass+mid+treb)*0.25;;\nvol=vol*vol;;\nvol2=(bass_att+mid_att+treb_att)*0.25;;\nvol2=vol2*vol2;;\nq2=vol2;;\nmtime=mtime+vol*0.01;;\nq1=time*0.5;;\n//can be buggy; if doesn't work, run init code.;\n//--------------------------------------;\n//Fed's beat code:;\n//;\n//br - beat rate;;\n//bt,bt2 - beat times;;\n//spika - beat detector, power of the beat;;\n//count - beat counter;;\n//++++++++++++++++++++++++++++++++++++++;\n//TRESH - power of treble to detect beat;;\n//BASH - power of bass to detect beat;;\n//beat detector works only if both of them;\n//are less then treb & bass!;\n//++++++++++++++++++++++++++++++++++++++;\n//abt - summ of all beatrates;;\n//Increases if no beat.;\n//mvol - middle volume;;\n//mba - middle bass;;\n//mtr - middle treb;;\n//pret - preset time;;\n//clr - amount of seconds to recalculate volumes.;\n//--------------------------------------;\npret=time-st;;\navol=avol+(bass+mid+treb)/3;;\naba=aba+bass;;\nmba=aba/pret/fps;;\natr=atr+treb;;\nmtr=atr/pret/fps;;\nmvol=avol/pret/fps;;\nTRESH=mtr+0.1;;\nBASH=mba+0.1;;\nclr=50;//----------HERE!!!!!! in seconds.;\nabass=bass_att*0.4+abass;;\nbt=time*((spika) > (0))+bt*((spika) == (0));;\nspika=((treb_att) > (TRESH))*treb+((bass_att) > (BASH))*bass;;\nspik=spik+spika*0.4;;\nbt2=time*((spika) > (0))+bt*((spika) == (0));;\ncount=count+((bt2-bt) > (0));;\nabt=max(((br) < (10)),((br) == (10)))*(abt+if(bt2-bt, bt2-bt, 1/fps))+((br) > (10));;\nbr=abt/count;;\ndx=dx-cos(abass)*br*0.02+sin(spik)/br*0.02;;\ndy=dy-sin(abass)*br*0.02+cos(spik)/br*0.02;;\nsx=sx+sin(abass)*dx*2;;\nsy=sy-cos(spik)*dy*2;;\nib_a=pow(spika/5,5);  //<--That's how we use it.;\n//debugging;\ncalc=((pret) < (clr));;\nabass=((abass) < (9000))*abass;;\navol=if(calc,avol,(bass+mid+treb)/3);;\nst=if(calc,st,time-1);;\naba=if(calc,aba,bass);;\natr=if(calc,atr,treb);;\nabt=((pret) > (0.2))*abt+((pret) < (0.2))*0.5;;\n//fun;\nafps=(fps+afps)/2;;\nzoom=zoom-(fps/afps-1)*90;;\nq4=int(pret/br)%2;;\nq5=((spika) > (0));;\n//monitor=pow(spika,6)/3000;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 0
+    }
+  ]
+}

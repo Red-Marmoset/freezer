@@ -1,0 +1,23 @@
+{
+  "name": "Stahlregen & EoS + Geiss + Phat + yin - Gaping Hole (Multicolor Glow)_2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.90694;\nrot = 0.006;\ndx = 0;\ndy = 0;\nsx = 1.29763;\nsy = 1.30821;\nwarp = 0;\ncx = 0.5;\ncy = 0.5;\nwave_g=1*sin(time);;\nwave_r=.5*tan(bass_att);;\nwave_b=.3*cos(treb);;\nrot=rot*sin(0.5*time);;\nrot = rot + if(((rot) > (0)),0.004*bass, -0.004*bass);",
+        "perVertex": "zoom = zoom + 0.1*((0.5*sqrt(2))-rad) + 0.15*sin(0.2*time) + 0.04*bass_att;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.4,
+      "orient": 0
+    }
+  ]
+}

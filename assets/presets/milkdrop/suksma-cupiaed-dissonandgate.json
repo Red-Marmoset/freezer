@@ -1,0 +1,23 @@
+{
+  "name": "suksma - cupiaed dissonandgate",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.999",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nbeatb=((bass) > (bass_att));;\nbeatbhard=if(beatb,bass-bass_att*.9,beatbhard);;\nbeatm=((mid) > (mid_att));;\nbeatmhard=if(beatm,mid-mid_att*.9,beatmhard);;\nbeatt=((treb) > (treb_att));;\nbeatthard=if(beatt,treb-treb_att*.9,beatthard);;\nvol=bass+mid+treb;;\nvol_att=bass_att+mid_att+treb_att;;\nq1=beatb;;\nq2=beatbhard;;\nq3=beatm;;\nq4=beatmhard;;\nq5=beatt;;\nq6=beatthard;;\nq8=10*bass_att*q4;;\ndecay=.98;;\nwrap=0;",
+        "perVertex": "ns=q8;;\ncx=((x*ns)%ns)/ns;;\ncy=((y*ns)%ns)/ns;;\nrot=((rad*100)%2-.5)*.3;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

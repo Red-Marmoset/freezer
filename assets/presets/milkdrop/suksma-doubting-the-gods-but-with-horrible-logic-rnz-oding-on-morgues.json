@@ -1,0 +1,32 @@
+{
+  "name": "suksma - doubting the gods but with horrible logic rnz ODing on morgues",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.9803;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp =0;;\nq8 = oldq8 +0.003*(((pow(1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,6)/fps) + (pow(1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,5)/fps) + (pow(1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,4)/fps) + (pow(1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,3)/fps) + (pow(1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,2)/fps) +(1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att)/fps)) + 1/(fps*5);;\noldq8 = q8;;\nq1 = 0.5 + 0.15*sin(0.416*q8) + 0.15*sin(0.832*q8) + 0.1*sin(1.324*q8);;\nq2 = 0.5 + 0.15*sin(0.341*q8) + 0.15*sin(0.768*q8) + 0.1*sin(1.523*q8);;\nq6 = 0.5 + 0.15*sin(0.287*q8) + 0.15*sin(0.913*q8) + 0.1*sin(1.142*q8);;\nq7 = 0.5 + 0.15*sin(0.531*q8) + 0.15*sin(0.671*q8) + 0.1*sin(1.442*q8);;\nchange = if(beat,int(rand(10))+3,oldchange);;\noldchange = change;;\nchange = 10;;\nq4 = (change + 0.2*sin(q8*0.385) + 0.2*sin(q8*0.641) + 0.2*sin(q8*0.846));;\nzz = if(beat,int(rand(13))+3,oldzz);;\noldzz =zz;;\nzz = 6;;\nq5 = (zz + 0.2*sin(q8*0.385) + 0.2*sin(q8*0.641) + 0.2*sin(q8*0.846));;\nq3 = mode;;\nwave_a =0;;\nmonitor = mode;;\ndecay =0.3;",
+        "perVertex": "newx = x - q1;;\nnewy = y - q6;;\nnewrad = min(sqrt((newx)*(newx)+0.5625*(newy)*(newy))*2,sqrt(2));;\nnewang = atan2(newx,newy);;\nnewzoom = pow(0.995 + 0.05*sin((q4)*(newang)), pow(sin(newrad*newrad), newrad));;\ndx = (newx)*newzoom - newx;;\ndy = (newy)*newzoom - newy;;\nnewx = x - q2;;\nnewy = y - q7;;\nnewrad = min(sqrt((newx)*(newx)+0.5625*(newy)*(newy))*2,sqrt(2));;\nnewang = atan2(newx,newy);;\nnewzoom = pow(0.995 + 0.05*sin((q5)*(newang)), pow(sin(newrad*newrad), newrad));;\ndx = dx + (newx)*newzoom - newx;;\ndy = dy + (newy)*newzoom - newy;;\nnewx = x - (0.33*(q1+q2+q6));;\nnewy = y - (0.33*(3-q2-q6-q7));;\nnewrad = min(sqrt((newx)*(newx)+0.5625*(newy)*(newy))*2,sqrt(2));;\nnewang = atan2(newx,newy);;\nnewzoom = pow(1.04 + 0.05*sin(0.5*(q4+q5)*(newang)), pow(sin(newrad*newrad), newrad));;\ndx = dx + (newx)*newzoom - newx;;\ndy = dy + (newy)*newzoom - newy;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffb380"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}
