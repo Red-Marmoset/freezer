@@ -235,24 +235,19 @@ function renderPresetList() {
 }
 
 function getFilteredPresets() {
+  // When searching, ignore sidebar filters — search across everything
+  if (searchQuery) {
+    return presets.filter((p, i) => searchIndex[i].includes(searchQuery));
+  }
+
   let result = presets;
 
-  // Filter by author
   if (filterAuthorId) {
     result = result.filter(p => p.authorId === filterAuthorId);
   }
 
-  // Filter by pack
   if (filterPackId) {
     result = result.filter(p => p.packIds.includes(filterPackId));
-  }
-
-  // Filter by search query
-  if (searchQuery) {
-    result = result.filter((p, i) => {
-      const idx = presets.indexOf(p);
-      return searchIndex[idx].includes(searchQuery);
-    });
   }
 
   return result;
