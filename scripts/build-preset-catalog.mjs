@@ -89,6 +89,7 @@ const AUTHOR_ALIASES = {
   'visbot': 'visbot',
   'splendora': 'splendora',
   'zxe': 'zxe',
+  'tomylobo': 'tomylobo',
 };
 
 // Display names for canonical author ids
@@ -121,6 +122,7 @@ const AUTHOR_DISPLAY = {
   'backtrack': 'Back on Track', 'reset': 'Re-Set',
   'framesof': 'frames.of.reality', 'mztpack': 'MZTPACK',
   'track13': 'Track 13', 'uudet': 'Uudet pressut', 'microd': 'micro.D\u00b0',
+  'tomylobo': 'TomyLobo',
 };
 
 /**
@@ -432,6 +434,10 @@ addPack('andy370', 'andy370', 'andy370-main', 'andy370');
 // ── drew and megatrox ───────────────────────────────────────────────
 addCompilation('drew and megatrox', 'drew-megatrox', 'drew and megatrox');
 
+// ── TomyLobo ────────────────────────────────────────────────────────
+// Preset from DeviantArt, not in C:\code\avs — manually placed in assets
+// addPack handled manually; the file is already in assets/presets/tomylobo/
+
 // ── Track 13 ────────────────────────────────────────────────────────
 addPack('Track 13', 'track13', 'track13-main', 'Track 13');
 
@@ -601,6 +607,36 @@ for (const entry of SOURCE_MAP) {
       file: relPath,
     });
   }
+}
+
+// ── Manual presets (not in C:\code\avs) ─────────────────────────────
+// These are presets sourced individually (e.g. DeviantArt downloads)
+// Their files must be pre-placed in assets/presets/ before running this script.
+
+const MANUAL_PRESETS = [
+  {
+    title: 'Home of the Dragons - Optimized',
+    authorId: 'tomylobo',
+    packId: 'tomylobo-main',
+    packName: 'TomyLobo',
+    file: 'tomylobo/tomylobo-main/tomylobo-home-of-the-dragons-optimized.avs',
+  },
+];
+
+for (const mp of MANUAL_PRESETS) {
+  ensureAuthor(mp.authorId);
+  if (!seenPackIds.has(mp.packId)) {
+    seenPackIds.add(mp.packId);
+    packsArr.push({ id: mp.packId, name: mp.packName, authorId: mp.authorId });
+  }
+  presetCounter++;
+  presets.push({
+    id: `${mp.packId}-${String(presetCounter).padStart(4, '0')}`,
+    title: mp.title,
+    authorId: mp.authorId,
+    packIds: [mp.packId],
+    file: mp.file,
+  });
 }
 
 // ── Sort presets by title ───────────────────────────────────────────
