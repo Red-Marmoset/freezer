@@ -727,3 +727,8 @@ body.dragover::after {
   color: var(--text);
   font-weight: 500;
 }
+
+/* Collapsible children */
+.tree-children.collapsed {
+  display: none;
+}

@@ -179,26 +179,32 @@ function buildEditorTree() {
   html += buildTreeNodes(json.components || [], 1);
   editorTree.innerHTML = html;
 
-  // Wire up toggle clicks
-  editorTree.querySelectorAll('.tree-row[data-toggle]').forEach(row => {
-    row.addEventListener('click', () => {
-      const children = row.nextElementSibling;
+  // Wire up all clicks
+  editorTree.querySelectorAll('.tree-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      const node = row.parentElement;
       const toggle = row.querySelector('.tree-toggle');
-      if (children && children.classList.contains('tree-children')) {
+      const children = node.querySelector(':scope > .tree-children');
+      const detail = node.querySelector(':scope > .tree-detail');
+
+      // If clicked on the toggle arrow, collapse/expand children
+      if (e.target.closest('.tree-toggle') && children) {
+        children.classList.toggle('collapsed');
+        toggle.classList.toggle('open');
+        return;
+      }
+
+      // If has children (EffectList), toggle collapse on row click too
+      if (children) {
         children.classList.toggle('collapsed');
         toggle.classList.toggle('open');
       }
-    });
-  });
 
-  // Wire up detail clicks
-  editorTree.querySelectorAll('.tree-row[data-detail]').forEach(row => {
-    row.addEventListener('click', (e) => {
-      if (e.target.closest('[data-toggle]')) return;
-      const detail = row.parentElement.querySelector('.tree-detail');
+      // Toggle detail pane
       if (detail) {
-        detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
-        row.classList.toggle('selected');
+        const isVisible = detail.style.display !== 'none';
+        detail.style.display = isVisible ? 'none' : 'block';
+        row.classList.toggle('selected', !isVisible);
       }
     });
   });
@@ -210,7 +216,7 @@ function buildTreeNodes(components, depth) {
     const cat = getCategory(comp.type);
     const icon = getIcon(comp.type, cat);
     const hasChildren = comp.components && comp.components.length > 0;
-    const hasDetail = comp.code || comp.builtinEffect !== undefined || comp._unsupported;
+    const hasDetail = true; // all components are expandable
     const indent = depth * 16;
     const disabled = comp.enabled === false;
     const unsupported = comp._unsupported;
@@ -240,16 +246,16 @@ function buildTreeNodes(components, depth) {
 
     html += '</div>';
 
-    // Detail pane (hidden by default)
+    // Detail pane (visible by default for selected, hidden for others)
     if (hasDetail) {
       html += '<div class="tree-detail" style="display:none;">';
       html += buildDetail(comp);
       html += '</div>';
     }
 
-    // Children
+    // Children (EffectLists start collapsed)
     if (hasChildren) {
-      html += '<div class="tree-children">';
+      html += `<div class="tree-children">`;
       html += buildTreeNodes(comp.components, depth + 1);
       html += '</div>';
     }
@@ -262,15 +268,26 @@ function buildTreeNodes(components, depth) {
 function buildDetail(comp) {
   let html = '';
 
-  // Properties
-  const skipKeys = ['type','components','code','colors','_unsupported','enabled','group'];
+  // Properties — show everything except children and code (shown separately)
+  const skipKeys = ['type','components','code','group'];
   const props = Object.entries(comp).filter(([k]) => !skipKeys.includes(k) && !k.startsWith('_'));
   if (props.length > 0) {
     html += '<div class="tree-detail-section">';
     html += '<div class="tree-detail-label">PROPERTIES</div>';
     for (const [key, val] of props) {
-      const display = typeof val === 'object' ? JSON.stringify(val) : String(val);
-      html += `<div class="tree-detail-prop"><span class="key">${key}</span><span class="val">${escHtml(display)}</span></div>`;
+      let display;
+      if (typeof val === 'boolean') {
+        display = val ? '\u2705 yes' : '\u274C no';
+      } else if (typeof val === 'number') {
+        display = Number.isInteger(val) ? String(val) : val.toFixed(4);
+      } else if (Array.isArray(val)) {
+        display = val.length + ' items';
+      } else if (typeof val === 'object' && val !== null) {
+        display = JSON.stringify(val);
+      } else {
+        display = String(val);
+      }
+      html += `<div class="tree-detail-prop"><span class="key">${escHtml(key)}</span><span class="val">${escHtml(display)}</span></div>`;
     }
     html += '</div>';
   }
@@ -286,7 +303,23 @@ function buildDetail(comp) {
     html += '</div></div>';
   }
 
-  // Code sections
+  // Comment text
+  if (comp.type === 'Comment' && comp.text) {
+    html += '<div class="tree-detail-section">';
+    html += '<div class="tree-detail-label">COMMENT</div>';
+    html += `<div class="tree-detail-code">${escHtml(comp.text.trim())}</div>`;
+    html += '</div>';
+  }
+
+  // Movement code (stored as string, not object)
+  if (comp.type === 'Movement' && typeof comp.code === 'string' && comp.code.trim()) {
+    html += '<div class="tree-detail-section">';
+    html += '<div class="tree-detail-label">CODE</div>';
+    html += `<div class="tree-detail-code">${escHtml(comp.code.trim())}</div>`;
+    html += '</div>';
+  }
+
+  // Code sections (object with init/perFrame/onBeat/perPoint)
   if (comp.code && typeof comp.code === 'object') {
     for (const [section, code] of Object.entries(comp.code)) {
       if (code && typeof code === 'string' && code.trim()) {
