@@ -112,7 +112,122 @@ const USER_FRAG = `
   }
 `;
 
-const DISP_SIZE = 128; // displacement map resolution
+const DISP_SIZE = 128; // displacement map resolution (fallback for complex code)
+
+/**
+ * Try to transpile simple EEL movement code to GLSL for pixel-perfect rendering.
+ * Returns a GLSL fragment shader string, or null if the code is too complex.
+ * Handles expressions like: d=d*0.9, r=0, r=r+0.01, d=d*(0.96+sin(r)*0.04), etc.
+ */
+function tryTranspileToGLSL(code, isPolar, wrap) {
+  if (!code || !code.trim()) return null;
+
+  // Strip comments
+  let clean = code.replace(/\/\/[^\n]*/g, '').trim();
+  if (!clean) return null;
+
+  // Split into statements
+  const stmts = clean.split(/[;\n\r]+/).map(s => s.trim()).filter(Boolean);
+  const glslLines = [];
+
+  for (const stmt of stmts) {
+    // Parse simple assignment: var = expr
+    const match = stmt.match(/^([a-z_]\w*)\s*=\s*(.+)$/i);
+    if (!match) return null; // Can't handle non-assignment statements
+
+    const varName = match[1].toLowerCase();
+    let expr = match[2].trim();
+
+    // Only allow d, r (polar) or x, y (cartesian) assignments
+    if (isPolar && varName !== 'd' && varName !== 'r') return null;
+    if (!isPolar && varName !== 'x' && varName !== 'y') return null;
+
+    // Transpile expression to GLSL
+    const glsl = eelExprToGLSL(expr);
+    if (glsl === null) return null;
+
+    glslLines.push(`${varName} = ${glsl};`);
+  }
+
+  if (glslLines.length === 0) return null;
+
+  const wrapCode = wrap ? 'uv = fract(uv);' : 'uv = clamp(uv, 0.0, 1.0);';
+
+  if (isPolar) {
+    return `
+      precision mediump float;
+      uniform sampler2D tSource;
+      varying vec2 vUv;
+      #define PI 3.14159265358979
+      void main() {
+        vec2 c = vUv - 0.5;
+        float d = length(c) * 2.0;
+        float r = atan(c.y, c.x);
+        ${glslLines.join('\n        ')}
+        vec2 uv = vec2(cos(r), sin(r)) * d * 0.5 + 0.5;
+        ${wrapCode}
+        gl_FragColor = texture2D(tSource, uv);
+      }
+    `;
+  } else {
+    return `
+      precision mediump float;
+      uniform sampler2D tSource;
+      varying vec2 vUv;
+      #define PI 3.14159265358979
+      void main() {
+        float x = vUv.x * 2.0 - 1.0;
+        float y = vUv.y * 2.0 - 1.0;
+        ${glslLines.join('\n        ')}
+        vec2 uv = vec2((x + 1.0) * 0.5, (y + 1.0) * 0.5);
+        ${wrapCode}
+        gl_FragColor = texture2D(tSource, uv);
+      }
+    `;
+  }
+}
+
+/**
+ * Convert a simple EEL math expression to GLSL.
+ * Supports: +, -, *, /, parentheses, numeric literals, sin, cos, tan, sqrt, abs,
+ * and variables d, r, x, y, $PI.
+ * Returns null if the expression uses features we can't transpile.
+ */
+function eelExprToGLSL(expr) {
+  // Replace $PI with PI
+  let s = expr.replace(/\$PI/gi, 'PI');
+
+  // Check for unsupported constructs (function calls we don't know, etc.)
+  // Allow: digits, operators, parens, d, r, x, y, PI, sin, cos, tan, sqrt, abs, atan2, pow, log
+  const allowed = /^[\s\d\.\+\-\*\/\(\)\,]+$|^[drxy]$/;
+  const tokens = s.match(/[a-zA-Z_]\w*|\d+\.?\d*|[+\-*/().,]|\s+/g);
+  if (!tokens) return null;
+
+  const knownVars = new Set(['d', 'r', 'x', 'y', 'PI']);
+  const knownFuncs = new Set(['sin', 'cos', 'tan', 'sqrt', 'abs', 'atan2', 'pow', 'log', 'asin', 'acos', 'atan', 'min', 'max']);
+
+  const result = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i].trim();
+    if (!t) continue;
+
+    if (/^\d/.test(t)) {
+      // Number — ensure it has a decimal point for GLSL float
+      result.push(t.includes('.') ? t : t + '.0');
+    } else if (/^[+\-*/().,]$/.test(t)) {
+      result.push(t);
+    } else if (knownVars.has(t)) {
+      result.push(t);
+    } else if (knownFuncs.has(t)) {
+      result.push(t);
+    } else {
+      // Unknown identifier — can't transpile
+      return null;
+    }
+  }
+
+  return result.join('');
+}
 
 export class Movement extends AvsComponent {
   constructor(opts) {
@@ -145,28 +260,44 @@ export class Movement extends AvsComponent {
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
     if (this.effectIndex === 13 && this.code) {
-      // User-defined: per-pixel via displacement map texture
-      this.codeFn = compileEEL(this.code);
-      this._dispData = new Float32Array(DISP_SIZE * DISP_SIZE * 4);
-      this._dispTex = new THREE.DataTexture(
-        this._dispData, DISP_SIZE, DISP_SIZE, THREE.RGBAFormat, THREE.FloatType
-      );
-      this._dispTex.minFilter = THREE.LinearFilter;
-      this._dispTex.magFilter = THREE.LinearFilter;
-      this._dispTex.needsUpdate = true;
-      this._dispDirty = true;
+      // User-defined: try GLSL transpile first (pixel-perfect), fall back to displacement map
+      const isPolar = this.coordinates === 'POLAR';
+      const glslFrag = tryTranspileToGLSL(this.code, isPolar, this.wrap);
 
-      this._geometry = new THREE.PlaneGeometry(2, 2);
-      this._material = new THREE.ShaderMaterial({
-        uniforms: {
-          tSource: { value: null },
-          tDispMap: { value: this._dispTex },
-          uWrap: { value: this.wrap },
-        },
-        vertexShader: VERT_SHADER,
-        fragmentShader: USER_FRAG,
-        depthTest: false,
-      });
+      this._useDispMap = !glslFrag;
+
+      if (glslFrag) {
+        // Pixel-perfect GLSL path
+        this._geometry = new THREE.PlaneGeometry(2, 2);
+        this._material = new THREE.ShaderMaterial({
+          uniforms: { tSource: { value: null } },
+          vertexShader: VERT_SHADER,
+          fragmentShader: glslFrag,
+          depthTest: false,
+        });
+      } else {
+        // Complex code: fall back to displacement map
+        this.codeFn = compileEEL(this.code);
+        this._dispData = new Float32Array(DISP_SIZE * DISP_SIZE * 4);
+        this._dispTex = new THREE.DataTexture(
+          this._dispData, DISP_SIZE, DISP_SIZE, THREE.RGBAFormat, THREE.FloatType
+        );
+        this._dispTex.minFilter = THREE.LinearFilter;
+        this._dispTex.magFilter = THREE.LinearFilter;
+        this._dispTex.needsUpdate = true;
+
+        this._geometry = new THREE.PlaneGeometry(2, 2);
+        this._material = new THREE.ShaderMaterial({
+          uniforms: {
+            tSource: { value: null },
+            tDispMap: { value: this._dispTex },
+            uWrap: { value: this.wrap },
+          },
+          vertexShader: VERT_SHADER,
+          fragmentShader: USER_FRAG,
+          depthTest: false,
+        });
+      }
     } else {
       // Built-in effect: full-screen quad with per-pixel shader
       this._geometry = new THREE.PlaneGeometry(2, 2);
@@ -190,8 +321,8 @@ export class Movement extends AvsComponent {
       this._reversed = !this._reversed;
     }
 
-    // User-defined: compute displacement map (once, or per-frame if code uses time)
-    if (this.effectIndex === 13 && this.codeFn) {
+    // User-defined with displacement map fallback: compute disp map
+    if (this.effectIndex === 13 && this._useDispMap && this.codeFn) {
       this._computeDispMap(ctx);
     }
 
