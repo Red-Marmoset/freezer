@@ -280,6 +280,31 @@ button.active {
   margin-bottom: 28px;
 }
 
+.splash-wip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.wip-icon { flex-shrink: 0; }
+.wip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+.wip-text strong {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: #f5a623;
+}
+
 .splash-explain {
   margin-bottom: 24px;
 }
@@ -639,7 +664,10 @@ body.dragover::after {
 .tree-icon.trans { color: #ab47bc; }
 .tree-icon.misc { color: #78909c; }
 .tree-icon.container { color: var(--accent); }
-.tree-icon.unsupported { color: #555; }
+.tree-icon.unsupported { color: #ff3333; }
+.tree-row .tree-label.unsupported-label { color: #ff3333; font-weight: 700; }
+.tree-row .tree-label.wip-label { color: #f5a623; }
+.tree-badge.unsupported-badge { background: rgba(255, 50, 50, 0.3); color: #ff5555; }
 
 .tree-label {
   color: var(--text);
@@ -693,7 +721,7 @@ body.dragover::after {
 }
 
 .tree-detail-code {
-  font-family: 'Consolas', 'Monaco', monospace;
+  font-family: 'Share Tech Mono', 'Consolas', 'Monaco', monospace;
   font-size: 11px;
   line-height: 1.5;
   color: var(--text);
@@ -1080,7 +1108,7 @@ body.dragover::after {
 }
 
 .ed-textarea {
-  font-family: 'Consolas', 'Monaco', monospace;
+  font-family: 'Share Tech Mono', 'Consolas', 'Monaco', monospace;
   font-size: 11px;
   line-height: 1.5;
   color: var(--text-bright);
@@ -1487,4 +1515,90 @@ body.dragover::after {
     border-bottom: 1px solid rgba(0, 229, 255, 0.08);
     max-height: 140px;
   }
+}
+
+/* ============================================
+   AVS COMMENT VIEW OVERLAY
+   Styled to match the original Winamp AVS
+   comment dialog (MS Sans Serif, 8pt)
+   ============================================ */
+
+.comment-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment-overlay.hidden { display: none; }
+
+.comment-overlay-backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.comment-overlay-dialog {
+  position: relative;
+  width: 432px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background: #c0c0c0;
+  border: 2px outset #dfdfdf;
+  box-shadow: 2px 2px 0 #808080, 4px 4px 8px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-overlay-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #000080, #1084d0);
+  padding: 2px 4px;
+  height: 20px;
+}
+
+.comment-overlay-title {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  user-select: none;
+}
+
+.comment-overlay-close {
+  background: #c0c0c0;
+  border: 2px outset #dfdfdf;
+  font-size: 11px;
+  line-height: 1;
+  width: 16px;
+  height: 14px;
+  padding: 0;
+  cursor: pointer;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, sans-serif;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment-overlay-close:active {
+  border-style: inset;
+}
+
+.comment-overlay-text {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, sans-serif;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #000000;
+  background: #ffffff;
+  border: 2px inset #808080;
+  margin: 6px;
+  padding: 4px 6px;
+  overflow-y: auto;
+  max-height: 60vh;
+  min-height: 120px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }

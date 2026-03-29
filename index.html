@@ -7,7 +7,7 @@
   <title>Freezer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -40,6 +40,21 @@
       <div class="splash-content">
         <h1>FREEZER</h1>
         <p class="splash-sub">Audio Visualization System</p>
+
+        <div class="splash-wip">
+          <svg class="wip-icon" viewBox="0 0 64 64" width="48" height="48">
+            <rect x="8" y="44" width="48" height="12" rx="2" fill="#f5a623" stroke="#e09000" stroke-width="2"/>
+            <rect x="14" y="32" width="36" height="14" rx="1" fill="#e0e0e0" stroke="#999" stroke-width="1.5"/>
+            <polygon points="20,32 32,14 44,32" fill="#f5a623" stroke="#e09000" stroke-width="2" stroke-linejoin="round"/>
+            <rect x="30" y="19" width="4" height="7" rx="1" fill="#333"/>
+            <circle cx="32" cy="29" r="2" fill="#333"/>
+            <line x1="8" y1="44" x2="56" y2="44" stroke="#e09000" stroke-width="2" stroke-dasharray="6,4"/>
+          </svg>
+          <div class="wip-text">
+            <strong>WORK IN PROGRESS</strong>
+            <span>This project is under active construction. Some features may be incomplete or broken.</span>
+          </div>
+        </div>
 
         <div class="splash-explain">
           <div class="splash-section-label">HOW IT WORKS</div>
@@ -204,6 +219,18 @@
     <div class="ctx-item" data-action="move-down">Move Down</div>
     <div class="ctx-sep"></div>
     <div class="ctx-item ctx-item-danger" data-action="remove">Remove</div>
+  </div>
+
+  <!-- AVS Comment View overlay -->
+  <div id="comment-overlay" class="comment-overlay hidden">
+    <div class="comment-overlay-backdrop"></div>
+    <div class="comment-overlay-dialog">
+      <div class="comment-overlay-titlebar">
+        <span class="comment-overlay-title">AVS Comment</span>
+        <button id="btn-comment-close" class="comment-overlay-close">&times;</button>
+      </div>
+      <div id="comment-overlay-text" class="comment-overlay-text"></div>
+    </div>
   </div>
 
   <script type="module" src="js/ui.js"></script>

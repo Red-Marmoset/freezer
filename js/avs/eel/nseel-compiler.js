@@ -7,6 +7,10 @@ import { STDLIB_MATH, STDLIB_INLINE } from './nseel-stdlib.js';
 
 const CLOSEFACT = 0.00001; // ns-eel epsilon for truthiness/equality
 
+// Global EEL code prefix (EelTrans #define macros).
+// Set by setEelPrefix() before compiling components.
+let _eelPrefix = '';
+
 // Compile an AST node to a JS expression string
 function compileExpr(node) {
   if (!node) return '0';
@@ -291,10 +295,20 @@ function compileWhileStmt(node) {
  * @param {string} code — EEL source code
  * @returns {Function} — function(s, lib) where s is state object, lib is stdlib
  */
+/**
+ * Set a global EEL code prefix (EelTrans #define macros).
+ * This prefix is prepended to every EEL code string before preprocessing.
+ */
+export function setEelPrefix(prefix) {
+  _eelPrefix = prefix || '';
+}
+
 export function compileEEL(code) {
   if (!code || !code.trim()) return function() {};
-  // Strip // comments and check if anything meaningful remains
-  const stripped = code.replace(/\/\/[^\n]*/g, '').trim();
+  // Prepend EelTrans prefix (contains #define macros)
+  const withPrefix = _eelPrefix ? _eelPrefix + '\n' + code : code;
+  // Strip // comments (but not //$ directives — those are handled by preprocess)
+  const stripped = withPrefix.replace(/\/\/(?!\$)[^\n]*/g, '').trim();
   if (!stripped) return function() {};
   try {
     const ast = parse(stripped);

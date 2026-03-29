@@ -123,17 +123,23 @@ export function createStdlib(opts = {}) {
     },
 
     /**
-     * gettime(mode)
-     * 0 = seconds since midnight (with ms precision)
-     * 1 = seconds since program start
-     * 2 = seconds since program start (same as 1 for us)
+     * gettime(x)
+     * Original AVS: GetTickCount()/1000.0 - x
+     * x ≈ -1: Winamp playback position in seconds (not supported, returns 0)
+     * x ≈ -2: Winamp playback position in ms (not supported, returns 0)
+     * Anything else: returns currentTime - x (delta timing)
+     *
+     * We use opts.time (seconds since preset load) to keep the float
+     * small and preserve precision over long sessions.
+     *
+     * Common pattern:
+     *   time = time + gettime(lasttime);  // accumulate elapsed
+     *   lasttime = gettime(0);            // store current time
      */
-    gettime(mode) {
-      if (mode === 0) {
-        const now = new Date();
-        return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000;
-      }
-      return opts.time || 0;
+    gettime(x) {
+      if (x > -1.001 && x < -0.999) return 0;
+      if (x > -2.001 && x < -1.999) return 0;
+      return (opts.time || 0) - x;
     },
   };
 }
