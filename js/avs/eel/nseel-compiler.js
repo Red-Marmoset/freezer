@@ -114,8 +114,9 @@ function compileBinary(node) {
       op === '%=' || op === '^=' || op === '|=' || op === '&=') {
     const lhs = compileLHS(left);
     if (op === '^=') return `(${lhs} = Math.pow(${lhs}, ${compileExpr(right)}))`;
-    if (op === '|=') return `(${lhs} = ((${lhs}) !== 0 || (${compileExpr(right)}) !== 0) ? 1 : 0)`;
-    if (op === '&=') return `(${lhs} = ((${lhs}) !== 0 && (${compileExpr(right)}) !== 0) ? 1 : 0)`;
+    // Bitwise assign operators (& and | are bitwise in ns-eel, not logical)
+    if (op === '|=') return `(${lhs} = (((${lhs}) | 0) | ((${compileExpr(right)}) | 0)))`;
+    if (op === '&=') return `(${lhs} = (((${lhs}) | 0) & ((${compileExpr(right)}) | 0)))`;
     return `(${lhs} ${op} ${compileExpr(right)})`;
   }
 
@@ -129,14 +130,16 @@ function compileBinary(node) {
     return `Math.pow(${compileExpr(left)}, ${compileExpr(right)})`;
   }
 
-  // Logical OR (ns-eel: | and ||)
+  // Bitwise OR (ns-eel: | converts to int, does bitwise OR, converts back)
+  // || is also bitwise OR in ns-eel (NOT logical OR — that's bor())
   if (op === '|' || op === '||') {
-    return `(((${compileExpr(left)}) !== 0 || (${compileExpr(right)}) !== 0) ? 1 : 0)`;
+    return `(((${compileExpr(left)}) | 0) | ((${compileExpr(right)}) | 0))`;
   }
 
-  // Logical AND (ns-eel: & and &&)
+  // Bitwise AND (ns-eel: & converts to int, does bitwise AND, converts back)
+  // && is also bitwise AND in ns-eel (NOT logical AND — that's band())
   if (op === '&' || op === '&&') {
-    return `(((${compileExpr(left)}) !== 0 && (${compileExpr(right)}) !== 0) ? 1 : 0)`;
+    return `(((${compileExpr(left)}) | 0) & ((${compileExpr(right)}) | 0))`;
   }
 
   // Comparison operators (return 0 or 1)
@@ -198,15 +201,15 @@ function compileCall(node) {
     return `(Math.abs((${compileExpr(args[0])}) - (${compileExpr(args[1])})) < ${CLOSEFACT} ? 1 : 0)`;
   }
 
-  // Logical functions
+  // Logical functions (use CLOSEFACT threshold matching original isnonzero())
   if (name === 'band' && args.length >= 2) {
-    return `(((${compileExpr(args[0])}) !== 0 && (${compileExpr(args[1])}) !== 0) ? 1 : 0)`;
+    return `((Math.abs(${compileExpr(args[0])}) > ${CLOSEFACT} && Math.abs(${compileExpr(args[1])}) > ${CLOSEFACT}) ? 1 : 0)`;
   }
   if (name === 'bor' && args.length >= 2) {
-    return `(((${compileExpr(args[0])}) !== 0 || (${compileExpr(args[1])}) !== 0) ? 1 : 0)`;
+    return `((Math.abs(${compileExpr(args[0])}) > ${CLOSEFACT} || Math.abs(${compileExpr(args[1])}) > ${CLOSEFACT}) ? 1 : 0)`;
   }
   if (name === 'bnot' && args.length >= 1) {
-    return `((${compileExpr(args[0])}) === 0 ? 1 : 0)`;
+    return `(Math.abs(${compileExpr(args[0])}) <= ${CLOSEFACT} ? 1 : 0)`;
   }
 
   // Math inlines
