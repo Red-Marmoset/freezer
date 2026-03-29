@@ -1,21 +1,61 @@
 // AVS DynamicMovement component — programmable per-vertex UV displacement
 // Uses EEL code to compute UV displacement across a grid mesh.
-// Supports buffer source selection, blend mode, alpha per vertex, polar/cartesian.
+// Supports buffer source selection, blend mode, per-vertex alpha, polar/cartesian.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
-import { blendTexture, BLEND } from '../blend.js';
 
+// Vertex shader passes UV and per-vertex alpha to fragment
 const VERT_SHADER = `
+  attribute float aAlpha;
   varying vec2 vUv;
+  varying float vAlpha;
   void main() {
     vUv = uv;
+    vAlpha = aAlpha;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
 
+// Fragment shader samples source texture and applies per-vertex alpha blending
+// When blend is enabled, mixes displaced source with the current framebuffer
 const FRAG_SHADER = `
+  precision mediump float;
+  uniform sampler2D tSource;
+  uniform sampler2D tDest;
+  uniform int uBlend;
+  varying vec2 vUv;
+  varying float vAlpha;
+  void main() {
+    vec4 src = texture2D(tSource, vUv);
+    if (uBlend == 1) {
+      vec4 dst = texture2D(tDest, gl_FragCoord.xy / vec2(textureSize(tDest, 0)));
+      gl_FragColor = vec4(mix(dst.rgb, src.rgb, vAlpha), 1.0);
+    } else {
+      gl_FragColor = src;
+    }
+  }
+`;
+
+// Simpler shader without textureSize (WebGL1 compat)
+const FRAG_BLEND = `
+  precision mediump float;
+  uniform sampler2D tSource;
+  uniform sampler2D tDest;
+  uniform vec2 uResolution;
+  varying vec2 vUv;
+  varying float vAlpha;
+  void main() {
+    vec4 src = texture2D(tSource, vUv);
+    vec2 screenUv = gl_FragCoord.xy / uResolution;
+    vec4 dst = texture2D(tDest, screenUv);
+    gl_FragColor = vec4(mix(dst.rgb, src.rgb, vAlpha), 1.0);
+  }
+`;
+
+const FRAG_NOBLEND = `
+  precision mediump float;
   uniform sampler2D tSource;
   varying vec2 vUv;
   void main() {
@@ -38,7 +78,7 @@ export class DynamicMovement extends AvsComponent {
     this.wrap = opts.wrap !== false;
     this.bilinear = opts.bFilter !== false;
     this.blend = opts.blend || false;
-    this.buffer = opts.buffer || 0; // 0=framebuffer, 1-8=save buffer
+    this.buffer = opts.buffer || 0;
     this.alphaOnly = opts.alphaOnly || false;
 
     this.state = null;
@@ -47,6 +87,7 @@ export class DynamicMovement extends AvsComponent {
     this._camera = null;
     this._material = null;
     this._geometry = null;
+    this._alphaAttr = null;
   }
 
   init(ctx) {
@@ -54,21 +95,34 @@ export class DynamicMovement extends AvsComponent {
     this._scene = new THREE.Scene();
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-    // Create grid mesh
+    // Create grid mesh with per-vertex alpha attribute
     this._geometry = new THREE.PlaneGeometry(2, 2, this.gridW, this.gridH);
+    const vertCount = this._geometry.attributes.position.count;
+    const alphas = new Float32Array(vertCount).fill(1);
+    this._alphaAttr = new THREE.BufferAttribute(alphas, 1);
+    this._geometry.setAttribute('aAlpha', this._alphaAttr);
 
-    this._material = new THREE.ShaderMaterial({
-      uniforms: {
-        tSource: { value: null },
-      },
-      vertexShader: VERT_SHADER,
-      fragmentShader: FRAG_SHADER,
-      depthTest: false,
-    });
+    if (this.blend || this.alphaOnly) {
+      this._material = new THREE.ShaderMaterial({
+        uniforms: {
+          tSource: { value: null },
+          tDest: { value: null },
+          uResolution: { value: new THREE.Vector2(ctx.width, ctx.height) },
+        },
+        vertexShader: VERT_SHADER,
+        fragmentShader: FRAG_BLEND,
+        depthTest: false,
+      });
+    } else {
+      this._material = new THREE.ShaderMaterial({
+        uniforms: { tSource: { value: null } },
+        vertexShader: VERT_SHADER,
+        fragmentShader: FRAG_NOBLEND,
+        depthTest: false,
+      });
+    }
 
-    const mesh = new THREE.Mesh(this._geometry, this._material);
-    this._scene.add(mesh);
-
+    this._scene.add(new THREE.Mesh(this._geometry, this._material));
     this.firstFrame = true;
   }
 
@@ -83,26 +137,19 @@ export class DynamicMovement extends AvsComponent {
       time: ctx.time,
     });
 
-    // Set built-in variables
     s.w = ctx.width;
     s.h = ctx.height;
     s.b = ctx.beat ? 1 : 0;
 
-    // Run init on first frame
     if (this.firstFrame) {
       try { this.initFn(s, lib); } catch {}
       this.firstFrame = false;
     }
 
-    // Run perFrame
     try { this.perFrameFn(s, lib); } catch {}
+    if (ctx.beat) { try { this.onBeatFn(s, lib); } catch {} }
 
-    // Run onBeat
-    if (ctx.beat) {
-      try { this.onBeatFn(s, lib); } catch {}
-    }
-
-    // Determine source texture: active framebuffer or a save buffer
+    // Determine source texture
     let srcTexture = fb.getActiveTexture();
     if (this.buffer > 0 && ctx.saveBuffers) {
       const bufIdx = this.buffer - 1;
@@ -111,48 +158,36 @@ export class DynamicMovement extends AvsComponent {
       }
     }
 
-    // Run perPoint code for each grid vertex and update UVs
+    // Run perPoint code for each grid vertex
     const uvAttr = this._geometry.attributes.uv;
     const posAttr = this._geometry.attributes.position;
+    const alphaArr = this._alphaAttr.array;
     const vertCount = posAttr.count;
 
-    // Polar normalization: max distance from center in UV space
-    // Original: max_screen_d = sqrt(w² + h²) * 0.5, then d is normalized to 0..~1
-    // In UV space (0..1), center is (0.5, 0.5), max distance to corner = sqrt(0.5² + 0.5²) = ~0.707
+    // Polar normalization matching original AVS
     const maxD = Math.sqrt(0.5 * 0.5 + 0.5 * 0.5);
 
-    let alphaSum = 0;
-
     for (let i = 0; i < vertCount; i++) {
-      // Get the original UV for this vertex (position is -1..1, map to 0..1)
       const origX = (posAttr.getX(i) + 1) / 2;
       const origY = (posAttr.getY(i) + 1) / 2;
 
-      // Set alpha default
       s.alpha = 1;
 
       if (this.usePolar) {
-        // Convert to polar coords matching original AVS:
-        // d = distance / maxDiagonal (0 at center, ~1 at corner)
-        // r = atan2(y, x) + π/2 (rotation offset to match AVS convention)
         const cx = origX - 0.5;
         const cy = origY - 0.5;
         s.d = Math.sqrt(cx * cx + cy * cy) / maxD;
         s.r = Math.atan2(cy, cx) + Math.PI / 2;
       }
-      // Always set x, y (both modes use them in original)
-      s.x = origX * 2 - 1; // -1 to 1
+      s.x = origX * 2 - 1;
       s.y = origY * 2 - 1;
 
-      // Run perPoint code
       try { this.perPointFn(s, lib); } catch {}
 
-      alphaSum += Math.max(0, Math.min(1, s.alpha));
+      alphaArr[i] = Math.max(0, Math.min(1, s.alpha));
 
-      // Get output UV
       let newU, newV;
       if (this.usePolar) {
-        // Convert back from polar (undo the π/2 offset)
         const r = s.r - Math.PI / 2;
         const nd = s.d * maxD;
         newU = Math.cos(r) * nd + 0.5;
@@ -162,7 +197,6 @@ export class DynamicMovement extends AvsComponent {
         newV = (s.y + 1) / 2;
       }
 
-      // Wrap or clamp
       if (this.wrap) {
         newU = newU - Math.floor(newU);
         newV = newV - Math.floor(newV);
@@ -174,35 +208,30 @@ export class DynamicMovement extends AvsComponent {
       uvAttr.setXY(i, newU, newV);
     }
     uvAttr.needsUpdate = true;
+    this._alphaAttr.needsUpdate = true;
 
-    // Set source texture
+    // Render
     this._material.uniforms.tSource.value = srcTexture;
 
-    if (this.blend && !this.alphaOnly) {
-      // Blend mode: render displaced to back, then blend onto active
-      ctx.renderer.setRenderTarget(fb.getBackTarget());
-      ctx.renderer.render(this._scene, this._camera);
-      this._material.uniforms.tSource.value = null;
+    if (this.blend || this.alphaOnly) {
+      // For blend/alpha-only: read active FB as dest, sample source via displaced UVs,
+      // mix per-vertex using alpha. Write to back, swap.
+      // Need to copy active to a temp first so we can read dest while writing.
+      this._material.uniforms.tDest.value = fb.getActiveTexture();
+      this._material.uniforms.uResolution.value.set(ctx.width, ctx.height);
 
-      // Use average alpha from grid points for blend amount
-      const avgAlpha = vertCount > 0 ? alphaSum / vertCount : 1;
-      blendTexture(ctx.renderer, fb.getBackTarget().texture, fb.getActiveTarget(),
-        BLEND.ADJUSTABLE, avgAlpha);
-    } else if (this.alphaOnly) {
-      // Alpha-only: darken the existing framebuffer based on alpha values
-      const avgAlpha = vertCount > 0 ? alphaSum / vertCount : 1;
-      // Blend active with black using (1-alpha) as the mix factor
-      if (avgAlpha < 0.999) {
-        blendTexture(ctx.renderer, fb.getActiveTexture(), fb.getActiveTarget(),
-          BLEND.ADJUSTABLE, avgAlpha);
-      }
-      this._material.uniforms.tSource.value = null;
-    } else {
-      // No blend: write displaced result directly, swap
       ctx.renderer.setRenderTarget(fb.getBackTarget());
       ctx.renderer.render(this._scene, this._camera);
-      fb.swap();
+
       this._material.uniforms.tSource.value = null;
+      this._material.uniforms.tDest.value = null;
+      fb.swap();
+    } else {
+      // No blend: displaced source overwrites FB
+      ctx.renderer.setRenderTarget(fb.getBackTarget());
+      ctx.renderer.render(this._scene, this._camera);
+      this._material.uniforms.tSource.value = null;
+      fb.swap();
     }
   }
 
