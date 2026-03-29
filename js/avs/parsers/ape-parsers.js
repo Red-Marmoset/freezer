@@ -105,10 +105,10 @@ export function parseColorMapAPE(r, endPos) {
       for (let c = 0; c < mapHeaders[m].numColors; c++) {
         if (r.pos + 12 > endPos) break;
         const position = r.uint32();
-        const colorRaw = r.uint32();
-        r.skip(4);
-        const cr = (colorRaw >> 16) & 0xff, cg = (colorRaw >> 8) & 0xff, cb = colorRaw & 0xff;
-        colors.push({ position, color: '#' + ((1 << 24) | (cr << 16) | (cg << 8) | cb).toString(16).slice(1) });
+        // Color stored as COLORREF (0x00BBGGRR) — use same extraction as r.color()
+        const color = r.color();
+        r.skip(4); // color_id (ignored)
+        colors.push({ position, color });
       }
       result.maps.push({
         enabled: mapHeaders[m].enabled,
