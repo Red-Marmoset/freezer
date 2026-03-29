@@ -953,10 +953,24 @@ function buildDetailDom(container, comp, path) {
     const section = document.createElement('div');
     section.className = 'tree-detail-section';
     section.innerHTML = '<div class="tree-detail-label">COMMENT</div>';
+
+    // "AVS Comment View" button
+    const viewBtn = document.createElement('button');
+    viewBtn.className = 'ed-tool-btn';
+    viewBtn.textContent = 'AVS Comment View';
+    viewBtn.style.marginBottom = '6px';
+    viewBtn.addEventListener('click', () => {
+      const overlay = document.getElementById('comment-overlay');
+      const textEl = document.getElementById('comment-overlay-text');
+      textEl.textContent = comp.text || '(empty)';
+      overlay.classList.remove('hidden');
+    });
+    section.appendChild(viewBtn);
+
     const ta = document.createElement('textarea');
     ta.className = 'ed-textarea';
     ta.value = comp.text || '';
-    ta.rows = 3;
+    ta.rows = 5;
     ta.addEventListener('change', () => {
       comp.text = ta.value;
       rebuildPreset();
@@ -1603,6 +1617,14 @@ document.addEventListener('keydown', (e) => {
 window.loadPresetJSON = loadPresetJSON;
 window.loadDefaultPreset = () => { currentPresetJSON = DEFAULT_PRESET; viz.setPreset(loadAvsPreset(DEFAULT_PRESET)); setActivePreset('Freezer Default'); };
 window.currentPresetJSON = () => currentPresetJSON;
+
+// --- Comment overlay ---
+document.getElementById('btn-comment-close').addEventListener('click', () => {
+  document.getElementById('comment-overlay').classList.add('hidden');
+});
+document.querySelector('.comment-overlay-backdrop').addEventListener('click', () => {
+  document.getElementById('comment-overlay').classList.add('hidden');
+});
 
 // --- Drag and drop ---
 

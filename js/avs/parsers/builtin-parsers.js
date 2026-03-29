@@ -181,9 +181,11 @@ export function parseMirror(r) { return { type: 'Mirror', enabled: r.hasBytes(4)
 export function parseBlur(r) { return { type: 'Blur', enabled: r.hasBytes(4) ? r.uint32() !== 0 : true, mode: r.hasBytes(4) ? r.uint32() : 0 }; }
 
 export function parseComment(r, endPos) {
-  const dataSize = endPos - r.pos;
+  // Comment binary format: uint32 length + text (size-prefixed string)
   let text = '';
-  if (dataSize > 0) text = r.decodeString(r.pos, Math.min(r.pos + dataSize, endPos));
+  if (r.pos + 4 <= endPos) {
+    text = r.sizeString();
+  }
   r.pos = endPos;
   return { type: 'Comment', text, enabled: false };
 }
