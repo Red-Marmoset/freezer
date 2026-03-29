@@ -1,0 +1,16 @@
+{
+  "name": "Hexcollie - Hedgehog dreams3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 0.961;\nrot = 0.22;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1.771011;\ncx = 0.5;\ncy = 0.5;\nwave_x = wave_x + 0.2900*( 0.60*sin(2.121*time) + 0.40*sin(1.621*time) );;\nwave_y = wave_y + 0.2900*( 0.60*sin(1.742*time) + 0.40*sin(2.322*time) );;\nwave_r = wave_r + 0.350*( 0.60*sin(0.823*time) + 0.40*sin(0.916*time) );;\nwave_g = wave_g + 0.350*( 0.60*sin(0.900*time) + 0.40*sin(1.023*time) );;\nwave_b = wave_b + 0.350*( 0.60*sin(0.808*time) + 0.40*sin(0.949*time) );;\nblah = 0.5/(wave_r+wave_g+wave_b);;\nwave_r = wave_r*blah; wave_g = wave_g*blah; wave_b = wave_b*blah;;\nrot = rot + 0.12*( 0.60*sin(0.21*time) + 0.40*sin(0.339*time) );;\ncx = cx + 0.30*( 0.60*sin(0.374*time) + 0.14*sin(0.194*time) );;\ncy = cy + 0.37*( 0.60*sin(0.274*time) + 0.10*sin(0.394*time) );;\nib_r = ib_r + 0.2*sin(time*0.5413);;\nib_g = ib_g + 0.2*sin(time*0.6459);;\nib_b = ib_b + 0.2*sin(time*0.7354);;\nblah = 0.4/(ib_r+ib_g+ib_b)*3;;\nib_r = ib_r*blah; ib_g = ib_g*blah; ib_b = ib_b*blah;;\ndx = 0.01*cos(time*0.27934+5);;\ndy = 0.01*sin(time*0.23142+2);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

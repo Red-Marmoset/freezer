@@ -1,0 +1,32 @@
+{
+  "name": "stahlregen - hypnotron v 0-5 (Hypnolotus)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.0406;\nrot = 0.02;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.10893;\ncx = 0.5;\ncy = 0.5;\nvol = (bass_att+treb_att+mid_att)*.125;;\nvolt = volt + .1*vol;;\nq1 = .25*volt;;\nwave_g = .5+.2*sin(time);;\nwave_b = .8+.2*sin(time*1.33);;\nwave_r = .9+.1*sin(time*2);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

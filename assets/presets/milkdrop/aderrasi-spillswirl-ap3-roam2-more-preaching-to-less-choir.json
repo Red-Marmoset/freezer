@@ -1,0 +1,23 @@
+{
+  "name": "Aderrasi - Spillswirl ap3+ roam2 more preaching to less choir",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = -0.00199;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_x = wave_x  + if(((wave_y) > (0.75)), - 0.1*tan(time), + 0.1*tan(time));;\nwave_y = wave_y  + 0.40*sin(8*mid);;\nwave_r = wave_r   + if(((3*bass) > (2)), +1,-2);;\nwave_g = wave_g + if(((3*mid) > (2)), +1, -2);;\nwave_b = wave_b + if(((3*treb) > (2)), +1, -2);;\nwarp = 0;;\nrot = rot - 0.05;",
+        "perVertex": "zoom = zoom + if (((rad) < (0.3)), -0.2*(1-rad), 0);;\nzoom = zoom + if(((rad) < (0.6)), -0.2*(0.5-rad), 0);;\nrot = rot - if(((rad) < (0.2)), 0.1*(1-rad), 0);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.02,
+      "alpha": 1,
+      "orient": 3
+    }
+  ]
+}

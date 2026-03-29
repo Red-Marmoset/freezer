@@ -1,0 +1,36 @@
+{
+  "name": "Dbleja - Horizontology (Red Mix)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.935",
+        "perFrame": "zoom = 1.0065;\nrot = 0;\ndx = 1;\ndy = 0;\nsx = 100;\nsy = 1;\nwarp = 0.01;\ncx = 0.5301;\ncy = 0.5;\nmv_b=mv_b-(0.08*sin(time*0.23))-0.10;;\nmv_g=mv_g-(0.18*sin(time*0.20))-0.20;;\nbbb=ib_a+(bass_att*0.1);;\naaa=bass_att;;\nccc=cx+(0.2*bass_att)-.2;;\nddd=ccc*0.2;;\ncx=if(((aaa) < (1)),.530,ccc);;\ncy=cy+(.1*sin(time));;\nmonitor=cy;;\nzoom=zoom+0.05*(sin(time)+cos(time*2));;\nsss=ib_b-((treb_att)*.4)-.14;;\nib_b=if(((sss) < (0)),0,sss);;\nob_b=ib_b;;\nmonitor=ib_b;;\nib_a=if(((aaa) < (1)),0,aaa*0.1);;\nob_a=ib_a;;\nmv_a=mv_a+0.012*sin(time*1.33);;\nwave_r=mv_r;;\nwave_g=mv_g;;\nwave_b=mv_b;;\nrot=0.5+sin(time)*0.33;;\n//This preset was originally made for my skin - \"Kieslowski - Red\". Do a search for it at www.1001winampskins.com",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6ffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "gymbaub",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9901;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay = 0;;\nxx1 = xx1*0.9 + (bass)*0.01;;\nxx2 = xx2*0.9 + (treb)*0.01;;\nyy1 = yy1*0.94 + (treb+bass)*0.0075;;\nx1 = 0.5 + (xx1-xx2)*3;;\ny1 = 1 - yy1*0.75;;\nspring = 20;;\ngrav = .65-0.25*yy1;;\nresist = 0.03;;\nbounce = 1;//0.5;;\ndt = 0.0005;;\nspx2 = (x1+x3-2*x2)*spring;;\nspy2 = (y1+y3-2*y2)*spring;;\nspx3 = (x2+x4-2*x3)*spring;;\nspy3 = (y2+y4-2*y3)*spring;;\nspx4 = (x3-x4)*spring;;\nspy4 = (y3-y4)*spring;;\nvx2 = vx2*(1-resist) + dt*(spx2);;\nvy2 = vy2*(1-resist) + dt*(spy2-grav);;\nvx3 = vx3*(1-resist) + dt*(spx3);;\nvy3 = vy3*(1-resist) + dt*(spy3-grav*1.5);;\nvx4 = vx4*(1-resist) + dt*(spx4);;\nvy4 = vy4*(1-resist) + dt*(spy4-grav*4);;\nx2 = x2 + vx2;;\ny2 = y2 + vy2;;\nx3 = x3 + vx3;;\ny3 = y3 + vy3;;\nx4 = x4 + vx4;;\ny4 = y4 + vy4;;\nvx2 = if(((x2) > (0)),vx2,abs(vx2)*bounce);;\nvx2 = if(((x2) < (1)),vx2,-abs(vx2)*bounce);;\nvx3 = if(((x3) > (0)),vx3,abs(vx3)*bounce);;\nvx3 = if(((x3) < (1)),vx3,-abs(vx3)*bounce);;\nvx4 = if(((x4) > (0)),vx4,abs(vx4)*bounce);;\nvx4 = if(((x4) < (1)),vx4,-abs(vx4)*bounce);;\nvy2 = if(((y2) > (0)),vy2,abs(vy2)*bounce);;\nvy2 = if(((y2) < (1)),vy2,-abs(vy2)*bounce);;\nvy3 = if(((y3) > (0)),vy3,abs(vy3)*bounce);;\nvy3 = if(((y3) < (1)),vy3,-abs(vy3)*bounce);;\nvy4 = if(((y4) > (0)),vy4,abs(vy4)*bounce);;\nvy4 = if(((y4) < (1)),vy4,-abs(vy4)*bounce);;\nq1 = x1;;\nq2 = x2;;\nq3 = x3;;\nq4 = x4;;\nq5 = y1;;\nq6 = y2;;\nq7 = y3;;\nq8 = y4;;\nq2 = sin(+atan2(x4-x3,y4-y3) - asin(1)*2)*0.2;;\nmonitor = q2;;\nq10 = aspectx;;\nq11 = aspecty;;\nzoom = 0.998;;\nrot = 0.00;;\nwarp = 0.02;;\nwave_a = 0;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

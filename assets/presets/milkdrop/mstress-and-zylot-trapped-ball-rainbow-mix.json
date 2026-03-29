@@ -1,0 +1,32 @@
+{
+  "name": "Mstress and Zylot - Trapped Ball (Rainbow Mix)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 1.001829;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.999005;\nsy = 0.999005;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nwave_r = min(1,max(0,0.2*bass));;\nwave_g = min(1,max(0,0.2*mid));;\nwave_b = min(1,max(0,0.2*treb));;\ncounter1 = if(((counter2) == (1)),if(((counter1) == (1)),0,counter1+.2),1);;\ncounter2 = if(((counter1) == (1)),if(((counter2) == (1)),0,counter2+.2),1);;\ncdelay1 = if(((cdelay2) == (1)),1,if(((colorcounter%2) == (1)),if(((counter1) == (1)),2 ,0), if(((counter2) == (1)),2,0)));;\ncdelay2 = if(((cdelay1) == (2)),1,0);;\ncolorcounter = if(((colorcounter) > (7)),0,if(((cdelay1) == (1)),colorcounter+1,colorcounter));;\nob_r = if(((colorcounter) == (1)),1, if(((colorcounter) == (2)),1, if(((colorcounter) == (3)),1, if(((colorcounter) == (4)),sin(counter2+2.1), if(((colorcounter) == (5)),0, if(((colorcounter) == (6)),0,sin(counter1)))))));;\nob_g = if(((colorcounter) == (1)),0, if(((colorcounter) == (2)),sin(counter2*.5), if(((colorcounter) == (3)),sin((counter1+1.75)*.4), if(((colorcounter) == (4)),1, if(((colorcounter) == (5)),1, if(((colorcounter) == (6)),sin(counter2+2),0))))));;\nob_b = if(((colorcounter) == (1)),sin(counter1+2.1), if(((colorcounter) == (2)),0, if(((colorcounter) == (3)),0, if(((colorcounter) == (4)),0, if(((colorcounter) == (5)),sin(counter1), if(((colorcounter) == (6)),1,1))))));;\nrot = .2*sin(time)+abs(.1*sin(time/2));;\nxmovn = 0.01*int(rand(6))-0.03;;\nymovn = 0.01*int(rand(6))-0.03;;\nxmov = if(beat,xmovn,xmov);;\nymov = if(beat,ymovn,ymov);;\nq1=oldx;;\nq2=oldy;;\nout_x = bor(((q1+xmov) > (.8)),((q1+xmov) < (.2)));;\nout_y = bor(((q2+ymov) > (.8)),((q2+ymov) < (.2)));;\nxmov = xmov + (-2*xmov*out_x);;\nymov = ymov + (-2*ymov*out_y);;\nwave_x =  q1+xmov ;;\nwave_y = q2+ymov;;\nq1=wave_x;;\nq2=wave_y;;\noldx = q1;;\noldy = q2;;\ndecay = decay - 0.91*(treble);;\n//Thanks to krash for beat detection (modified);\nvolume = 0.3*bass+mid;;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01))+(1-((volume) < (0.01)))*beatrate);;\nlastbeat = if(beat,time,lastbeat);;\nmeanbass_att = 0.1*(meanbass_att*9+bass_att);;\npeakbass_att = max(bass_att,peakbass_att);;\nbeat = ((volume) > (0.8))*((bass_att) > (meanbass_att*1.2))*((time-lastbeat) > (0.1 + 0.5*(beatrate-0.1)));;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9+time-lastbeat), beatrate) ,beatrate),0.1);;\nmonitor = beatrate;",
+        "perVertex": "mrad = pow(pow(x-q1,2)+pow(y-(1-q2),2),0.5)*pow(2,0.5);;\ncx = q1;;\ncy = 1-q2;;\nrot= rot + ((mrad-0.2) < (0))*0.5*sin(mrad*40)*(mrad-0.2)*10- ((mrad-0.2) > (0))*0.5*sin(mrad*2)*(mrad-0.2)*sin(cx*cy*10);;\nzoom= zoom - ((mrad-0.1) > (0))*0.05*mrad;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#c49999"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

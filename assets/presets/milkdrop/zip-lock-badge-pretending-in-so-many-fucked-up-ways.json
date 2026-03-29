@@ -1,0 +1,16 @@
+{
+  "name": "zip lock badge - pretending in so many fucked up ways",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 13.29089;\nrot = 0;\ndx = 1;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nvol= (bass+mid+treb)*0.25;;\nvol=vol*vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nmusictime=musictime+vol;;\nq4=0;;\nq5=0;;\n//q4=sin(musictime*0.02)*0.3;;\n//q5=sin(musictime*0.01)*0.3;;\n//dx=sin(musictime*0.1)*0.07;;\n//dy=cos(musictime*0.069)*0.01;;\nq1=sin(musictime*0.001)*0.4+0.5;;\nq2=cos(musictime*0.001)*0.5+0.5;;\ndx=0;dy=0;;\ncx=0.5;;\nsx=1.002;;\nq8=musictime;;\nzoom=1;;\nmonitor=rot;;\nmusictime=musictime+(mid*mid)*0.003;;\nbasstime=basstime+(bass*bass)*0.03;;\nxpos=sin(musictime*0.6)*0.01;;\nypos=sin(musictime*0.4)*0.01;;\nq4=xpos;;\nq5=ypos;;\nq6=basstime",
+        "perVertex": "rot=0;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

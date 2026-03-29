@@ -1,0 +1,23 @@
+{
+  "name": "381",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1.00796;\nrot = 0.02;\ndx = 0;\ndy = 0;\nsx = 0.99967;\nsy = 0.9999;\nwarp = 0.00016;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.350*( 0.60*sin(0.980*time) + 0.40*sin(1.047*time) );;\nwave_g = wave_g + 0.350*( 0.60*sin(0.835*time) + 0.40*sin(1.081*time) );;\nwave_b = wave_b + 0.350*( 0.60*sin(0.814*time) + 0.40*sin(1.011*time) );;\nq1 = (cx*2-1) + 0.32*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );;\nq2 = (cy*2-1) + 0.52*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );;\nq3 = (cx*2-1) + 0.32*( 0.60*sin(0.174*-time) + 0.40*sin(0.364*time) );;\nq4 = (cy*2-1) + 0.52*( 0.60*sin(0.234*time) + 0.40*sin(0.271*-time) );;\ndecay = decay - 0.01*((frame%5) == (0));",
+        "perVertex": "du = x*2-1 - q1;;\ndv = y*2-1 - q2;;\ndist = sqrt(du*du+dv*dv);;\nang2 = atan2(du,dv);;\nmult = 0.012/(dist+0.4);;\ndx = mult*sin(ang2-1.5);;\ndy = mult*cos(ang2-1.5);;\ndu = x*2-1 - q3;;\ndv = y*2-1 - q4;;\ndist = sqrt(du*du+dv*dv);;\nang2 = atan2(du,dv);;\nmult = 0.012/(dist+0.4);;\ndx = dx + mult*sin(ang2+1.5);;\ndy = dy + mult*cos(ang2+1.5);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

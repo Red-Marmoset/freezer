@@ -1,0 +1,20 @@
+{
+  "name": "55",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9803;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nwave_mystery = 2;;\nvol = (bass+mid+att)/6;;\nxamptarg = if(((frame%15) == (0)),min(0.5*vol*bass_att,0.5),xamptarg);;\nxamp = xamp + 0.5*(xamptarg-xamp);;\nxdir = if(((abs(xpos)) > (xamp)),-sign(xpos),if(((abs(xspeed)) < (0.1)),2*((xpos) > (0))-1,xdir));;\nxaccel = xdir*xamp - xpos - xspeed*0.055*((abs(xpos)) < (xamp));;\nxspeed = xspeed + xdir*xamp - xpos - xspeed*0.055*((abs(xpos)) < (xamp));;\nxpos = xpos + 0.001*xspeed;;\ndx = xpos/16;;\nyamptarg = if(((frame%15) == (0)),min(0.3*vol*treb_att,0.5),yamptarg);;\nyamp = yamp + 0.5*(yamptarg-yamp);;\nydir = if(((abs(ypos)) > (yamp)),-sign(ypos),if(((abs(yspeed)) < (0.1)),2*((ypos) > (0))-1,ydir));;\nyaccel = ydir*yamp - ypos - yspeed*0.055*((abs(ypos)) < (yamp));;\nyspeed = yspeed + ydir*yamp - ypos - yspeed*0.055*((abs(ypos)) < (yamp));;\nypos = ypos + 0.001*yspeed;;\ndy =ypos/12;",
+        "perVertex": "zoom = 1.45 +0.04*cos(time*0.42) + atan(atan(1-rad)*1.5*rad);;\nrot = 0.03*sin(0.34*time)-0.013*cos(0.784*time)+0.02*sin(1-rad);;\ndx = dx + 0.01*(0.5*sqrt(2)-rad);;\ndy= dy + 0.01*(0.5*sqrt(2)-rad);;\ncx = 0.5 + 0.1*sin(0.497*time)*(sqrt(2)-rad);;\ncy = 0.5 +0.1*sin(0.413*time)*(0.5*sqrt(2)-rad);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Rovastar & Zylot - Reactor Mirage",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nwave_r = .5 + (wave_color1*sin(time*.555));;\nwave_g = .5 + (wave_color2*sin(time*.444));;\nwave_b = .5 + (wave_color3*sin(time*.666));;\nwave_mystery = wave_mystery +0.01*(frame%20)+ bass*.01;;\nbass_test = ((bass+bass_att) > (2.2));;\nwave_mystery = if(bass_test,if(frame%2,0,1),wave_mystery);;\nwave_mode = if(bass_test,7,wave_mode);;\nwave_y = if(bass_test,0.25,wave_y);;\ndecay = if((((frame)%2) > (0)),decay,.71);;\nwave_r = if(bass_test,1,0);;\ndx = .5;;\ndy = .5;;\nzoom = 0.58+0.058*(bass+bass_att);;\nob_r = if(((treb) > (1.2)),treb*.1,0);;\nmv_r = if(((bass_att) > (1.2)),bass*.1,0);;\nib_a = if(((bass) > (2)),1,0);;\necho_zoom =0.9+0.5*(2*bass+bass_att);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.999595,
+      "alpha": 0.5,
+      "orient": 0
+    }
+  ]
+}

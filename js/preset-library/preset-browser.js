@@ -295,7 +295,8 @@ function renderVisibleRows() {
 
     const authorName = authorById[p.authorId]?.name || '';
     const packName = p.packIds.map(pid => packById[pid]?.name || '').join(', ');
-    row.innerHTML = `<span class="lib-preset-title">${esc(p.title)}</span><span class="lib-preset-meta">${esc(authorName)} &middot; ${esc(packName)}</span>`;
+    const wip = (p.packIds.includes('milkdrop') || p.packIds.includes('geiss')) ? ' \u{1F6A7}' : '';
+    row.innerHTML = `<span class="lib-preset-title">${esc(p.title)}${wip}</span><span class="lib-preset-meta">${esc(authorName)} &middot; ${esc(packName)}</span>`;
     row.addEventListener('click', () => loadPreset(p));
     presetList.appendChild(row);
   }
@@ -366,8 +367,16 @@ async function loadPreset(preset) {
     const url = `assets/presets/${preset.file}`;
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const buffer = await resp.arrayBuffer();
-    if (loadPresetCallback) loadPresetCallback(buffer, preset.title + '.avs', preset.id);
+
+    if (preset.format === 'json' || preset.file.endsWith('.json')) {
+      // JSON presets (MilkDrop conversions, Geiss, etc.) — load directly
+      const json = await resp.json();
+      if (loadPresetCallback) loadPresetCallback(json, null, preset.id);
+    } else {
+      // Binary .avs presets — pass as ArrayBuffer for parsing
+      const buffer = await resp.arrayBuffer();
+      if (loadPresetCallback) loadPresetCallback(buffer, preset.title + '.avs', preset.id);
+    }
   } catch (err) {
     console.error(`Failed to load preset ${preset.title}:`, err);
   }

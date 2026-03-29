@@ -1,0 +1,16 @@
+{
+  "name": "EoS - heater core C_Phat's_class_mix wave2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.999902;\nrot = 0;\ndx = 0;\ndy = -1;\nsx = 0.999998;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nvol=(bass+mid+treb)*0.25;;\nvol=vol*vol;;\nmtime=mtime+vol*0.018;;\nq7=mtime;;\nq8=vol;;\nr=tan(time*0.3+0.0)*0.25;;\nr=max(r,0);;\ng=tan(time*0.3+2.1)*0.25;;\ng=max(g,0);;\nb=tan(time*0.3+4.2)*0.25;;\nb=max(b,0);;\nq1=r;;\nq2=g;;\nq3=b",
+        "perVertex": "zoom=-1.02 + rad*10;;\n//rot=rad*500;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

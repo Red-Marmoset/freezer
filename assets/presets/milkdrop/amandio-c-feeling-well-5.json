@@ -1,0 +1,16 @@
+{
+  "name": "amandio c - feeling well 5",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.86;\ndecay=.6;;\nq6=aspecty;;\n//// flexi's beat counter;\nbt1 = bt1*0.95 + sqr(bass*4)*20/fps;;\nbt2 = bt2 + bt1*0.005;;\nbt = bt2 *0.01;;\ntt1 = tt1*0.95 + sqr(treb*4)*20/fps;;\ntt2 = tt2 + tt1*0.005;;\ntt = tt2 *0.01;;\nq1=bt;     q2=tt;;\nt10=t10+3/fps;;\nt10=t10*((25) > (t10));;\nq10=t10;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

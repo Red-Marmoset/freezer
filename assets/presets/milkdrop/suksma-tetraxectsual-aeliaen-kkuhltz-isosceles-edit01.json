@@ -1,0 +1,32 @@
+{
+  "name": "suksma - tetraxectsual aeliaen kkuhltz --- Isosceles edit01",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 1.064;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.88027;\nsy = 0.01;\nwarp = 0;\ncx = 0.5;\ncy = 0.5;\nib_r = 0.5 + (5.499*( 0.60*sin(0.945*time/3) + 0.40*sin(1.065*time/3) ));;\nib_g = 0.5 + (5.499*( 0.60*sin(0.933*time/3) + 0.40*sin(1.045*time/3) ));;\nib_b = 0.5 + (5.499*( 0.60*sin(0.910*time/3) + 0.40*sin(0.920*time/3) ));;\nob_g = ib_r;;\nob_r = ib_g;;\nob_b = ib_b;;\nwave_a=0;;\ndecay =0.99;;\nwarp=1.5;;\nq1 = oldq1+0.005*(bass+bass_att+(bass*bass_att)-2);;\noldq1 = ((q1) < (30000))*q1;;\nmonitor =q1;",
+        "perVertex": "//dx=0.003*(bass*bass+bass_att)*sin((sin(sqrt(4)-rad))*5+(rad*5*sin(q1)))*y*ang;;\n//dy=0.003*(bass*bass+bass_att)*cos((sin(sqrt(4)-rad))*5+(-rad*5*sin(q1)))*x*rad*ang;;\n//tm=12 + sin(time/2)*0.7;;\ntmm=time*rad*rad;;\nrot=(sin(tmm/2)*x)/(atan(tmm*2)/ang/x);;\n//rot=rot + (x/y)*0.1;;\nzoom=-1.00* ( x  / y ) ;;\nsy=sx"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#80ffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    }
+  ]
+}

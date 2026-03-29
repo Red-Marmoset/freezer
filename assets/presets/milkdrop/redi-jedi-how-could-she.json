@@ -1,0 +1,23 @@
+{
+  "name": "redi jedi - How could she",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nnum_samples=gmegabuf(0);;\nnum_slices = 4;;\nslice_size = num_samples/num_slices;;\nraw_bass = 0;;\nraw_treb = 0;;\ni=0;;\nloop(slice_size,;\nexec3(;\nraw_bass = raw_bass + gmegabuf(i+1+slice_size*.3),;\nraw_treb = raw_treb + gmegabuf(i+1+slice_size*(num_slices*.7)),;\ni=i+1;\n);\n);;\nraw_bass = raw_bass * 30/fps;;\nraw_treb = raw_treb * 30/fps;;\nraw_bass = raw_bass/num_samples;;\nraw_treb = raw_treb/num_samples;;\ndbass = raw_bass - last_raw_bass;;\ndtreb = raw_treb - last_raw_treb;;\navgdbass=avgdbass*.99+abs(dbass)*.01;;\navgdtreb=avgdtreb*.99+abs(dtreb)*.01;;\nlast_raw_bass = raw_bass;;\nlast_raw_treb = raw_treb;;\nis_beat = ((abs(dbass)) > (avgdbass*2));;\nis_beat = is_beat * ((time-lbt) > (avgbr*.5));;\nbeatb = is_beat;;\nis_beat = ((abs(dtreb)) > (avgdtreb*2));;\nis_beat = is_beat * ((time-lbt2) > (avgbr2*.5));;\nmonitor = raw_treb;;\nbeatb2 = is_beat;;\n//beatrate calc;\navgbr=beatb*(avgbr*.9+(time-lbt)*.1)+(1-beatb)*max(avgbr+(1/avgbr)*.0001,0); // avg beat rate;\navgbr2=beatb2*(avgbr2*.9+(time-lbt2)*.1)+(1-beatb2)*max(avgbr2+(1/avgbr2)*.00001,0);;\nlbt=time*beatb+(1-beatb)*lbt; //last beat time;\nlbt2=time*beatb2+(1-beatb2)*lbt2;;\nph=(time-lbt)*(60/avgbr)*const;;\nphase=max(min( ph, 1 ),0);;\nconst=const*(1-beatb)+beatb*( const+ (.002*bool) );;\nbool=((phase) < (.98))*(.98-ph)-((phase) > (.98))*(ph*.5);;\nph2=(time-lbt2)*(60/avgbr2)*const2;;\nphase2=max(min( ph2, 1 ),0);;\nconst2=const2*(1-beatb2)+beatb2*( const2+ (.002*bool2) );;\nbool2=((phase2) < (.98))*(.98-ph2)-((phase2) > (.98))*(ph2*.5);;\nbc=bc+beatb;;\nbc2=bc2+beatb2;;\nmtime=mtime+( (avgdbass*(60/avgbr))*(1+beatb) )*(1/fps);;\nmtime2=mtime2+( (avgdtreb*(60/avgbr2))*(1+beatb2) )*(1/fps);;\nq1=1-phase;;\nq2=1-phase2;;\nq3=bc;;\nq4=bc2;;\nq5=mtime;;\nq6=mtime2;;\nq7=sin(mtime)*.5+.5;;\nq8=sin(mtime2)*.5+.5;;\nq9=sin(mtime*.1)*.5+.5;;\nq10=sin(mtime2*.1)*.5+.5;;\nq11=avgdbass;;\nq12=avgdtreb;;\nq14=60/avgbr;;\nq15=60/avgbr2;;\nmonitor = q14+floor(q15) *100000;;\nmonitor = avgbr + floor(q14) * 100;;\nq20=beatb;;\nq21=beatb2;;\nq22=bc%4;;\nq23=bc2%4;;\n//monitor=bc;;\nwarp=0;;\nwrap=1;;\nzoom=1;;\ns=1+q20+q21;;\nob_r=sin((mtime*1.2-mtime2*1.3)*s)*.5+.5;;\nob_g=sin((mtime*0.9+mtime2*1.4)*s)*.5+.5;;\nob_b=sin((mtime2*1.5-mtime*0.8)*s)*.5+.5;;\nob_a = min(q1*0.5+(beatb+beatb2),1);;\n//ob_r=ob_g=ob_b=1;",
+        "perVertex": "//rot=(q2-q1);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.007,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

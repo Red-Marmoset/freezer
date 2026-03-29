@@ -1,0 +1,39 @@
+{
+  "name": "Pinbi7 & Idiot - Cathedral",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.76023;\nrot = 0.006;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1.000002;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nob_r=obr-.2*sin(time*.35);;\nob_g=obg+.2*sin(time*15);;\nob_b=obg-.1*sin(time*.25);",
+        "perVertex": "rot=rot-rad+ang&x&y-.4+y-.7"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.9996,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

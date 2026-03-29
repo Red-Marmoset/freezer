@@ -1,0 +1,39 @@
+{
+  "name": "suksma - 3125 legislative pig's orbitael minimass - cope vs goat roam3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.715",
+        "perFrame": "zoom = 1;\nrot = 0.004;\ndx = -0.012;\ndy = -0.004;\nsx = 1.8167;\nsy = 1.79871;\nwarp = 0.80322;\ncx = 0.5;\ncy = 0.5;\n// Black Rebel Motorcycle Club - Lien On Your Dreams;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.3)*0.91+1.3);;\nvol = 0.1*(vol*9 + (bass_att+mid_att+treb_att)*0.333333);;\nq11 = vol;;\nmtime = mtime+vol*0.1;;\nq10 = mtime*0.1;;\ntrel = trel + (1+vol/2)/fps;;\nq1 = trel*0.44;;\nq2 = trel*0.32;;\nq3 = trel*0.285;;\nq7 = trele*0.1;;\nq4 = 0.2*sin(trel*0.4);;\nq5 = 0.2*cos(trel*0.634);;\nq6 = -0.2*sin(trel*0.58);;\n//sy = sy + vol;;\nbeat = ((bass_thresh) == (2))*1 + (1-((bass_thresh) == (2)))*beat*0.95;;\nq8 = beat;;\nmonitor=beat;;\npigtemp=int(pow(4,bass+treb+mid));;\nq12=if(((pigtemp) > (1024)),1024,pigtemp);;\nmonitor=q12;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 2,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

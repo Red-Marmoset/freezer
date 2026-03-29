@@ -1,0 +1,32 @@
+{
+  "name": "boobs - tithypno",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1;\nrot = -0.02;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nrot=if(((bass) > (1.3)),-rot,rot);;\nwave_x=0.5+(cos(time*2.8)*0.3);;\nwave_r=int(rand(101))/100;;\nwave_g=int(rand(101))/100;;\nwave_b=int(rand(101))/100;;\ncx=0.5+sin(time*3)*0.9;;\ncy=0.5+cos(time*3)*0.9;",
+        "perVertex": "//rot=if(((rad) > (0.5)),-rot,rot);;\n// i don't like the block effects very much, the sigmoid function does a very good job to avoid them;\n// http://en.wikipedia.org/wiki/Sigmoid_function;\n// welcome to our crazy microcosmos ;);\nc = 8; // try values from 1 to 100;\nrot = rot*(sigmoid(rad-0.5,c)-0.5)*2;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

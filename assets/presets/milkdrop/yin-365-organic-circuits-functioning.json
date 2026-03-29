@@ -1,0 +1,16 @@
+{
+  "name": "yin - 365 - Organic circuits (functioning)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.898999",
+        "perFrame": "zoom = 0.999999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n// -------------------------------- beat detection code ----------------------------------;\nsure=if(((sure) == (0)),.75,sure);;\ninterval=if(((interval) == (0)),.7*FPS,interval);;\navginterval=if(((avginterval) == (0)),.7*FPS,avginterval);;\nlockinterval=if(((lockinterval) == (0)),.7*FPS,lockinterval );;\nlastbeat=if(((lastbeat) == (0)),frame-FPS,lastbeat);;\ndbass=(bass-pbass)*FPS;;\nbeat=((dbass) < (0))*((pdbass) > (0))*((bass) > (.95*avgbass))*((frame-lastbeat) > (FPS/3));;\nsure=if(beat*((abs(frame-(interval+lastbeat))) < (FPS/5)),;\nmin(.095+sure,1),beat*(sure-.095)+(1-beat)*sure*.9996);;\nsure=max(.5,sure);;\navgbass=.995*avgbass+.005*bass;;\nmaxdbass=max(maxdbass*.999,dbass);;\nmaxdbass=min(200,maxdbass);;\nmaxdbass=max(.02,maxdbass);;\ninterval=if(beat*((frame-lastbeat) < (1.8*interval)), ((frame-lastbeat)*.25+.75*interval),interval);;\nlastbeat=if((1-force)*beat+((lastbeat+interval) == (frame)),frame,lastbeat);;\navginterval=if(beat,.9*avginterval+.1*interval, avginterval);;\nlockinterval=if(beat,.9*lockinterval+.1*avginterval,lockinterval);;\npbass=bass;;\npdbass=dbass;;\nbpm=60*FPS*.3333*( ((2*(1-sure))/interval)+((2*sure)/avginterval)+(1/lockinterval) );;\nphase=min( (frame-lastbeat)/(.333*(2*sure*avginterval+2*(1-sure)*interval+lockinterval)), 1 );;\nbeat=if(((phase) == (0)),1,beat);;\ninterval=min(interval,.7*FPS);;\navginterval=min(avginterval,.7*FPS);;\nlockinterval=min(lockinterval,.7*FPS);;\n// ----------------------------------------------------------------------------------------------;\nob_size=0;;\nwarp=0;;\nzoom=1.01;;\ndt=1/FPS;;\ncontbass=(1-.2*dt)*contbass+.2*dt*bass;;\ncontbass=min(contbass,1.2);;\nzoom=1+.001*(contbass/1.2);;\nmytime=mytime + dt*.25 + ((bass-mypbass) > (0))*(bass-mypbass)*.01;;\nq1=.3+.49*abs(sin(.1*time+.543));;\n//q1=.45;;\nq2=1+cos(2*mytime+.43+sin(10*mytime+1.043));;\nq3=pow(1-phase,5);;\ndecay=.9 + .1*((phase) > (0))*pow(1-phase,.5);;\n//decay=.99;;\n//zoom=1;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

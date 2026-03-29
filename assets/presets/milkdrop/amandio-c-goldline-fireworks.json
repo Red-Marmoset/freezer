@@ -1,0 +1,23 @@
+{
+  "name": "Amandio C - Goldline (fireworks)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.97",
+        "perFrame": "zoom = 0.999899;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nsy=1.002;;\nsx=1.001;;\nt2=t2+.02;;\nq2=460+t2;;\nmonitor=t2;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997383,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

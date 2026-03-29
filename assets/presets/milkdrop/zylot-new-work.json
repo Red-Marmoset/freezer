@@ -1,0 +1,32 @@
+{
+  "name": "Zylot - new work",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.997",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nvol = (bass+mid+att)/6;;\nxamptarg = if(((frame%15) == (0)),min(0.5*vol*bass_att,0.5),xamptarg);;\nxamp = xamp + 0.5*(xamptarg-xamp);;\nxdir = if(((abs(xpos)) > (xamp)),-sign(xpos),if(((abs(xspeed)) < (0.1)),2*((xpos) > (0))-1,xdir));;\nxaccel = xdir*xamp - xpos - xspeed*0.055*((abs(xpos)) < (xamp));;\nxspeed = xspeed + xdir*xamp - xpos - xspeed*0.055*((abs(xpos)) < (xamp));;\nxpos = xpos + 0.001*xspeed;;\nyamptarg = if(((frame%15) == (0)),min(0.3*vol*treb_att,0.5),yamptarg);;\nyamp = yamp + 0.5*(yamptarg-yamp);;\nydir = if(((abs(ypos)) > (yamp)),-sign(ypos),if(((abs(yspeed)) < (0.1)),2*((ypos) > (0))-1,ydir));;\nyaccel = ydir*yamp - ypos - yspeed*0.055*((abs(ypos)) < (yamp));;\nyspeed = yspeed + ydir*yamp - ypos - yspeed*0.055*((abs(ypos)) < (yamp));;\nypos = ypos + 0.001*yspeed;;\nq1 = ypos;;\nq2 = xpos;",
+        "perVertex": "zoom = 1+rad*.1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

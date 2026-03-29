@@ -1,0 +1,32 @@
+{
+  "name": "Stahlregen - funky Blur (lotus mix) make perfect sense of everything with zero resources",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0.005;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a=0;;\nat=(bass_att+treb_att+mid_att)*.2;;\nfp=(time*10)%1000*.0001;;\nbt=bt+fp*(at*.06);;\nbt=((bt) < (6.28))*bt;;\nq1 = bt*.01;;\nq2 = bt*.03;;\ndecay=0.975;;\nmonitor=bt;;\nob_r=sin(time*.013)*.2+.8;;\nob_g=sin(time*.016)*.2+.8;;\nob_b=sin(time*.019)*.2+.8;",
+        "perVertex": "zoom=zoom-(x/sin(time*q1))+(y*cos(time*q2))+1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

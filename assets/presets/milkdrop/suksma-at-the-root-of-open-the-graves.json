@@ -1,0 +1,16 @@
+{
+  "name": "suksma - at the root of - open the graves",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + .3*sin(time*.222);;\nwave_g = wave_g + .3*sin(time*.123);;\nwave_b = wave_b + .3*sin(time*.444);;\ndecay = .9 + .1*sin(time*.01);;\nq20=(bass+treb+mid)*.3;",
+        "perVertex": "dx = dx - .01*tan(time + (x)*47);;\ndy = .01*sin((-time*.22 + (y+.5)));"
+      },
+      "gridSize": 48
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "Stahlregen - funky Blur (lotus mix)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.0303;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\n// <<-- Stahlregen's (off)beat detection;\n// frame counter for average;\ncount = count+1;;\n// counters of the bass/treb/mid values for average;\nbc = bc+bass;;\ntc = tc+treb;;\nmc = mc+mid;;\n// checking for impact: highest of bass/mid/treb has impact;\nbimp = if(((3.25*bass) > (bass+treb+mid)),1,0);;\ntimp = if(((2.75*treb) > (bass+treb+mid)),1,0);;\nmimp = if(((2.75*mid) > (bass+treb+mid)),1,0);;\n// checking for beats: compare adjusted buffered;\n// vs. average value and check for impact;\nis_beat = if(((.75*bass) > (bc/count)),1*bimp,;\nif(((.75*treb) > (tc/count)),1*timp,;\nif(((.75*mid) > (mc/count)),1*mimp,;\n0)));;\n// restricting max number of beats per second (fraction of fps);\nis_beat = if(((reha) > (0)),0,is_beat);;\nreha = if(is_beat,fps*.25,if(((reha) < (1)),0,reha-1));;\n// end of (off)beat detection -->;\nfade = if(is_beat,100+fade,.9*fade-1);;\nfade = if(((fade) < (1)),0,fade);;\nzoom = 1.01+.001*fade;;\nwave_r = .5+.5*sin(time);;\nwave_g = .5+.5*sin(time*1.53);;\nwave_b = .5+.5*sin(time*2.02);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

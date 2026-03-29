@@ -1,0 +1,32 @@
+{
+  "name": "amandio c - fume",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 1.0003;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1.1046;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nq1=25*sin(.06*time);;\nq2=25*sin(.04*time);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

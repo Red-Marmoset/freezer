@@ -1,0 +1,23 @@
+{
+  "name": "signed 'nuph phoaqing death warrants niq yr 'eadin",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1.00051;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.00002;\ncx = 0.5;\ncy = 0.5;\n//Thanks to krash for beat detection (modified);\nvolume = 0.3*bass+mid;;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate);;\nlastbeat = lastbeat + ((lastbeat) == (0))*time;;\nmeanbass_att = 0.1*(meanbass_att*9 + bass_att);;\nrunmeanbass =(runmeanbass*2 + bass_att)/3;;\npeakbass_att = max(bass_att,peakbass_att);;\nbeat = ((volume) > (0.8))*((bass_att) > (runmeanbass*1.1))*((peakbass_att - bass_att) < (0.05*peakbass_att))*((time - lastbeat) > (0.1 + 0.5*(beatrate - 0.1)));;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\npeakbass_att = beat*bass_att + (1-beat)*peakbass_att*(((time - lastbeat) > (2*beatrate))*0.95 + (1-((time - lastbeat) > (2*beatrate)))*0.995);;\nlastbeat = beat*time + (1-beat)*lastbeat;;\npeakbass_att = max(peakbass_att,1.1*meanbass_att);;\nq1 = beat;;\nvol=bass+treb+mid;;\nq11=-2+sin(time)*.5+vol;;\nq12=-2+sin(time)*.5+vol;;\nq29=(vol)*1;;\nq30=vol*1.5;;\nq30=(bass+treb+mid)*2;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.018,
+      "alpha": 0.38,
+      "orient": 0
+    }
+  ]
+}

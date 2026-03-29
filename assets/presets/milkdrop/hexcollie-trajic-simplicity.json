@@ -1,0 +1,39 @@
+{
+  "name": "Hexcollie - Trajic Simplicity",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.0101;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.5*sin(time*1.13);;\nwave_g = wave_g + 0.5*sin(time*1.23);;\nwave_b = wave_b + 0.5*sin(time*1.33);",
+        "perVertex": "zoom = zoom + 0.25*(0.05*bass_att + sin(sin(time+rad))*0.3 - cos(rad)*0.1);;\nrot = 0.06*sin(rad);;\ndx = dx + 0.008*(0.99*1-rad)*sin(0.733*time);;\ndy = dy + 0.008*(0.99*1-rad)*cos(0.953*time);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 2
+    }
+  ]
+}

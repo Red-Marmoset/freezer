@@ -1,0 +1,23 @@
+{
+  "name": "ORB - Depth Charge",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.96;\nrot = -6.279995;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.000521;\ncx = 0.5;\ncy = 0.5;\nbasstime = basstime + bass*0.06;;\nq1 = basstime;;\nq9 = basstime * 0.000005;;\nbasstime = if(((basstime) < (1000)),1000,basstime);;\nvol = pow(bass+mid+treb,2);;\nbasssum = vol;;\nstickybit = time%2;;\n//avg vol;\n//buffer 1;\nvolAvg = volAvg + vol*((stickybit) == (1));;\n//number of samples 1 or framerate;\nsample1 = sample1 + ((stickybit) == (1));;\n//buffer 2;\nvolAvg2 = volAvg2 + vol*((stickybit) == (0));;\n//number of samples 2;\nsample2 = sample2 + ((stickybit) == (0));;\n//transision;\nedge = bnot(((bit2) == (stickybit)));;\nvolAvg = volAvg - volAvg*edge*stickybit;;\nvolAvg2 = volAvg2 - volAvg2*edge*((stickybit) == (0));;\nsample1 = sample1  - sample1*edge*stickybit;;\nsample2 = sample2  - sample2*edge*((stickybit) == (0));;\n//test vol against avg buffer lvl;\ndiff = if(((stickybit) == (1)), (basssum/(volAvg2/sample2)) , 0);;\ndiff = if(((stickybit) == (0)), (basssum/(volAvg/sample1)), diff);;\nq3 = diff;;\nbit2 = time%2;;\ndifftime = difftime + diff*0.03;;\nq2 = difftime;;\n//fix a strange error;\ndifftime = if(((difftime) > (2000)),0, difftime);;\nmonitor = q1;",
+        "perVertex": "zoom = 1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.006596,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

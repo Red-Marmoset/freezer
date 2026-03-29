@@ -1,0 +1,16 @@
+{
+  "name": "fiShbRaiN - city slicker",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.999513;\nrot = 0;\ndx = 0;\ndy = -0.2;\nsx = 2.006757;\nsy = 2.047096;\nwarp = 5.277905;\ncx = 0.5;\ncy = 0.5;\nmv_r=bass*.75;;\nmv_g=treb*.75;;\nmv_dx=sin(time)*.1;;\nmv_dy=cos(time)*.1;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

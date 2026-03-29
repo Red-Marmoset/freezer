@@ -1,0 +1,32 @@
+{
+  "name": "amandio c - typhoon season (inside) - fuckingdelic",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nwave_a=0;;\nzoom=.995;;\n//// Flexi's beat counter;\nbt1 = bt1*0.95 + sqr(bass*5)*30/fps;;\nmt1 = mt1*0.95 + sqr(mid*5)*30/fps;;\ntt1 = tt1*0.95 + sqr(treb*5)*30/fps;;\nbt2 = bt2 + bt1*0.003;;\nmt2 = mt2 + mt1*0.003;;\ntt2 = tt2 + tt1*0.003;;\nq1 = bt2 *0.02;;\nq2 = mt2 *0.02;;\nq3 = tt2 *0.02;;\nq5=aspectx;;\nq6=aspecty;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    }
+  ]
+}

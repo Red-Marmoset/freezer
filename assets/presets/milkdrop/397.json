@@ -1,0 +1,23 @@
+{
+  "name": "397",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.97",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.96, 30/fps);;\ndec_slow = pow (0.98, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.5+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %8;;\nindex2 = (index2 + is_beat*bnot(index))%2;;\nindex3 = (index3 + is_beat*bnot(index) * bnot(index2))%2;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nvol = bass_att + treb_att;;\nv2 = v2 * dec_slow + vol * (1-dec_slow) ;;\nq26 = max(atan (vol - v2*.8),.3);;\nq27 = index + 1;;\nsw = sw*dec_med + (1-dec_med)*(index2%2);;\nq28 = sw;;\nk1 =  is_beat*bnot(index);;\nk2 =  is_beat*bnot(index);;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_slow * p2+ (1-dec_slow)*p1;;\nrott = p2 * 3.1416/2;;\nmonitor = k1;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\nq5 = cos(time/6);;\nq6 = -sin(time/6);;\nq7 = -q6;;\nq8 = q5;;\nzoom = 1;;\nrot = -0;;\nmovez = movez + .0035*(q1+1.1)*30/fps;;\nq29 = movez;;\nrota = rota + .001*(2-q1)*30/fps;;\nq30 = rota;;\nq31 = 1 + 16*abs(cos(time*.1));;\nq32 = .5*cos(time*.08)/4;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

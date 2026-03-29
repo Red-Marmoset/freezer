@@ -114,6 +114,8 @@ function loadPresetJSON(json, presetId) {
       url.searchParams.set('preset', id);
       history.replaceState(null, '', url);
     }
+    // Check for unsupported/incomplete components
+    checkComponentSupport(json);
     // Refresh editor tree if open
     if (!document.getElementById('editor').classList.contains('hidden')) {
       buildEditorTree();
@@ -121,6 +123,59 @@ function loadPresetJSON(json, presetId) {
   } catch (e) {
     console.error('Failed to load preset:', e);
   }
+}
+
+function checkComponentSupport(json) {
+  if (!json.components) return;
+  const unsupported = [];
+  const incomplete = [];
+  const allComps = flattenComponents(json.components);
+  for (const c of allComps) {
+    if (c._unsupported) {
+      unsupported.push(c.type);
+    } else if (c.type === 'MilkDropMotion' || c.type === 'CustomShader' || c.type === 'Echo' || c.type === 'DarkenCenter') {
+      incomplete.push(c.type);
+    }
+  }
+  if (unsupported.length > 0) {
+    showNotification(`Unsupported components: ${unsupported.join(', ')}`, 'error');
+  }
+  if (incomplete.length > 0) {
+    showNotification(`Experimental components (WIP): ${incomplete.join(', ')}`, 'warning');
+  }
+}
+
+function flattenComponents(comps) {
+  const result = [];
+  for (const c of comps) {
+    result.push(c);
+    if (c.components) result.push(...flattenComponents(c.components));
+  }
+  return result;
+}
+
+let notificationTimer = null;
+function showNotification(message, level) {
+  let el = document.getElementById('preset-notification');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'preset-notification';
+    el.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:999;padding:8px 18px;border-radius:6px;font-family:Rajdhani,sans-serif;font-size:13px;font-weight:600;opacity:0;transition:opacity 0.5s cubic-bezier(0.4,0,0.2,1);pointer-events:none;max-width:80vw;text-align:center;';
+    document.body.appendChild(el);
+  }
+  clearTimeout(notificationTimer);
+  el.textContent = message;
+  if (level === 'error') {
+    el.style.background = 'rgba(180,40,40,0.92)';
+    el.style.color = '#ffaaaa';
+    el.style.border = '1px solid rgba(255,80,80,0.4)';
+  } else {
+    el.style.background = 'rgba(160,120,20,0.92)';
+    el.style.color = '#fff3cd';
+    el.style.border = '1px solid rgba(255,200,60,0.4)';
+  }
+  el.style.opacity = '1';
+  notificationTimer = setTimeout(() => { el.style.opacity = '0'; }, 3000);
 }
 
 /**
@@ -157,9 +212,16 @@ function loadPresetFile(file) {
 
 // --- Preset Library ---
 
-initPresetBrowser((buffer, filename, presetId) => {
+initPresetBrowser((bufferOrJson, filename, presetId) => {
   try {
-    const json = parseAvsFileWithName(buffer, filename);
+    let json;
+    if (filename === null && typeof bufferOrJson === 'object' && !(bufferOrJson instanceof ArrayBuffer)) {
+      // JSON preset (MilkDrop/Geiss) — already parsed
+      json = bufferOrJson;
+    } else {
+      // Binary .avs preset — parse it
+      json = parseAvsFileWithName(bufferOrJson, filename);
+    }
     loadPresetJSON(json, presetId);
     dismissSplash();
   } catch (err) {

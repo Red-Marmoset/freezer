@@ -1,0 +1,39 @@
+{
+  "name": "beta106i - Eruption (Organic Soup)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.25*sin(1.4*time) + 0.25*sin(2.25*time);;\nwave_g = wave_g + 0.25*sin(1.7*time) + 0.25*sin(2.11*time);;\nwave_b = wave_b + 0.25*sin(1.84*time) + 0.25*sin(2.3*time);;\nwarp = 2;;\nob_r = wave_b;;\nob_b = wave_g;;\nob_g = wave_r;;\nib_r = abs(1-ob_r);;\nib_g = abs(1-ob_g);;\nib_b = abs(1-ob_b);;\ndecay = decay + abs(0.01*cos(time));",
+        "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.05*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.05*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nzoom = zoom - 0.1*(1-rad);;\nsx = sx + 1.4*dx_r*(x*(0.6-y))*sin(5*sin((0.2*time)*1-x));;\nsy = sy + 1.4*dy_r*(y*(0.6-x))*cos(5*cos((0.2*time)*1-y));;\nzoom = zoom - 0.1*(cos(8*rad)*(0.25*cos(6*rad)))*sin(5*cos((time)));;\ndy = dy - 3.3*dy_r*(x*(1.6-y))*sin(5*sin((0.2*time)*1-x));;\ndx = dx - 3.3*dx_r*(y*(1.6-x))*cos(5*cos((0.2*time)*1-y));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=v*0.5; y=(i*2-1)*0.8"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.999998,
+      "alpha": 0.5,
+      "orient": 0
+    }
+  ]
+}

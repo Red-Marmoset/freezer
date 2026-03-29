@@ -1,0 +1,32 @@
+{
+  "name": "27_super_goats-orbus_maximus poown",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.715",
+        "perFrame": "zoom = 1;\nrot = 0.004;\ndx = -0.012;\ndy = -0.004;\nsx = 1.8167;\nsy = 1.79871;\nwarp = 0.80322;\ncx = 0.5;\ncy = 0.5",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

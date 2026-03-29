@@ -1,0 +1,16 @@
+{
+  "name": "suksma - don't know, but yes this bored (adnan's)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.17914;\ncx = 0.5;\ncy = 0.5;\nmyVolume = (bass+treb+mid)/3;;\nwave_r = wave_r + 0.5*sin(7*bass)*3.78*time;;\nwave_b = wave_b + 0.5*sin(7*treb)*6.56*time;;\nwave_g = wave_g + 0.5*sin(7*mid)*4.35*time;;\nwave_x = wave_x + 0.1*sin(0.89*time);;\nwave_y = wave_y + 0.1*sin(0.76*time);;\nob_r = ob_r + 1.5*sin(7*bass)*3.78*time;;\nob_b = ob_b + 1.5*sin(7*treb)*6.56*time;;\nob_g = ob_g + 1.5*sin(7*mid)*4.35*time;;\ndy = -0.008 * sin(0.5*time);;\ndx = -0.008*  cos(0.26*time);",
+        "perVertex": "rot = rot + if (((rad) < (0.4+ 0.2*sin(bass/mid))), abs(0.02*abs(bass/treb)*sin(time)+ 0.01*abs(mid/treb/bass))*cos(time), 0);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

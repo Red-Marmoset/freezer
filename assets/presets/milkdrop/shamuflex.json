@@ -1,0 +1,27 @@
+{
+  "name": "shamuflex",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nwave_a=0;;\nzoom=.995;;\nbt=bt+bass/fps;;\nq1=.20*time;;\ntt=tt+treb/fps;;\nq2=.22*time;;\nmt=mt+mid/fps;;\nq3=.24*time;;\nq5=aspectx;;\nq6=aspecty;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997,
+      "alpha": 0.5,
+      "orient": 2
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

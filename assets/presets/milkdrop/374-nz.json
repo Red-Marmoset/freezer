@@ -1,0 +1,23 @@
+{
+  "name": "374 nz+",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nwave_a = 0;;\n//Thanks to Zylot for rainbow generator;\ncounter1 = if(((counter2) == (1)),if(((counter1) == (1)),0,counter1+.2),1);;\ncounter2 = if(((counter1) == (1)),if(((counter2) == (1)),0,counter2+.2),1);;\ncdelay1 = if(((cdelay2) == (1)),1,if(((colorcounter%2) == (1)),if(((counter1) == (1)),2 ,0), if(((counter2) == (1)),2,0)));;\ncdelay2 = if(((cdelay1) == (2)),1,0);;\ncolorcounter = if(((colorcounter) > (7)),0,if(((cdelay1) == (1)),colorcounter+1,colorcounter));;\nib_r = .5*if(((colorcounter) == (1)),1, if(((colorcounter) == (2)),1, if(((colorcounter) == (3)),1, if(((colorcounter) == (4)),sin(counter2+2.1), if(((colorcounter) == (5)),0, if(((colorcounter) == (6)),0,sin(counter1)))))));;\nq1=ib_r;;\nq2=ib_g;;\nq3=ib_b;;\ndecay = 1;;\n//echo_orient=((bass_att+mid_att+treb_att)/3)*3;;\n//solarize=((0.1) > (treb));;\ndarken=((1) > (treb));;\nmusictime=musictime+(mid*mid*mid)*0.01*(134/fps);;\nxpos=cos(musictime*5)*0.3;;\nypos=sin(musictime*0.4)*0.6;;\nq4=xpos;;\n//q5=ypos;\nq5=-0.39;;\nib_r=0;;\nib_g=0;",
+        "perVertex": "//flip= (-2 * ((sin(time)) > (-0.9)) )+1;;\n//var=(bass+mid+treb)/3;;\n//rot=((ang&rad/rad)/(var*20))/10;;\n//sx=.99-(var*0.01);;\n//cx=var*0.1*(ang/12);;\n//sy=sx;;\n//zoom=-1;;\nsx=-1+(bass*0.2);;\nsy=-1-(treb*0.2);;\ncx=0.5+q4;;\ncy=0.5-q5;;\nrd=sqrt( sqr( (x-0.5-q4)*2) + sqr( (y-0.5+q5)*9) );;\n//zm=(1.1-(rd/4));;\nzm=1;;\nag=atan( (y-0.5+q5)/(x-0.5-q4) );;\nstar=sin(ag*6+time)*((2-rd)-ag)/8;;\nzm=zm+star/30;;\nsx=zm*rd;;\nsy=zm*rd;;\n//rot=((rd) > (0.7))*(rd-0.7)*sin(time*0.3)"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

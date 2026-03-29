@@ -1,0 +1,39 @@
+{
+  "name": "Martin - beamer code 03h",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = 1- .2*30/fps;;\ndec_slow = 1-.05*30/fps;;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (1.2*avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %16;;\nq27 = index;;\npeak_ = dec_med*peak_ + (1-dec_med)*peak;;\nma = ma + (peak_-0)/fps*4*((peak_) > (0));;\nmx=mx*dec_slow+(1-dec_slow)*cos(ma);;\nmy=my*dec_slow+(1-dec_slow)*sin(ma);;\nq15 = mx/2 ;;\nq16 = my/2 ;;\nq17 = ma;;\nq32 = aspectx;;\nmonitor = q27;",
+        "perVertex": "warp = .0;;\nrot = .0;;\nzoom = 1.01"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

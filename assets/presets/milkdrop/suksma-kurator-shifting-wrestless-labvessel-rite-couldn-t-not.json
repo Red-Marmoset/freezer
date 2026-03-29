@@ -1,0 +1,32 @@
+{
+  "name": "suksma - kurator shifting wrestless labvessel rite - couldn't not",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nvb = vb*0.95 + (1-vb)*pow(bass*treb*mid,2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(mid,2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(treb,2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = vvb*2;//0.5 + vb - vvb;;\nq2 = vvm*2;//0.5 + vm - vvm;;\nq3 = vvt*2;//0.5 + vt - vvt;;\nv=2;;\nbb = bb - vvb*v;;\nmm = mm - vvm*v;;\ntt = tt - vvt*v;;\nq4 = -bb;;\nq5 = -mm;;\nq6 = -tt;;\nq4=(q1+q2+q3)*5;;\nq5=(q1+q2+q3)*5;;\nq6=(q1+q2+q3)*5;;\nq7=(q1+q2+q3)*5;;\nq8=(q1+q2+q3)*5;;\nq9=(q1+q2+q3)*5;;\nq10=(q1+q2+q3)*5;;\nq11=(q1+q2+q3)*5;;\nq12=(q1+q2+q3)*5;;\nq13=(q1+q2+q3)*5;;\nq14=(q1+q2+q3)*5;;\nq15=(q1+q2+q3)*5;;\nq16=(q1+q2+q3)*5;;\nq17=(q1+q2+q3)*5;;\nq18=(q1+q2+q3)*5;;\nq19=(q1+q2+q3)*5;;\nq20=(q1+q2+q3)*5;;\nq21=(q1+q2+q3)*5;;\nq22=(q1+q2+q3)*5;;\nq23=(q1+q2+q3)*5;;\nq24=(q1+q2+q3)*5;;\nq25=(q1+q2+q3)*5;;\nq26=(q1+q2+q3)*5;;\nq27=(q1+q2+q3)*5;;\nq28=(q1+q2+q3)*5;;\nq29=(q1+q2+q3)*5;;\nq30=(q1+q2+q3)*5;;\nq31=(q1+q2+q3)*5;;\nq32=(q1+q2+q3)*5;;\ndec_med = pow (0.9, 30/fps);;\ndec_slow = pow (0.99, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.4+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %12;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nindex3 = (index3 + is_beat*bnot(index)*bnot(index2))%3;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = bass + mid + treb;;\nq27 = index + 1;;\nq28 = index2;;\nk1 =  is_beat*((index%2) == (0));;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_med * p2+ (1-dec_med)*p1;;\nrott = p2 * 3.1416/4;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\ndrot = (index%4-2) * 30/fps;;\np3 = p3*dec_slow + (1-dec_slow)*30/fps * drot;;\nq30 = p3 ;;\nstag = (q27+index2*1);;\nstag = max(stag,1);;\np4 = dec_med*p4 + (1-dec_med)*stag;;\nq31 = p4;;\nzoom = 1 + .05*q1;;\nrot = -0.007 * index;;\nq32 = pow(0.996, 30/fps); //fade;\nmonitor = index2;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

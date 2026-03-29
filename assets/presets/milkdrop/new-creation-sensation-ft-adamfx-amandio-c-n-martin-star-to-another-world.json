@@ -1,0 +1,32 @@
+{
+  "name": "New Creation Sensation Ft AdamFx Amandio c n Martin - Star to Another World ",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.08925;\ncx = 0.5;\ncy = 0.5;\nsx=1+.01*(8*bass%8)*((time%(int(24-2*bass))) == (0));;\nsy=1+.01*(8*mid%8) *((time%(12+int(24-2*bass))) == (0));;\nzoom = 1;;\nwarp = 0;;\nwave_a = 0;;\n//pogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogo;\nr = 0.12+ max(bass_att,treb_att)*0.002;;\nbounce = ((y1) < (r));;\ny1 = y1+vy1;vy1 = if(bounce, abs(vy1)*0.94 + (r-y1)*0.1, vy1-0.0003*60/fps);;\nbounce = ((x1) < (r));x1 = x1+vx1;vx1 = if(bounce, abs(vx1)*0.94 + (r-x1)*0.1, vx1);;\nbounce = ((x1) > (1-r));vx1 = if(bounce, - abs(vx1)*0.94 + (1-r-x1)*0.04, vx1);;\nbounce = ((y2) < (r));y2 = y2 + vy2;vy2 = if(bounce,abs(vy2)*0.94+(r-y2)*.1, vy2-0.0003*60/fps);;\nbounce = ((x2) < (r));x2 = x2+ vx2;vx2 = if(bounce, abs(vx2)*0.94 + (r-x2)*0.1, vx2);;\nbounce = ((x2) > (1-r));vx2 = if(bounce, - abs(vx2)*0.94 + (1-r-x2)*0.1, vx2);;\nbounce = ((y3) < (r));y3 = y3 + vy3;vy3 = if(bounce,abs(vy3)*0.94+(r-y3)*.1, vy3-0.0003*60/fps);;\nbounce = ((x3) < (r));x3 = x3+ vx3;vx3 = if(bounce, abs(vx3)*0.94 + (r-x3)*0.1, vx3);;\nbounce = ((x3) > (1-r));vx3 = if(bounce, - abs(vx3)*0.94 + (1-r-x3)*0.1, vx3);;\nbounce = ((y4) < (r));y4 = y4 + vy4;vy4 = if(bounce,abs(vy4)*0.94+(r-y4)*.1, vy4-0.0003*60/fps);;\nbounce = ((x4) < (r));x4 = x4+ vx4;vx4 = if(bounce, abs(vx4)*0.94 + (r-x4)*0.1, vx4);;\nbounce = ((x4) > (1-r));vx4 = if(bounce, - abs(vx4)*0.94 + (1-r-x4)*0.1, vx4);;\nbounce = ((sqrt( sqr(x1+vx1-x2-vx2) + sqr(y1+vy1-y2-vy2))) < (2*r));;\nref_ang = atan2(x2-x1,y2-y1)+asin(1); // common tangent;\nv1 = sqrt(vx1*vx1+vy1*vy1);v2 = sqrt(vx2*vx2+vy2*vy2);w1 = atan2(vx1,vy1);w2 = atan2(vx2,vy2);;\nvx1 = if(bounce,sin(ref_ang)*v1*cos(w1-ref_ang) + sin(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vx1);;\nvy1 = if(bounce,cos(ref_ang)*v1*cos(w1-ref_ang) + cos(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vy1);;\nvx2 = if(bounce,sin(ref_ang)*v2*cos(w2-ref_ang) + sin(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vx2);;\nvy2 = if(bounce,cos(ref_ang)*v2*cos(w2-ref_ang) + cos(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vy2);;\nbounce = ((sqrt( sqr(x1+vx1-x3-vx3) + sqr(y1+vy1-y3-vy3))) < (2*r));;\nref_ang = atan2(x3-x1,y3-y1)+asin(1); // common tangent;\nv1 = sqrt(vx1*vx1+vy1*vy1);v2 = sqrt(vx3*vx3+vy3*vy3);w1 = atan2(vx1,vy1);w2 = atan2(vx3,vy3);;\nvx1 = if(bounce,sin(ref_ang)*v1*cos(w1-ref_ang) + sin(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vx1);;\nvy1 = if(bounce,cos(ref_ang)*v1*cos(w1-ref_ang) + cos(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vy1);;\nvx3 = if(bounce,sin(ref_ang)*v2*cos(w2-ref_ang) + sin(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vx3);;\nvy3 = if(bounce,cos(ref_ang)*v2*cos(w2-ref_ang) + cos(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vy3);;\nbounce = ((sqrt( sqr(x2+vx2-x3-vx3) + sqr(y2+vy2-y3-vy3))) < (2*r));;\nref_ang = atan2(x3-x2,y3-y2)+asin(1); // common tangent;\nv1 = sqrt(vx2*vx2+vy2*vy2);v2 = sqrt(vx3*vx3+vy3*vy3);w1 = atan2(vx2,vy2);w2 = atan2(vx3,vy3);;\nvx2 = if(bounce,sin(ref_ang)*v1*cos(w1-ref_ang) + sin(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vx2);;\nvy2 = if(bounce,cos(ref_ang)*v1*cos(w1-ref_ang) + cos(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vy2);;\nvx3 = if(bounce,sin(ref_ang)*v2*cos(w2-ref_ang) + sin(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vx3);;\nvy3 = if(bounce,cos(ref_ang)*v2*cos(w2-ref_ang) + cos(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vy3);;\nbounce = ((sqrt( sqr(x1+vx1-x4-vx4) + sqr(y1+vy1-y4-vy4))) < (2*r));;\nref_ang = atan2(x4-x1,y4-y1)+asin(1); // common tangent;\nv1 = sqrt(vx1*vx1+vy1*vy1);v2 = sqrt(vx4*vx4+vy4*vy4);w1 = atan2(vx1,vy1);w2 = atan2(vx4,vy4);;\nvx1 = if(bounce,sin(ref_ang)*v1*cos(w1-ref_ang) + sin(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vx1);;\nvy1 = if(bounce,cos(ref_ang)*v1*cos(w1-ref_ang) + cos(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vy1);;\nvx4 = if(bounce,sin(ref_ang)*v2*cos(w2-ref_ang) + sin(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vx4);;\nvy4 = if(bounce,cos(ref_ang)*v2*cos(w2-ref_ang) + cos(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vy4);;\nbounce = ((sqrt( sqr(x2+vx2-x4-vx4) + sqr(y2+vy2-y4-vy4))) < (2*r));;\nref_ang = atan2(x4-x2,y4-y2)+asin(1); // common tangent;\nv1 = sqrt(vx2*vx2+vy2*vy2);v2 = sqrt(vx4*vx4+vy4*vy4);w1 = atan2(vx2,vy2);w2 = atan2(vx4,vy4);;\nvx2 = if(bounce,sin(ref_ang)*v1*cos(w1-ref_ang) + sin(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vx2);;\nvy2 = if(bounce,cos(ref_ang)*v1*cos(w1-ref_ang) + cos(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vy2);;\nvx4 = if(bounce,sin(ref_ang)*v2*cos(w2-ref_ang) + sin(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vx4);;\nvy4 = if(bounce,cos(ref_ang)*v2*cos(w2-ref_ang) + cos(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vy4);;\nbounce = ((sqrt( sqr(x3+vx3-x4-vx4) + sqr(y3+vy3-y4-vy4))) < (2*r));;\nref_ang = atan2(x4-x3,y4-y3)+asin(1); // common tangent;\nv1 = sqrt(vx3*vx3+vy3*vy3);v2 = sqrt(vx4*vx4+vy4*vy4);w1 = atan2(vx3,vy3);w2 = atan2(vx4,vy4);;\nvx3 = if(bounce,sin(ref_ang)*v1*cos(w1-ref_ang) + sin(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vx3);;\nvy3 = if(bounce,cos(ref_ang)*v1*cos(w1-ref_ang) + cos(ref_ang+asin(1))*v2*cos(w2-ref_ang-asin(1)), vy3);;\nvx4 = if(bounce,sin(ref_ang)*v2*cos(w2-ref_ang) + sin(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vx4);;\nvy4 = if(bounce,cos(ref_ang)*v2*cos(w2-ref_ang) + cos(ref_ang+asin(1))*v1*cos(w1-ref_ang-asin(1)), vy4);;\n//pogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogopogo;\nq1 = aspectx;;\nq2 = aspecty;;\nq3 = x1;;\nq4 = y1;;\nq5 = r;;\nq6 = x2;;\nq7 = y2;;\nq8 = r;;\nq9 = x3;;\nq10 = y3;;\nq11 = r;;\nq12 = x4;;\nq13 = y4;;\nq14 = r;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

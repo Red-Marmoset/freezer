@@ -1,0 +1,23 @@
+{
+  "name": "shifter + flexi - american pie artifactory - never contribute - loinel",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1.02198;\ncx = 0.5;\ncy = 0.5;\n//wave_a = 0;;\n//decay = 0.1;;\ntic = min(time-tin,.1);;\ntin = time;;\nti = ti + tic*24;;\nq1 = ((ti) > (1));;\nti = ti*((ti) < (1));;\nt2 = t2 + tic*bass*bass;;\nt2 = t2*((t2) < (.01));;\nq5 = ((t2) == (0));;\nq5 = 1-tic*(.5 + .1*bass*bass);;\n//t2 = 1-t2;;\n//q5 = t2;;\nvt = vt + bass*mid*treb*tic*.2;;\nbt = bt + bass*tic*.4;;\nmt = mt + mid*tic*.4;;\ntt = tt + treb*tic*.4;;\nq2=bt;;\nq3=mt;;\nq4=tt;;\nq10 = vt;;\nq11 = .5 + .25*sin(bt*1.12);;\nq12 = .5 + .25*sin(bt*0.98);;\nmonitor = ((bass*mid*treb) > (int(rand(1001)))*.001*2);;\nq20=aspecty;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 0
+    }
+  ]
+}

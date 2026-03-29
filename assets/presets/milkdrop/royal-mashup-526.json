@@ -1,0 +1,39 @@
+{
+  "name": "$$$ Royal - Mashup (526)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.033;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nzoom=0.95+.075*max(treb_att,bass_att);;\nwarp = 0;;\nvol=(bass_att+mid_att+treb_att)*0.25;;\nvol=vol*vol;;\nmtime=mtime+vol*0.1;;\nq1=mtime*0.4-.05*time;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#99ffcc"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.001,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

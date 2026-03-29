@@ -1,0 +1,36 @@
+{
+  "name": "suksma - water cooled red uranium vs dotes - taunt, persecute, genocide - but do it so softly, like a whisper to victim",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9803;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\n//wave_mystery = 1;;\nbassrun=bass+bassrun;;\ntrebrun=treb+trebrun;;\nmidrun=mid+midrun;;\nvol=(bassrun+midrun+trebrun)*.03;;\nvol2=vol*.001;;\nwarp = 0;;\nzoom = 1.4 +0.15*cos(vol*0.42);;\nrot = 0.01*sin(1.34*vol);;\ndx = 0.005*sin(vol*0.646);;\ndy=0.005*sin(vol*0.314);;\ncx = 0.5 + 0.05*sin(0.497*vol);;\ncy = 0.5 +0.05*sin(0.413*vol);;\npi23=4*asin(-1)*.33333333333333;;\nq8= (sin(vol-0*pi23)+1)*.5;;\nq9= (sin(vol-1*pi23)+1)*.5;;\nq10=(sin(vol-2*pi23)+1)*.5;;\nmv_r=q8;;\nmv_g=q9;;\nmv_b=q10;;\ncount = if(((count) < (9)),count+1,0);;\nq1 = 0.5;;\nq2 = 0.5;;\nq3 = count;;\n//zoom = 1 + 0.065*bass_att+0.05*bass;;\nq30=(bass+mid+treb)*.75;;\nq3=q30*2;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6ff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

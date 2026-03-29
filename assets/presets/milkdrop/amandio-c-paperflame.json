@@ -1,0 +1,16 @@
+{
+  "name": "Amandio C - Paperflame",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nangle =3.14+.2*sin(.3*time);;\nq31 = sin(angle);;\nq32 = cos(angle);;\nq5=0;;\nsx=.998;;\nsy=.998;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

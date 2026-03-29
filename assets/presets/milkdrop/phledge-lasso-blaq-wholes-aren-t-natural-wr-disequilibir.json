@@ -1,0 +1,16 @@
+{
+  "name": "phledge lasso blaq wholes aren't natural wr disequilibir",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1.00496;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.99967;\nsy = 0.9999;\nwarp = 0.00016;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nq4=sin(atime*.03);;\nq5=cos(atime*.030383824);;\nq6=tan(atime*.029384834);;\nq8 =oldq8+ 0.005*(pow(1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,6)/fps);;\noldq8 = q8;;\nmonitor = q8;;\nq1 = 0.62*( 0.60*sin(0.374*q8) + 0.40*sin(0.294*q8) );;\nq2 = 0.62*( 0.60*sin(0.393*q8) + 0.40*sin(0.223*q8) );;\nq3 = 0.62*( 0.60*sin(0.174*-q8) + 0.40*sin(0.364*q8) );;\nq4 = 0.62*( 0.60*sin(0.234*q8) + 0.40*sin(0.271*-q8) );;\nib_a = abs(sin(q8*0.9141));;\nslowtime = slowtime+beat*time;;\nvol_now =  .4 * bass + 0.1 * (bass_att+treb+mid);;\nvol_mean =  if(((frame%50) == (0)),vol_mean-0.5*(vol_mean-vol_now),0.1*(vol_mean*9 + vol_now));;\nbeat = if(((vol_now) > (1.5*vol_mean)),1,0);;\nib_r = cos(slowtime);;\nib_g = sin(time) ;;\nib_b= cos(slowtime)*sign(cos(slowtime));;\nredneg = if(((ib_r) < (0)),1,0);;\ngreenneg = if(((ib_g) < (0)),1,0);;\nblueneg = if(((ib_b) < (0)),1,0);;\nwave_r = if(redneg,if(bor(greenneg , blueneg),1,1+ib_r),ib_r);;\nwave_g = if(greenneg,if(((greenneg + blueneg) == (2)),1,1+ib_g),ib_g);;\nwave_b = if(blueneg,1 + ib_b, ib_b);;\nib_size = .01*(abs(sin(vol_mean)));;\nq5 = sin(slowtime);;\nq30=(bass+treb+mid)*2;",
+        "perVertex": "du = x*2-1 - q1;;\ndv = y*2-1 - q2;;\ndist = sqrt(du*du+dv*dv);;\nang2 = atan2(du,dv);;\nmult = 0.008/(dist+0.4);;\ndx = mult*sin(ang2-1.5);;\ndy = mult*cos(ang2-1.5);;\ndu = x*2-1 - q3;;\ndv = y*2-1 - q4;;\ndist = sqrt(du*du+dv*dv);;\nang2 = atan2(du,dv);;\nmult = 0.008/(dist+0.4);;\ndx = dx + mult*sin(ang2+1.5);;\ndy = dy + mult*cos(ang2+1.5);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

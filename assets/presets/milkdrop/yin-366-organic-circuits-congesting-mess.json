@@ -1,0 +1,16 @@
+{
+  "name": "yin - 366 - Organic circuits (congesting) - mess",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.899",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nob_size=0;;\nwarp=0;;\nzoom=1.01;;\ndecay=1;;\ndt=1/FPS;;\ncontbass=(1-.2*dt)*contbass+.2*dt*bass;;\ncontbass=min(contbass,1.2);;\nzoom=1+.01*(contbass/1.2);;\nmytime=mytime + dt*.25 + ((bass-mypbass) > (0))*(bass-mypbass)*.01;;\nq1=.3+.49*abs(sin(.1*time+.543));;\nq1=.4;;\nq2=1+cos(2*mytime+.43+sin(10*mytime+1.043));;\nsolarize=((frame%(2*FPS)) < (FPS));;\nmonitor=zoom;;\nvol=bass+treb+mid;;\nq11=-2+sin(time)*.5+vol;;\nq12=-2+sin(time)*.5+vol;;\nq29=(vol)*1;;\nq30=vol*1.5;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

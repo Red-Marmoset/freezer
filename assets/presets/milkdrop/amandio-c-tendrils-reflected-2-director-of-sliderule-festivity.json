@@ -1,0 +1,16 @@
+{
+  "name": "amandio c - tendrils reflected 2 director of sliderule festivity",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.86;\nwave_a=0;     warp=0;   decay=.1;;\nq6=aspecty;   t=t+.05/fps;   q1=t;;\ni=0;     x=0;     y=0;     p=0;;\nloop(2048,       sample=i/2048;;\np = .9*p*(1+.1*sin(2*t*sample+t)) +  2*cos(-sample-t);;\nx=x+sin(p);      y=y+cos(p);;\ngmegabuf(2*i)=x;      gmegabuf(2*i+1)=y;;\ni=i+1;);;\nmonitor=t;;\nq2=.1+.1*sqrt(t);  ///zoom",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

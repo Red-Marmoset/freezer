@@ -1,0 +1,16 @@
+{
+  "name": "suksma - no beat forensic",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.96;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.00052;\ncx = 0.5;\ncy = 0.5;\nbasstime = basstime + bass*0.03;;\nq1 = basstime;;\nbasstime = basstime + bass_att*0.03;;\nvol = pow(bass+mid+treb,2);;\nbasssum = vol;;\nstickybit = time%2;;\n//avg vol;\n//buffer 1;\nvolAvg = volAvg + vol*((stickybit) == (1));;\n//number of samples 1 or framerate;\nsample1 = sample1 + ((stickybit) == (1));;\n//buffer 2;\nvolAvg2 = volAvg2 + vol*((stickybit) == (0));;\n//number of samples 2;\nsample2 = sample2 + ((stickybit) == (0));;\n//transision;\nedge = bnot(((bit2) == (stickybit)));;\nvolAvg = volAvg - volAvg*edge*stickybit;;\nvolAvg2 = volAvg2 - volAvg2*edge*((stickybit) == (0));;\nsample1 = sample1  - sample1*edge*stickybit;;\nsample2 = sample2  - sample2*edge*((stickybit) == (0));;\n//test vol against avg buffer lvl;\ndiff = if(((stickybit) == (1)), (basssum/(volAvg2/sample2)) , 0);;\ndiff = if(((stickybit) == (0)), (basssum/(volAvg/sample1)), diff);;\nq3 = diff;;\nbit2 = time%2;;\ndifftime = difftime + diff*0.03;;\nq2 = difftime;;\nstate = state +  ((diff) > (5));;\nstate = if(((state) > (2)),0,state);;\nmonitor = state;;\nq5 = state;;\n//fix a strange error;\ndifftime = if(((difftime) > (2000)),0, difftime);;\nrarr = int(rand(100))*0.01;;\ndecay_r = 0.6 + 0.2*(abs(sin(diff+rarr)));;\ndecay_g = 0.6 + 0.25*(abs(cos(diff+rarr)));;\ndecay_b = 0.6 + 0.30*(abs(atan(diff+rarr)));;\n//shape fill",
+        "perVertex": "zoom = 1 + 0.05*q3;;\nzoom = 1;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Serge circles012",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1.0002;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a = 0;;\n//decay = 0.1;;\nvol = (bass_att + treb_att + mid_att)*.333333;;\ntic = min(time-tin,.1);;\ntin = time;;\nra = 10;;\ntreb_avg = tic*(treb_avg*(1/tic - ra) + ra*treb);;\nmid_avg = tic*(mid_avg*(1/tic - ra) + ra*mid);;\nbass_avg = tic*(bass_avg*(1/tic - ra) + ra*bass);;\nvav = tic*(vav*(1/tic - ra) + ra*(bass+treb+mid)*.33333);;\ntt = tt + tic*treb_avg;;\nmt = mt + tic*mid_avg;;\nbt = bt + tic*bass_avg;;\nsp = abs(vav - slide)*.1;;\nslide = if(((slide) > (vav)),slide-tic*sp,slide+tic*sp) + (1-toc)*vav;;\ntoc = 1;;\nvt = vt + tic*slide;;\nq1 = bt;;\nq2 = mt;;\nq3 = tt;;\nq4 = slide*1;;\nq5 = vt*.05 + 150;;\nq6 = .01;//tic;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

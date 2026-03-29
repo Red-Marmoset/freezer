@@ -1,0 +1,16 @@
+{
+  "name": "suksma - plagues or isms",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.95",
+        "perFrame": "zoom = 1.10408;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a = 0;;\nvol = .1*(vol*9 + (bass_att+mid_att+treb_att)*.333333);;\nq1 = vol*.7;;\nq1 = min(q1,2);;\ntic = time-tin;;\ntin = time;;\ntm = tm + tic*(bass_att+mid_att+treb_att)*.333333;;\nq2 = tm;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

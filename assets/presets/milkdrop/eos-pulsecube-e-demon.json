@@ -1,0 +1,23 @@
+{
+  "name": "EoS - pulsecube e demon",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.93;;\nzoom=0.999;;\nwarp =0;;\nsx=-1;;\nq1 = sin(time*3.3) * 0.5 + 0.5;;\nvol = (bass+mid+treb)*0.2;;\nvol= vol*vol;;\nslow = min( bass*bass , 1 );;\nmtime = mtime+ vol*0.1*slow;;\nq1 = min( vol, 1 );;\nq2 = mtime/3;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.99663,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

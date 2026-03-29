@@ -1,0 +1,43 @@
+{
+  "name": "midezel",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.99816;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.00183;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=.999;;\nwrap=sin(time*10);;\nmv_dx=bass;;\nob_a=.008;",
+        "perVertex": "zoom=1.001-(rad/100)+(bass*0.01);;\nrot=rad/600;;\nsy=-1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#666666"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=v*0.5; y=(i*2-1)*0.8"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.222,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

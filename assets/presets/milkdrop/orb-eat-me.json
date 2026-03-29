@@ -1,0 +1,16 @@
+{
+  "name": "ORB - Eat me",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.01;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.009091;\ncx = 0.5;\ncy = 0.5",
+        "perVertex": "zoom = 1 + 0.1*bass_att*(0.5 - rad);1 + (0.5 - rad)*0.1;;\nrot = (rad)*0.1;;\nwarp = 10*bass_att*(0.5 - rad);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

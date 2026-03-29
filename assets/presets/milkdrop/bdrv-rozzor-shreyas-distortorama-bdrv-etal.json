@@ -1,0 +1,16 @@
+{
+  "name": "Bdrv Rozzor & Shreyas - Distortorama bdrv etAL",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 1.064;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.400*( 0.60*sin(0.933*time) + 0.40*sin(1.045*time) );;\nwave_g = wave_g + 0.400*( 0.60*sin(0.900*time) + 0.40*sin(0.956*time) );;\nwave_b = wave_b + 0.400*( 0.60*sin(0.910*time) + 0.40*sin(0.920*time) );;\nzoom = zoom + 0.003*( 0.60*sin(0.339*time) + 0.40*sin(0.276*time) );;\nrot = rot + 0.0040*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) );;\ndecay = decay - 0.01*((frame%2) == (0));",
+        "perVertex": "zoom=zoom+(y*2-1)*(0.06+0.12*sin(time*0.351))-(x*2-1)*(0.06+0.12*cos(time*0.351));;\nrot=rot+(zoom-1.0)*0.16;;\nnum = 8;;\npi = 3.141592654;;\nradi = (y-.5)*.75;;\nradi = (y-.5);;\nradi = pow(radi*radi + (x-.5)*(x-.5),.5);;\nan = ang + pi + time;;\nan = an - pi*2*int(an/(pi*2));;\nmod = .1;;\nseg = ang + pi;;\nseg = seg/(pi*2)*num;;\nseg = int(seg);;\nseg = seg - ((seg) == (num));;\nanga = (ang + pi) - (pi*2/num)*seg;;\nanga = if(((seg%2) == (0)),(pi*2/num) - anga,anga);;\n//anga = anga + pi/6; // num = 6;\nanga = anga + pi/4; // num = 8;\n//anga = anga + .85; // num = 10;\nox = .5 - radi*sin(anga);;\noy = .5 + radi*cos(anga);;\n//rot = if(((seg) == (0)),rot,0);;\ndx = ((seg) == (3))*(x-ox);;\ndy = ((seg) == (3))*(y-oy);;\ndx = ((seg) > (0))*(x-ox);;\ndy = ((seg) > (0))*(y-oy);;\n//dx = ((seg) == (1))*(x - .5)*2;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

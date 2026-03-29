@@ -1,0 +1,16 @@
+{
+  "name": "ORB - Typhoon",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.01;\nrot = 5.3;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nbasstime = basstime + 0.03*bass;;\nq2 = basstime;;\ndecay = 0.6;;\npeak = peak -0.05;;\npeak = if(((bass) > (peak)),bass, peak);;\nmonitor = peak;;\nq1 = peak;;\nrot = 0;;\nq3 = -100 +100*sin(basstime*0.01);;\nq4 = -100 +100*sin(basstime*0.011);;\nq5 = 1 + sin(basstime*0.01);;\nheight = if(((bass*0.1) > (height)), bass*0.1, height-0.01);;\nq6 = height;;\nmonitor = q3;;\nmulti = multi + ((bass) > (1.3));;\nmulti = if(((multi) > (200)),100, multi);;\nq8 = multi;",
+        "perVertex": "warp =  0;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

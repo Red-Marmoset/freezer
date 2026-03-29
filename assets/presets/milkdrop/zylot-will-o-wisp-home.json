@@ -1,0 +1,16 @@
+{
+  "name": "Zylot - Will'o Wisp (Home)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nwave_a=0;;\nradc = if(((bass*.3) > (radc)),radc+.0005,radc-.0005);;\nradc = if(((radc) < (0)),0,radc);;\ntrebc = if(((treb*.05) > (trebc)),trebc+.0005,trebc-.0005);;\ntrebc = if(((trebc) < (0)),0,trebc);;\nspeedc = speedc + trebc;;\nq1 = radc;;\nq2 = speedc;",
+        "perVertex": "newx = .5-x+q1*sin(q2);;\nnewy = .5-y-q1*cos(q2);;\nnewrad = sqrt((newx)*(newx)+0.5625*(newy)*(newy))*2;;\nnewzoom = .8*newrad*4;;\nnewzoom = if(((newzoom) > (1)),1,newzoom);;\ndx = (newx)*newzoom - newx;;\ndy = (newy)*newzoom - newy;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

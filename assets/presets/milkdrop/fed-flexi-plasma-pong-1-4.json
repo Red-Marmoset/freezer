@@ -1,0 +1,32 @@
+{
+  "name": "fed + Flexi - plasma pong 1-4",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 0.92179;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.86;\ncy = 2;\n//zoom = zoom*9;;\nib_r = sin(time*1.25*4)*0.3+0.7;;\nib_g = sin(time*4)*0.3+0.3;;\nib_b = sin(time/3*4)*0.5+0.5;;\nwave_r = 1- ib_r;;\nwave_g = 1- ib_g;;\nwave_b = 1- ib_b;;\n//wave_mystery = -1+bass/2;;\nwave_x = 0.5+sin(time*3)*0.3;;\nwave_y = 0.5+cos(time*2.187)*0.3;;\nq1=ib_r;;\n//--fed's detection 1.3--;\nboom = bass-oldbass;;\ntick = treb-oldtreb;;\nbeep = mid-oldmid;;\ncrash = (boom*1.2+beep*0.3+tick*0.9)*0.3;;\nbeat = beat*0.5+(crash-oldcrash)*0.5;;\nbeat2 = beat2*0.5+beat*0.5;;\nmonitor = abs(beat2);;\nout=abs(beat2);;\n//-----------------------;\nrot=rot*out/beat2; //[rot]?[-rot] swtch;\nq3=out/beat2;;\n//-----------------------;\nq2=out;;\nq4=beat2;;\noldbass = bass;;\noldmid = mid;;\noldtreb = treb;;\noldcrash = crash;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

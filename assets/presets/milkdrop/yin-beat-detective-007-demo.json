@@ -1,0 +1,36 @@
+{
+  "name": "yin - Beat Detective 007 demo",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a=1;ob_size=0;;\ndecay = .9; zoom=1;;\n// -------------------------------- Beat Detective v0.07 ----------------------------------;\nsure=if(((sure) == (0)),.6,sure);;\ninterval=if(((interval) == (0)),40,interval);;\nlastbeat=if(((lastbeat) == (0)),frame-FPS,lastbeat);;\ndbass=(bass-pbass)/FPS;;\nbeat=((dbass) > (.6*maxdbass))*((frame-lastbeat) > (FPS/3));;\nsure=if(beat*((abs(frame-(interval+lastbeat))) < (FPS/5)),;\nmin(.095+sure,1),beat*(sure-.095)+(1-beat)*sure*.9996);;\nsure=max(.5,sure);;\ncheat=if(((frame) > (lastbeat+interval+ int(FPS/10)))*((sure) > (.91)),1,cheat);;\nbeat=if(cheat,1,beat);;\nsure=if(cheat,.95*sure,sure);;\nmaxdbass=max(maxdbass*.999,dbass);;\nmaxdbass=max(.012,maxdbass);;\nmaxdbass=min(.02,maxdbass);;\ninterval=if(beat, frame-lastbeat,interval);;\nlastbeat=if(beat,frame-cheat*int(FPS/10),lastbeat);;\ncheat=0;;\npbass=bass;;\n// ----------------------------------------------------------------------------------------------;\nob_size = beat;;\nwave_mystery=1-1.5*min((frame-lastbeat)/interval,1);;\nmonitor=interval*0+lastbeat*0+bass_att*0+interval*0+1*sure;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ff3333"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

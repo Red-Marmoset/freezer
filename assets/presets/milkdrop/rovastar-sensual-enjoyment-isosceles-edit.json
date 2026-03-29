@@ -1,0 +1,39 @@
+{
+  "name": "Rovastar - Sensual Enjoyment --- Isosceles edit",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.999",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nxdx =dx -0.0005;;\nxdy = dy-0.0005;;\nmv_l = 1500 + 1000*bass;;\nmv_r = 0.499+0.5*sin(time);;\nbass_effect = max(max(bass,bass_att)-1.3,0);;\ndecay = if(((bass_effect) > (0)),0.99-0.1*bass_effect,0.998);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

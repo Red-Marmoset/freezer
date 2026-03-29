@@ -1,0 +1,16 @@
+{
+  "name": "Zylot - Musicawa Skizm (Imprints)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nvolume = 0.3*(bass+mid+att);;\nbeatrate = if(((beatrate) == (0)),1,if(((volume) < (0.01)),1,beatrate));;\nlastbeat = if(((lastbeat) == (0)),time,lastbeat);;\nmeanbass_att = 0.1*(meanbass_att*9 + bass_att);;\npeakbass_att = if(((bass_att) > (peakbass_att)),bass_att,peakbass_att);;\nbeat = if(((volume) > (0.8)),if(((peakbass_att - bass_att) < (0.05*peakbass_att)),if(((time - lastbeat) > (0.1+0.5*(beatrate-0.1))),1,0),0),0);;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\npeakbass_att = if(((beat) == (0)),if(((time - lastbeat) > (2*beatrate)),peakbass_att*0.95,peakbass_att*0.995),bass_att);;\nlastbeat = if(beat,time,lastbeat);;\npeakbass_att = max(if(beat,bass_att,peakbass_att),1.1*meanbass_att);;\nbeatcounter = if(((beat) > (0)),beatcounter +1, beatcounter);;\nbeatcounter = if(((beatcounter) > (101)), 0, beatcounter);;\nbeateven=beatcounter%2;;\ntimer = if(((beat) == (1)),rand(30)*.1,timer);;\nq1 = timer;;\nq2 = beat;;\nwave_a=0;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

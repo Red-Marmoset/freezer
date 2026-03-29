@@ -1,0 +1,16 @@
+{
+  "name": "phledge lasso blaq wholes aren't natural wr thee knew svithreou",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.033;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nq4=sin(atime*.03);;\nq5=cos(atime*.030383824);;\nq6=tan(atime*.029384834);;\n//krash's beat detection code;\nvolume = 0.3*(bass+mid+att);;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate);;\nlastbeat = lastbeat + ((lastbeat) == (0))*time;;\nmeanbass_att = 0.1*(meanbass_att*9 + bass_att);;\npeakbass_att = max(bass_att,peakbass_att);;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\npeakbass_att = beat*bass_att + (1-beat)*peakbass_att*(((time - lastbeat) > (2*beatrate))*0.95 + (1-((time - lastbeat) > (2*beatrate)))*0.995);;\nlastbeat = beat*time + (1-beat)*lastbeat;;\npeakbass_att = max(peakbass_att,1.1*meanbass_att);;\nbeat = ((volume) > (0.8))*((peakbass_att - bass_att) < (0.05*peakbass_att))*((time - lastbeat) > (0.1 + 0.5*(beatrate - 0.1)));;\nbeatcounter = beatcounter + beat;;\nmode = if(beat*((beatcounter%2) == (0)),1-mode,mode);;\nflip = 2*mode-1;;\nmonitor=flip;;\nq8=flip;;\nq7=0;;\ndecay=0.88;;\nzoom=1.002;;\nvol=(bass_att+mid_att+treb_att)*0.25;;\nvol=vol*vol;;\nmtime=mtime+vol*0.1*flip;;\nq1=mtime*0.4;;\nwarp=0.3;;\nq30=(bass+treb+mid)*2;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

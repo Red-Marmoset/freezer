@@ -1,0 +1,39 @@
+{
+  "name": "va ultramix2 - 534",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nob_size=.01+bass*mid/11;\n99;;;\nvol= (bass+mid+treb)*2;;\nvol=vol;;\nzoom=1.000;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;",
+        "perVertex": "ckdx=dx;//////////////////////////////////////////;\nckdy=dy;;\ncksx=sx;;\ncksy=sy;;\nckrt=rot;;\nckzm=zoom;;\nckcx=cx;;\nckcy=cy;;\nckwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\nhkdx=dx;//////////////////////////////////////////;\nhkdy=dy;;\nhksx=sx;;\nhksy=sy;;\nhkrt=rot;;\nhkzm=zoom;;\nhkcx=cx;;\nhkcy=cy;;\nhkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\nkdx=dx;//////////////////////////////////////////;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\n//c3=0;;\nc1=max(y*cos((x-y)*5*q8+q3)-.5,0);;\nc2=max(y*cos((x-y)*q7+q6)-.5,0);;\nc3=max(y*cos((y+x)*5*q7+q5)-.5,0);;\nc4=max(y*cos((y+x)*q8+q4)-.5,0);;\ncx=.5;;\ncy=.5;;\nsx=2*y*cos((q5*c2-q4*c4)*.01)*.1-1+2*fc;;\nsy=2*y*cos((q6*c1-q3*c3)*.01)*.1-1+2*fc;;\n///////////////////////////////////////;\ncr1=12*.01;;\ncr2=3*.01;   ;       ; ; ;  ;  ;;\ncrx=cr2-cr1;;\nci=(1-abs(-2*x+1)+(1-abs(-2*y+1)));;\ncb=.3125  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);////////////////////////////////////////////////////;\n///////////////////////////////////////;\ncr1=199*.01;;\ncr2=199*.01;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nhjdx=dx;;\nhjdy=dy;;\nhjsx=sx;;\nhjsy=sy;;\nhjrt=rot;;\nhjzm=zoom;;\nhjcx=cx;;\nhjcy=cy;;\nhjwp=warp;;\ndx=(jx1*hjdx+kx1*hkdx);;\ndy=(jx1*hjdy+kx1*hkdy);;\nsx=(jx1*hjsx+kx1*hksx);;\nsy=(jx1*hjsy+kx1*hksy);;\nrot=(jx1*hjrt+kx1*hkrt);;\nzoom=(jx1*hjzm+kx1*hkzm);;\ncx=(jx1*hjcx+kx1*hkcx);;\ncy=(jx1*hjcy+kx1*hkcy);;\nwarp=(jx1*hjwp+kx1*hkwp);////////////////////////////////////////////////////;\n///////////////////////////////////////;\ncr1=.5+sin(time/5)*.5;;\ncr2=cr1;;\ncrx=cr2-cr1;;\nci=(1-(1-abs(-2*(x+y)/2+1)+(1-abs(-2*(1-(x+(1-y))/2)+1)))/2)*4-1;;\ncb=.2;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\ncjdx=dx;;\ncjdy=dy;;\ncjsx=sx;;\ncjsy=sy;;\ncjrt=rot;;\ncjzm=zoom;;\ncjcx=cx;;\ncjcy=cy;;\ncjwp=warp;;\ndx=(jx1*cjdx+kx1*ckdx);;\ndy=(jx1*cjdy+kx1*ckdy);;\nsx=(jx1*cjsx+kx1*cksx);;\nsy=(jx1*cjsy+kx1*cksy);;\nrot=(jx1*cjrt+kx1*ckrt);;\nzoom=(jx1*cjzm+kx1*ckzm);;\ncx=(jx1*cjcx+kx1*ckcx);;\ncy=(jx1*cjcy+kx1*ckcy);;\nwarp=(jx1*cjwp+kx1*ckwp);////////////////////////////////////////////////////"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#80664d"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.99663,
+      "alpha": 0.4,
+      "orient": 1
+    }
+  ]
+}

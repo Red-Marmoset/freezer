@@ -1,0 +1,32 @@
+{
+  "name": "Stahlregen - funky Blur (lotus mix) fucking tornado",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.00951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.16217;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\ntic = min(time - tin,.1);;\ntin = time;;\nra = 10;;\ntreb_avg = tic*(treb_avg*(1/tic - ra) + ra*treb);;\nmid_avg = tic*(mid_avg*(1/tic - ra) + ra*mid);;\nbass_avg = tic*(bass_avg*(1/tic - ra) + ra*bass);;\nrb = 1;;\nvav = tic*(vav*(1/tic - rb) + rb*(bass+treb+mid)*.33333);;\ntt = tt + tic*treb_avg;;\nmt = mt + tic*mid_avg;;\nbt = bt + tic*bass_avg;;\nvt = vt + tic*(treb_avg+mid_avg+bass_avg)*.33333;;\nsz = .2;;\nq1 = .5 + sz*sin(tt*.629) - sz*sin(tt*.107);;\nq2 = .5 + sz*sin(tt*.987) - sz*sin(tt*.456);;\nq3 = .5 + sz*sin(mt*.654) - sz*sin(mt*.355);;\nq4 = .5 + sz*sin(mt*.548) - sz*sin(mt*.875);;\nq5 = .5 + sz*sin(bt*.687) - sz*sin(bt*.318);;\nq6 = .5 + sz*sin(bt*.465) - sz*sin(bt*.526);",
+        "perVertex": "xd = q1-x;;\nyd = q2-y;;\ndis = pow(xd*xd+yd*yd,.5);;\ndes = 1 - dis*.7071068;;\ndes = pow(des,8)*-treb;;\nan = acos(abs(xd)/dis);;\ndx = sign(xd)*.07*cos(an)*des;;\ndy = sign(yd)*.07*sin(an)*des;;\ndy = dy + sign(xd)*treb*.05*cos(an)*des;;\ndx = dx + sign(yd)*treb*.05*sin(an)*des*-1;;\nxd = q3-x;;\nyd = q4-y;;\ndis = pow(xd*xd+yd*yd,.5);;\ndes = 1 - dis*.7071068;;\ndes = pow(des,8)*-mid;;\nan = acos(abs(xd)/dis);;\ndx = dx + sign(xd)*.07*cos(an)*des;;\ndy = dy + sign(yd)*.07*sin(an)*des;;\ndy = dy + sign(xd)*mid*.05*cos(an)*des;;\ndx = dx + sign(yd)*mid*.05*sin(an)*des*-1;;\nxd = q5-x;;\nyd = q6-y;;\ndis = pow(xd*xd+yd*yd,.5);;\ndes = 1 - dis*.7071068;;\ndes = pow(des,8)*-bass;;\nan = acos(abs(xd)/dis);;\ndx = dx + sign(xd)*.07*cos(an)*des;;\ndy = dy + sign(yd)*.07*sin(an)*des;;\ndy = dy + sign(xd)*bass*.05*cos(an)*des;;\ndx = dx + sign(yd)*bass*.05*sin(an)*des*-1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

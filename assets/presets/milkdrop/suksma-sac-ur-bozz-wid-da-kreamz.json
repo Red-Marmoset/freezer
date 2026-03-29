@@ -1,0 +1,16 @@
+{
+  "name": "suksma - sac ur bozz wid da kreamz",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;",
+        "perVertex": "zoom = if(((rad) > (.2)),zoom + rad*.1,zoom-rad*.2);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

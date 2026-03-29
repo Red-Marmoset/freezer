@@ -1,0 +1,23 @@
+{
+  "name": "shifter - spun sugar - smooth cheese nz",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.24146;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\ntic = min(time-tin,.1);;\ntin = time;;\nvol = (bass_att + treb_att + mid_att)*.333333;;\nra = 1/tic*.1;;\ntreb_avg = tic*(treb_avg*(1/tic - ra) + ra*treb);;\nmid_avg = tic*(mid_avg*(1/tic - ra) + ra*mid);;\nbass_avg = tic*(bass_avg*(1/tic - ra) + ra*bass);;\nvav = tic*(vav*(1/tic - ra) + ra*(bass+treb+mid)*.33333);;\ntt = tt + tic*treb;;\nmt = mt + tic*mid;;\nbt = bt + tic*bass;;\nvt = vt + tic*vav;;\ndy = (treb_avg - mid_avg)*.05;;\ndx = (bass_avg - (treb_avg + mid_avg)*.5)*.15;;\ndx = (bass_avg + treb_avg + mid_avg)*.01;;\nq1 = vt;;\nq2 = bt;;\nq3 = bass_avg;;\nq4 = (tt + mt)*.5;;\nq5 = (treb_avg + mid_avg)*.5;;\nq6 = vt;;\nq7 = .8 - vav*.2;;\nmonitor = q7;;\nq8 = .6;",
+        "perVertex": "//sw = ((x) > (.5));;\nan = if(sw,ang,3.1416 - ang);;\nzoom = 1 + pow(sin(an*5 - q2),1)*.03*bass;;\nrot = .02*sin(ra*6.2832*2 - q4*4)*(mid + treb)*.5*(1-2*sw);;\n//sy = -1;;\ndx = dx*pow(rad,3)*(-1+2*sw);;\ndy = dy*pow(rad,1);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

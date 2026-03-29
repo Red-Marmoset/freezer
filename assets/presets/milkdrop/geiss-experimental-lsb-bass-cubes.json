@@ -1,0 +1,32 @@
+{
+  "name": "geiss_experimental__LSB Bass Cubes",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.025;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.02349;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.200*( 0.90*sin(2.753*time+0) + 0.40*sin(2.315*time+1) );;\nwave_g = wave_g + 0.100*( 0.90*sin(3.183*time+3) + 0.40*sin(2.006*time+4) );;\nwave_b = wave_b + 0.100*( 0.90*sin(2.393*time+5) + 0.40*sin(2.733*time+2) );;\nzoom = zoom + 0.019*( 0.60*sin(0.339*time) + 0.40*sin(0.276*time) );;\nrot = rot + 0.01*( 0.60*sin(0.691*time) + 0.40*sin(0.449*time) );;\nrot = rot + 0.01*( sin(time*0.834+2) + sin(time*1.7134+1) + sin(time*1.334) );;\ncx = cx + 0.003*( 0.60*sin(0.471*time) + 0.40*sin(0.297*time) );;\ncy = cy + 0.003*( 0.60*sin(0.379*time) + 0.40*sin(0.351*time) );;\ndx = dx + 0.003*( 0.60*sin(0.234*time) + 0.40*sin(0.277*time) );;\ndx=dx+0.0025*(sin(time*1.134)+sin(time*0.7134)+sin(time*2.334));;\ndy=dy+0.0025*(sin(time*1.8834)+sin(time*1.0144)+sin(time*1.334));",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#b3a6b3"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

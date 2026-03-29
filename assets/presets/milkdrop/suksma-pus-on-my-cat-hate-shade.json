@@ -1,0 +1,16 @@
+{
+  "name": "suksma - pus on my cat - hate shade",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nnatr=bass_att+thresh*treb_att;;\ncha=abs(batr-natr);;\nspik=((abs(cha-addict)) > (addict));;\naddict=(addict+cha)/2;;\n//effects here;\nzoom=zoom+if((((bass*2) > (treb))-1),-1,1)*((cha*thresh) > (2))*0.1;;\n//added the rotation effect with the same code just to offer some possibilities, activate it if you dare - goody;\n//rot=rot+if((((bass*2) > (treb))-1),-1,1)*((cha*thresh) > (2))*0.1;;\n//zoomexp=2/zoom;;\nmv_r=log(thresh)*spik;;\nmv_b=abs(spik*cha-1);;\nmv_g=sin(time+thresh);;\nmv_a=spik*.75;;\n//end.;\nbatr=natr;;\nmonitor=log(thresh);;\nwave_r = wave_r + 0.35*sin(3*time) + 0.15*sin(2.5*time);;\nwave_g = wave_g + 0.35*sin(2.7*time) + 0.15*sin(2.11*time);;\nwave_b = wave_b + 0.35*sin(2.84*time) + 0.15*sin(2.3*time);;\nwave_mystery=wave_mystery*(addict);;\ncog = ocog+0.005*(bass+bass_att+(bass*bass_att)-2);;\nocog = ((cog) < (30000))*cog;;\nq1=batr;;\nq2=spik;;\n//Hai guiz, you found the secret message. What are you gonna do now?",
+        "perVertex": "//Tiles-;\n//movement first:;\ndxm=.01*sin(time*.41);;\ndym=.01*sin(time*.36);;\n//Now the tiles themselves:;\ndx=dxm+.01*sin(x*80+sin(time))+.005*sin(q1*(y*sin(time*.94)));;\ndy=dym+.01*sin(y*80+sin(time))+.005*sin(q1*(x*sin(time*.97)));;\n//end tiles"
+      },
+      "gridSize": 48
+    }
+  ]
+}

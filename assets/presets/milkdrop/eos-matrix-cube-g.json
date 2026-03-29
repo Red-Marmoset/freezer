@@ -1,0 +1,16 @@
+{
+  "name": "EoS - matrix cube G",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay = 0.97;;\n//uncommenting this block will make decay start at 0 when preset begins, and rise to the \"max_decay\" value;\n//max_decay = 0.97;;\n//dcsp = dcsp + 0.007*(75/fps);;\n//dcsp = min(dcsp , max_decay);;\n//decay = dcsp;;\n//volume, and volume based time. framerate adjusted;\nvol = (bass+mid+treb)*0.25;;\nvol = vol*vol;;\nmtime = mtime + vol * 0.01 * (75/fps);;\nq1 = vol;;\nq2 = 3.1415/2 + sin(time/3)*0.03;;\n//non bass volume;\nvol2 = (mid+treb)*0.33;;\nvol2 = vol2*vol2;;\nm2time = m2time + vol2 * 0.01 * (75/fps);;\nq3 = vol2;;\nq4 = m2time;;\n//krash's beat detection code;\nvolume = 0.3*(bass+mid+att);;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate);;\nlastbeat = lastbeat + ((lastbeat) == (0))*time;;\nmeanbass_att = 0.1*(meanbass_att*9 + bass_att);;\npeakbass_att = max(bass_att,peakbass_att);;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\npeakbass_att = beat*bass_att + (1-beat)*peakbass_att*(((time - lastbeat) > (2*beatrate))*0.95 + (1-((time - lastbeat) > (2*beatrate)))*0.995);;\nlastbeat = beat*time + (1-beat)*lastbeat;;\npeakbass_att = max(peakbass_att,1.1*meanbass_att);;\nbeat = ((volume) > (0.8))*((peakbass_att - bass_att) < (0.05*peakbass_att))*((time - lastbeat) > (0.1 + 0.5*(beatrate - 0.1)));;\nbeatcounter = beatcounter + beat;;\nmode = if(beat*((beatcounter%2) == (0)),1-mode,mode);;\nflip = 2*mode-1;;\nbeatdrop = if( ((beatdrop) == (0)) , beat , max(beatdrop - 0.02*(75/fps) , 0) );;\nq7 = beatdrop;;\nq8 = 12;;\nbd = min( vol*0.5 , 1 );;\ngamma = 1 + bd*0.28;;\ndecay = 0.95;;\nzoom = 1 + bd*0.1;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

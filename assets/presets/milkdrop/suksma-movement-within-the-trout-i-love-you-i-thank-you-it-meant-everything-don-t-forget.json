@@ -1,0 +1,39 @@
+{
+  "name": "suksma - movement within the trout - i love you, i thank you, it meant everything, don't forget",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.005;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.683;\ncx = 0.5;\ncy = 0.5;\nzoom = zoom + 0.013*( 0.60*sin(0.339*time) + 0.40*sin(0.276*time) );;\nrot = rot + 0.007*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) );;\ncx = cx + 0.110*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );;\ncy = cy + 0.110*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#2180ff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

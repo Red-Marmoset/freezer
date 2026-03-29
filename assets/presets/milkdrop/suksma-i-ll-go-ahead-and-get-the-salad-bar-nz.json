@@ -1,0 +1,36 @@
+{
+  "name": "suksma - i'll go ahead and get the salad bar nz+",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0.02;\ndx = 0.02;\ndy = 0;\nsx = 1.0303;\nsy = 1.01;\nwarp = 0.02988;\ncx = 1.1;\ncy = 1.1;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\ndx =dx -0.0005;;\ndy = dy-0.0035;;\nmv_r=mv_r+.5*bass;;\nmv_g=mv_g+.5*mid;;\nmv_b=mv_b+.5*treb;;\nbass_effect = max(max(bass,bass_att)-1.3,0);;\ndecay = if(((bass_effect) > (0)),0.96,0.996);;\nwave_x = 0.6+0.3*sin(time*0.724);;\nwave_r = wave_r + 0.400*( 0.60*sin(0.933*time) + 0.40*sin(1.045*time) );;\nwave_g = wave_g + 0.400*( 0.60*sin(0.900*time) + 0.40*sin(0.956*time) );;\nwave_b = wave_b + 0.400*( 0.60*sin(0.910*time) + 0.40*sin(0.920*time) );;\nmv_l = 3000;;\ndx = dx + dx_residual;;\ndy = dy + dy_residual;;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.3)*0.96+1.3);;\ndx_residual = ((bass_thresh) == (2))*0.016*sin(time*7) + (1-((bass_thresh) == (2)))*dx_residual;;\ndy_residual = ((bass_thresh) == (2))*0.012*sin(time*9) + (1-((bass_thresh) == (2)))*dy_residual;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}
