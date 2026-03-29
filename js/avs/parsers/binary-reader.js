@@ -71,10 +71,15 @@ export class BinaryReader {
   }
 
   color() {
+    // AVS stores colors as COLORREF: 0x00BBGGRR in the uint32,
+    // which in little-endian bytes is [RR, GG, BB, 00].
+    // Wait — the user confirmed bytes are BGRA order in the file:
+    // byte 0 = B, byte 1 = G, byte 2 = R, byte 3 = A
+    // As a LE uint32: value = B | (G<<8) | (R<<16) | (A<<24)
     const v = this.uint32();
-    const r = v & 0xFF;
+    const b = v & 0xFF;
     const g = (v >> 8) & 0xFF;
-    const b = (v >> 16) & 0xFF;
+    const r = (v >> 16) & 0xFF;
     return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
   }
 }
