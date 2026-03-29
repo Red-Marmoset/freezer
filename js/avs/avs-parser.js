@@ -80,22 +80,35 @@ function parseDllComponent(dllId, r, endPos) {
 function parseEffectList(r, endPos) {
   if (!r.hasBytes(5)) { r.pos = endPos; return null; }
 
-  const byte0 = r.uint8();
-  const enabled = !(byte0 & 0x02);
-  const clearFrame = !!(byte0 & 0x01);
-  const hasExtended = !!(byte0 & 0x80);
+  // Mode byte: bit 0=clearfb, bit 1=!enabled, bit 7=has extended uint32
+  // When bit 7 set: read next 4 bytes as uint32, OR into mode
+  // mode bits 8-12 = blendin (5 bits), bits 16-20 = blendout^1 (5 bits)
+  // bits 24-31 = extended data size
+  let mode = r.uint8();
+  if (mode & 0x80) {
+    mode = (mode & ~0x80) | r.uint32();
+  } else {
+    // Legacy: bytes 1,2,3 are unused,blendin,blendout
+    r.skip(1);
+    const bi = r.uint8();
+    const bo = r.uint8();
+    mode = (mode & 0xFF) | (bi << 8) | (bo << 16);
+  }
 
-  r.skip(1);
-  const inputBlend = r.uint8();
-  const outputBlend = r.uint8();
+  const enabled = !!((mode & 2) ^ 2); // bit 1 set = disabled
+  const clearFrame = !!(mode & 1);
+  const inputBlend = (mode >> 8) & 31;
+  const outputBlend = ((mode >> 16) & 31) ^ 1; // XOR 1 per original
+  const extDataSize = (mode >> 24) & 0xFF;
 
   let enableOnBeat = false, enableOnBeatFor = 1;
+  let inAdjust = 128, outAdjust = 128;
   let codeInit = '', codePerFrame = '', codeEnabled = false;
 
-  if (hasExtended) {
-    const configSize = r.uint8();
-    if (configSize > 0 && r.hasBytes(configSize * 4)) {
-      r.uint32(); r.uint32(); // inAdjust, outAdjust
+  if (extDataSize > 0) {
+    if (r.hasBytes(extDataSize * 4)) {
+      inAdjust = r.uint32();
+      outAdjust = r.uint32();
       r.skip(16); // inBuffer, outBuffer, invert flags
       enableOnBeat = r.uint32() !== 0;
       enableOnBeatFor = r.uint32();
@@ -116,8 +129,6 @@ function parseEffectList(r, endPos) {
         }
       }
     }
-  } else {
-    r.skip(1);
   }
 
   const children = parseComponents(r, endPos);
@@ -126,6 +137,7 @@ function parseEffectList(r, endPos) {
     type: 'EffectList', enabled, clearFrame,
     input: BLEND_IN[inputBlend] || 'IGNORE',
     output: BLEND_OUT[outputBlend] || 'REPLACE',
+    inAdjust, outAdjust,
     enableOnBeat, enableOnBeatFor,
     code: { enabled: codeEnabled, init: codeInit, perFrame: codePerFrame },
     components: children,
