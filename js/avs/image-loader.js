@@ -2,7 +2,7 @@
 // Includes a minimal BMP parser since Three.js doesn't support BMP natively.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 
-const IMAGE_BASE = 'assets/avs-images/';
+const IMAGE_BASE = 'assets/avs-data/';
 const cache = new Map();
 
 // Fallback gaussian blob (reused across components)

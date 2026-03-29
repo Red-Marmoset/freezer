@@ -212,6 +212,7 @@ const DISPLAY_NAMES = {
   'Render: Triangle': 'Triangle',
   'Picture II': 'Picture II',
   'EelTrans': 'AVSTrans Automation',
+  'Jheriko: Global': 'Global Variables',
 };
 
 // Components confirmed as finished/working by the user.

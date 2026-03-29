@@ -70,6 +70,7 @@ function parseDllComponent(dllId, r, endPos) {
   if (cleanId === 'Color Map') return A.parseColorMapAPE(r, endPos);
   if (cleanId === 'Picture II') return A.parsePicture2APE(r, endPos);
   if (cleanId.startsWith('Misc: AVSTrans') || cleanId === 'AVS Trans Automation') return A.parseEelTransAPE(r, endPos);
+  if (cleanId === 'Jheriko: Global' || cleanId.includes('Global')) return A.parseGlobalVariablesAPE(r, endPos);
 
   return { type: cleanId || 'UnknownAPE', enabled: true, _unsupported: true, _apeId: cleanId };
 }

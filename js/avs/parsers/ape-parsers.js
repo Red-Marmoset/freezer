@@ -120,6 +120,25 @@ export function parseColorMapAPE(r, endPos) {
   return result;
 }
 
+export function parseGlobalVariablesAPE(r, endPos) {
+  const loadTime = r.hasBytes(4) ? r.uint32() : 0;
+  if (r.hasBytes(24)) r.skip(24); // unused bytes
+  let init = '', frame = '', beat = '', file = '', saveRegRanges = '', saveBufRanges = '';
+  if (r.pos < endPos) init = r.ntString();
+  if (r.pos < endPos) frame = r.ntString();
+  if (r.pos < endPos) beat = r.ntString();
+  if (r.pos < endPos) file = r.ntString();
+  if (r.pos < endPos) saveRegRanges = r.ntString();
+  if (r.pos < endPos) saveBufRanges = r.ntString();
+  return {
+    type: 'Jheriko: Global',
+    enabled: true,
+    loadTime,
+    code: { init, frame, beat },
+    file: file.replace(/.*[/\\]/, ''), // strip path, keep basename
+  };
+}
+
 export function parseEelTransAPE(r, endPos) {
   const translateEnabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
   const logEnabled = r.hasBytes(4) ? r.uint32() !== 0 : false;
