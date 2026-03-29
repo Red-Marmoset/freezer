@@ -60,6 +60,10 @@ import './components/comment.js';
 import './components/multiplier.js';
 import './components/eeltrans.js';
 import './components/global-variables.js';
+import './components/milkdrop-motion.js';
+import './components/custom-shader.js';
+import './components/darken-center.js';
+import './components/echo.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object
