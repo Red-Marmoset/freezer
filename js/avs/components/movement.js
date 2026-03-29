@@ -97,17 +97,22 @@ function buildBuiltinFrag(effectIdx, wrap) {
   `;
 }
 
-// Grid fragment shader for user-defined (UVs displaced by CPU)
-const GRID_FRAG = `
+// User-defined shader: lookup displaced UVs from a precomputed displacement texture
+const USER_FRAG = `
   precision mediump float;
   uniform sampler2D tSource;
+  uniform sampler2D tDispMap;
+  uniform bool uWrap;
   varying vec2 vUv;
   void main() {
-    gl_FragColor = texture2D(tSource, vUv);
+    vec2 uv = texture2D(tDispMap, vUv).rg;
+    if (uWrap) { uv = fract(uv); }
+    else { uv = clamp(uv, 0.0, 1.0); }
+    gl_FragColor = texture2D(tSource, uv);
   }
 `;
 
-const GRID_SIZE = 32; // grid resolution for user-defined movement
+const DISP_SIZE = 128; // displacement map resolution
 
 export class Movement extends AvsComponent {
   constructor(opts) {
@@ -140,13 +145,26 @@ export class Movement extends AvsComponent {
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
     if (this.effectIndex === 13 && this.code) {
-      // User-defined: grid mesh + EEL code
+      // User-defined: per-pixel via displacement map texture
       this.codeFn = compileEEL(this.code);
-      this._geometry = new THREE.PlaneGeometry(2, 2, GRID_SIZE, GRID_SIZE);
+      this._dispData = new Float32Array(DISP_SIZE * DISP_SIZE * 4);
+      this._dispTex = new THREE.DataTexture(
+        this._dispData, DISP_SIZE, DISP_SIZE, THREE.RGBAFormat, THREE.FloatType
+      );
+      this._dispTex.minFilter = THREE.LinearFilter;
+      this._dispTex.magFilter = THREE.LinearFilter;
+      this._dispTex.needsUpdate = true;
+      this._dispDirty = true;
+
+      this._geometry = new THREE.PlaneGeometry(2, 2);
       this._material = new THREE.ShaderMaterial({
-        uniforms: { tSource: { value: null } },
+        uniforms: {
+          tSource: { value: null },
+          tDispMap: { value: this._dispTex },
+          uWrap: { value: this.wrap },
+        },
         vertexShader: VERT_SHADER,
-        fragmentShader: GRID_FRAG,
+        fragmentShader: USER_FRAG,
         depthTest: false,
       });
     } else {
@@ -172,9 +190,9 @@ export class Movement extends AvsComponent {
       this._reversed = !this._reversed;
     }
 
-    // User-defined: run EEL code on grid vertices
+    // User-defined: compute displacement map (once, or per-frame if code uses time)
     if (this.effectIndex === 13 && this.codeFn) {
-      this._renderUserDefined(ctx);
+      this._computeDispMap(ctx);
     }
 
     // Read from active, write to back, swap
@@ -185,7 +203,7 @@ export class Movement extends AvsComponent {
     this._material.uniforms.tSource.value = null;
   }
 
-  _renderUserDefined(ctx) {
+  _computeDispMap(ctx) {
     const s = this.state;
     const lib = createStdlib({
       waveform: ctx.audioData.waveform,
@@ -199,52 +217,53 @@ export class Movement extends AvsComponent {
     s.b = ctx.beat ? 1 : 0;
 
     if (this.firstFrame) {
-      try { this.codeFn(s, lib); } catch {}
       this.firstFrame = false;
+      this._dispDirty = true;
     }
 
+    // Movement displacement is typically static (doesn't depend on time),
+    // but recompute if beat or if code references time-varying variables.
+    // For safety, recompute every frame (128x128 = 16K points is fast).
     const usePolar = this.coordinates === 'POLAR';
-    const uvAttr = this._geometry.attributes.uv;
-    const posAttr = this._geometry.attributes.position;
-    const vertCount = posAttr.count;
+    const data = this._dispData;
+    const sz = DISP_SIZE;
 
-    for (let i = 0; i < vertCount; i++) {
-      const origX = (posAttr.getX(i) + 1) / 2;
-      const origY = (posAttr.getY(i) + 1) / 2;
+    for (let y = 0; y < sz; y++) {
+      for (let x = 0; x < sz; x++) {
+        const origX = (x + 0.5) / sz;
+        const origY = (y + 0.5) / sz;
 
-      if (usePolar) {
-        const cx = origX - 0.5;
-        const cy = origY - 0.5;
-        s.d = Math.sqrt(cx * cx + cy * cy) * 2;
-        s.r = Math.atan2(cy, cx);
-      } else {
-        s.x = origX * 2 - 1;
-        s.y = origY * 2 - 1;
+        if (usePolar) {
+          const cx = origX - 0.5;
+          const cy = origY - 0.5;
+          s.d = Math.sqrt(cx * cx + cy * cy) * 2;
+          s.r = Math.atan2(cy, cx);
+        } else {
+          s.x = origX * 2 - 1;
+          s.y = origY * 2 - 1;
+        }
+
+        try { this.codeFn(s, lib); } catch {}
+
+        let newU, newV;
+        if (usePolar) {
+          const nd = s.d * 0.5;
+          newU = Math.cos(s.r) * nd + 0.5;
+          newV = Math.sin(s.r) * nd + 0.5;
+        } else {
+          newU = (s.x + 1) / 2;
+          newV = (s.y + 1) / 2;
+        }
+
+        const idx = (y * sz + x) * 4;
+        data[idx] = newU;
+        data[idx + 1] = newV;
+        data[idx + 2] = 0;
+        data[idx + 3] = 1;
       }
-
-      try { this.codeFn(s, lib); } catch {}
-
-      let newU, newV;
-      if (usePolar) {
-        const nd = s.d * 0.5;
-        newU = Math.cos(s.r) * nd + 0.5;
-        newV = Math.sin(s.r) * nd + 0.5;
-      } else {
-        newU = (s.x + 1) / 2;
-        newV = (s.y + 1) / 2;
-      }
-
-      if (this.wrap) {
-        newU = newU - Math.floor(newU);
-        newV = newV - Math.floor(newV);
-      } else {
-        newU = Math.max(0, Math.min(1, newU));
-        newV = Math.max(0, Math.min(1, newV));
-      }
-
-      uvAttr.setXY(i, newU, newV);
     }
-    uvAttr.needsUpdate = true;
+
+    this._dispTex.needsUpdate = true;
   }
 
   destroy() {
