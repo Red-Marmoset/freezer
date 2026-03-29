@@ -117,24 +117,11 @@ class AvsPreset {
     // framebuffer texture and any render target bindings.
     this._blitScene = new THREE.Scene();
     this._blitCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    // Final output with gamma correction (sRGB encode)
-    // AVS components work in linear space, but the screen expects sRGB
-    this._outputMaterial = new THREE.ShaderMaterial({
-      uniforms: { tSource: { value: null } },
-      vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-      fragmentShader: `
-        precision mediump float;
-        uniform sampler2D tSource;
-        varying vec2 vUv;
-        void main() {
-          vec3 c = texture2D(tSource, vUv).rgb;
-          // Linear → sRGB gamma correction
-          vec3 lo = c * 12.92;
-          vec3 hi = 1.055 * pow(c, vec3(1.0/2.4)) - 0.055;
-          vec3 srgb = mix(lo, hi, step(0.0031308, c));
-          gl_FragColor = vec4(srgb, 1.0);
-        }
-      `,
+    // Direct blit — no gamma correction.
+    // Original AVS used raw linear framebuffer blitted straight to DirectDraw.
+    // CRT monitors applied their own ~2.2 gamma naturally.
+    this._outputMaterial = new THREE.MeshBasicMaterial({
+      map: null,
       depthTest: false,
     });
     this._blitScene.add(new THREE.Mesh(
@@ -199,10 +186,10 @@ class AvsPreset {
     }
     renderer.resetState();
 
-    // Now safely bind the framebuffer texture and render to screen with gamma correction
-    this._outputMaterial.uniforms.tSource.value = this.framebuffer.getActiveTexture();
+    // Now safely bind the framebuffer texture and render to screen
+    this._outputMaterial.map = this.framebuffer.getActiveTexture();
     renderer.render(this._blitScene, this._blitCamera);
-    this._outputMaterial.uniforms.tSource.value = null;
+    this._outputMaterial.map = null;
   }
 
   destroy(ctx) {
