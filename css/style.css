@@ -666,6 +666,7 @@ body.dragover::after {
 .tree-icon.container { color: var(--accent); }
 .tree-icon.unsupported { color: #ff3333; }
 .tree-row .tree-label.unsupported-label { color: #ff3333; font-weight: 700; }
+.tree-row .tree-label.wip-label { color: #f5a623; }
 .tree-badge.unsupported-badge { background: rgba(255, 50, 50, 0.3); color: #ff5555; }
 
 .tree-label {

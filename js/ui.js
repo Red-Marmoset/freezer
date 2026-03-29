@@ -189,6 +189,13 @@ const DISPLAY_NAMES = {
   'Picture II': 'Picture II',
 };
 
+// Components confirmed as finished/working by the user.
+// Everything NOT in this set gets a yellow "under construction" marker in the editor.
+// Add component type names here as they are verified.
+const FINISHED_COMPONENTS = new Set([
+  // None confirmed yet — add as verified
+]);
+
 // Known select-type fields and their options
 // Pretty display names for enum values
 const PRETTY_NAMES = {
@@ -521,6 +528,7 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
     const indent = depth * 16;
     const disabled = comp.enabled === false;
     const unsupported = comp._unsupported;
+    const wip = !unsupported && !FINISHED_COMPONENTS.has(comp.type);
     const isSelected = selectedPath && selectedPath.join(',') === pathStr;
 
     const node = document.createElement('div');
@@ -533,10 +541,14 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
     row.dataset.path = pathStr;
     row.draggable = true;
 
+    const labelClass = disabled ? ' disabled' : unsupported ? ' unsupported-label' : wip ? ' wip-label' : '';
+    const iconContent = unsupported ? '\u26A0' : wip ? '\u{1F6A7}' : icon;
+    const iconClass = unsupported ? 'unsupported' : cat;
+
     row.innerHTML = `
       <span class="tree-toggle ${hasChildren ? 'open' : 'leaf'}">\u25B6</span>
-      <span class="tree-icon ${unsupported ? 'unsupported' : cat}">${unsupported ? '\u26A0' : icon}</span>
-      <span class="tree-label${disabled ? ' disabled' : ''}${unsupported ? ' unsupported-label' : ''}">${escHtml(DISPLAY_NAMES[comp.type] || comp.type)}</span>
+      <span class="tree-icon ${iconClass}">${iconContent}</span>
+      <span class="tree-label${labelClass}">${escHtml(DISPLAY_NAMES[comp.type] || comp.type)}</span>
       ${(cat !== 'container' && cat !== 'misc' && !unsupported) ? `<span class="tree-badge ${cat}">${cat}</span>` : ''}
       ${unsupported ? '<span class="tree-badge unsupported-badge">UNSUPPORTED</span>' : ''}
       ${comp.drawMode ? `<span class="tree-badge misc">${escHtml(comp.drawMode)}</span>` : ''}
