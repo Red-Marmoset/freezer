@@ -11,7 +11,7 @@ export function createRenderer(canvas) {
   const camera = new THREE.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 0.1, 100);
   camera.position.z = 1;
 
-  renderer.setSize(w, h);
+  renderer.setSize(w, h, false);
 
   let activePreset = null;
   let audioEngine = null;
@@ -90,7 +90,8 @@ export function createRenderer(canvas) {
   function resize() {
     w = canvas.clientWidth;
     h = canvas.clientHeight;
-    renderer.setSize(w, h);
+    // false = don't set CSS style (we use 100vw/100vh in CSS)
+    renderer.setSize(w, h, false);
     camera.left = -w / 2;
     camera.right = w / 2;
     camera.top = h / 2;
@@ -99,6 +100,10 @@ export function createRenderer(canvas) {
   }
 
   window.addEventListener('resize', resize);
+  // Also observe the canvas element directly for more reliable resize detection
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(resize).observe(canvas);
+  }
 
   return { setPreset, start, resize, scene, camera };
 }
