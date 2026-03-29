@@ -347,8 +347,10 @@ export function parseBump(r) {
 }
 
 export function parseSetRenderMode(r) {
-  const raw = r.hasBytes(4) ? r.uint32() : 0;
-  return { type: 'SetRenderMode', enabled: !(raw & 0x80000000), blend: raw & 0xff, alpha: (raw >> 8) & 0xff, lineSize: ((raw >> 16) & 0xff) || 1 };
+  // g_line_blend_mode packed uint32: bit 31 = ENABLED (set = active), bits 0-7 = blend,
+  // bits 8-15 = alpha, bits 16-23 = linesize. Default = 0x80010000 (enabled, blend 0, linesize 1)
+  const raw = r.hasBytes(4) ? r.uint32() : 0x80010000;
+  return { type: 'SetRenderMode', enabled: !!(raw & 0x80000000), blend: raw & 0xff, alpha: (raw >> 8) & 0xff, lineSize: ((raw >> 16) & 0xff) || 1 };
 }
 
 export function parseInterferences(r) {
