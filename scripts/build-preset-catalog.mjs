@@ -434,6 +434,9 @@ addPack('andy370', 'andy370', 'andy370-main', 'andy370');
 // ── drew and megatrox ───────────────────────────────────────────────
 addCompilation('drew and megatrox', 'drew-megatrox', 'drew and megatrox');
 
+// ── les Noobiens ────────────────────────────────────────────────────
+addCompilation('les Noobiens', 'les-noobiens', 'les Noobiens DIY', 'les Noobiens DIY');
+
 // ── TomyLobo ────────────────────────────────────────────────────────
 // Preset from DeviantArt, not in C:\code\avs — manually placed in assets
 // addPack handled manually; the file is already in assets/presets/tomylobo/
