@@ -1,4 +1,5 @@
 // AVS EffectList component — container with blend modes and nested components
+// Ported from r_list.cpp. EEL code can control alphain, alphaout, enabled, clear.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 import { Framebuffer } from '../framebuffer.js';
@@ -15,6 +16,10 @@ export class EffectList extends AvsComponent {
     this.enableOnBeat = opts.enableOnBeat || false;
     this.enableOnBeatFor = opts.enableOnBeatFor || 1;
 
+    // Adjustable blend values from parser
+    this.inAdjust = (opts.inAdjust || 128) / 255;
+    this.outAdjust = (opts.outAdjust || 128) / 255;
+
     const code = opts.code || {};
     this.initFn = compileEEL(code.init || '');
     this.perFrameFn = compileEEL(code.perFrame || '');
@@ -29,11 +34,9 @@ export class EffectList extends AvsComponent {
   init(ctx) {
     this.state = createState(ctx.globalRegisters, ctx.globalMegabuf);
 
-    // Create child framebuffer
     this.childFb = new Framebuffer(ctx.renderer, ctx.width, ctx.height);
     this.childFb.clear(0x000000);
 
-    // Recursively instantiate child components
     this.children = AvsComponent.createComponents(this.opts.components || []);
     for (const child of this.children) {
       child.init(ctx);
@@ -55,19 +58,42 @@ export class EffectList extends AvsComponent {
     }
 
     const s = this.state;
-    const lib = createStdlib({ time: ctx.time });
+    const lib = createStdlib({
+      waveform: ctx.audioData.waveform,
+      spectrum: ctx.audioData.spectrum,
+      fftSize: ctx.audioData.fftSize,
+      time: ctx.time,
+    });
 
-    // Run init on first frame
-    if (this.firstFrame) {
-      this.initFn(s, lib);
-      this.firstFrame = false;
-    }
-
-    // Run perFrame code
+    // Set EEL variables (matching r_list.cpp)
     s.w = ctx.width;
     s.h = ctx.height;
     s.b = ctx.beat ? 1 : 0;
-    this.perFrameFn(s, lib);
+    s.enabled = 1;
+    s.clear = this.clearFrame ? 1 : 0;
+    s.alphain = this.inAdjust;
+    s.alphaout = this.outAdjust;
+
+    // Run init on first frame
+    if (this.firstFrame) {
+      try { this.initFn(s, lib); } catch {}
+      this.firstFrame = false;
+    }
+
+    // Run perFrame code — can modify enabled, clear, alphain, alphaout, beat
+    try { this.perFrameFn(s, lib); } catch {}
+
+    // Read back EEL-controlled values
+    const frameEnabled = s.enabled !== 0;
+    const frameClear = s.clear !== 0;
+    const alphaIn = Math.max(0, Math.min(1, s.alphain));
+    const alphaOut = Math.max(0, Math.min(1, s.alphaout));
+    const beat = s.b !== 0;
+
+    // Update beat in context for children (EEL code can suppress/trigger beat)
+    const childCtx = { ...ctx, beat };
+
+    if (!frameEnabled) return;
 
     // Resize child FB if needed
     if (this.childFb && (ctx.width !== this.childFb.width || ctx.height !== this.childFb.height)) {
@@ -76,19 +102,19 @@ export class EffectList extends AvsComponent {
 
     // Determine rendering target:
     // If both input and output are IGNORE, render directly onto parent FB
-    // (the EffectList IS the framebuffer, not a separate layer)
     const renderToParent = (this.input === BLEND.IGNORE && this.output === BLEND.IGNORE && parentFb);
     const targetFb = renderToParent ? parentFb : this.childFb;
 
     if (!renderToParent) {
-      // Clear child framebuffer FIRST (before input blend overwrites it)
-      if (this.clearFrame) {
+      // Clear child framebuffer — but skip when input is REPLACE (matching original:
+      // "if (use_clear && (isroot || blendin() != 1))" where mode 1 = COPY/REPLACE)
+      if (frameClear && this.input !== BLEND.REPLACE) {
         this.childFb.clear(0x000000);
       }
 
       // Input blend: copy parent content into child framebuffer
       if (this.input !== BLEND.IGNORE && parentFb) {
-        blendTexture(ctx.renderer, parentFb.getActiveTexture(), this.childFb.getActiveTarget(), this.input);
+        blendTexture(ctx.renderer, parentFb.getActiveTexture(), this.childFb.getActiveTarget(), this.input, alphaIn);
       }
     }
 
@@ -96,7 +122,7 @@ export class EffectList extends AvsComponent {
     const gl = ctx.renderer.getContext();
     for (const child of this.children) {
       if (child.enabled) {
-        child.render(ctx, targetFb);
+        child.render(childCtx, targetFb);
         ctx.renderer.setRenderTarget(null);
         for (let i = 0; i < 8; i++) {
           gl.activeTexture(gl.TEXTURE0 + i);
@@ -108,7 +134,7 @@ export class EffectList extends AvsComponent {
 
     // Output blend: composite child result back onto parent framebuffer
     if (!renderToParent && this.output !== BLEND.IGNORE && parentFb) {
-      blendTexture(ctx.renderer, this.childFb.getActiveTexture(), parentFb.getActiveTarget(), this.output);
+      blendTexture(ctx.renderer, this.childFb.getActiveTexture(), parentFb.getActiveTarget(), this.output, alphaOut);
     }
   }
 

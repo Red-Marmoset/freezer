@@ -161,11 +161,11 @@ export function parseFastBrightness(r) {
 
 export function parseBufferSave(r) {
   const action = r.hasBytes(4) ? r.uint32() : 0;
-  const rawBuffer = r.hasBytes(4) ? r.uint32() : 1;
-  const buffer = Math.max(0, rawBuffer - 1);
+  // Buffer index is stored 0-based (0 to NBUF-1) in the original r_stack.cpp
+  const buffer = r.hasBytes(4) ? r.uint32() : 0;
   const blendMode = r.hasBytes(4) ? r.uint32() : 0;
   const adjustBlend = r.hasBytes(4) ? r.uint32() : 128;
-  return { type: 'BufferSave', action, buffer, blendMode, adjustBlend };
+  return { type: 'BufferSave', action, buffer: Math.max(0, Math.min(7, buffer)), blendMode, adjustBlend };
 }
 
 export function parseMosaic(r) {
