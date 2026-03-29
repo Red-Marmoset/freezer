@@ -1,0 +1,23 @@
+{
+  "name": "Adam Eatit Mashup FX 2 martin - disco mix + Lodus + Geiss + Ludicrous speed + Baked Ft another AdamFX 16",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nvol= (bass+mid+treb)*2;;\nvol=vol;;\nzoom=1.000;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;",
+        "perVertex": "tm=sin(time*0.5)*3;;\ntm2=cos(time)*3;;\nzooma=((cos(x*6.28*3+tm)) > (0)) * ((cos(y*6.28*2+tm2)) > (0));;\nzooma=min(sin(x*6.28*3+tm)+1,1) * min(cos(y*6.28*2+tm)+1,1);;\nrd=sqrt( sqr( (x-0.5-q4)*1.7) + sqr( (y-0.5+q5)*1.2 ) );;\ncx=0.5+q4;;\ncy=0.5-q5;;\nzoom=0.99*(zooma) + 0.99*(1-zooma);;\nzm=rd+rd;;\nsx=zm;sy=zm;;\nrot=.3*zooma*rd;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

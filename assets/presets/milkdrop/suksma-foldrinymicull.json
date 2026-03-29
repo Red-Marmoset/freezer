@@ -1,0 +1,27 @@
+{
+  "name": "suksma - foldrinymicull",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1.16085;\nrot = 0.02;\ndx = 0;\ndy = 0;\nsx = 1.05101;\nsy = 0.82766;\nwarp = 9.58836;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.5*( 0.60*sin(0.733*time) + 0.40*sin(0.345*time) );;\nwave_g = wave_g + 0.5*( 0.60*sin(0.600*time) + 0.40*sin(0.456*time) );;\nwave_b = wave_b + 0.5*( 0.60*sin(0.510*time) + 0.40*sin(0.550*time) );;\ndx=dx+0.009*cos(time*0.974);;\ndy=dy+0.009*cos(time*0.705);",
+        "perVertex": "rot=rot+0.082*(mid_att+1.5)*(rad*0.3);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.4,
+      "alpha": 0.1,
+      "orient": 0
+    }
+  ]
+}

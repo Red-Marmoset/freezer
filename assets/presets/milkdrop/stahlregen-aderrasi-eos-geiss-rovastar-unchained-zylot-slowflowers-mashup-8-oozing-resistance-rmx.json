@@ -1,0 +1,32 @@
+{
+  "name": "Stahlregen & Aderrasi + EoS + Geiss + Rovastar + Unchained + Zylot - Slowflowers (MashUp 8 - Oozing Resistance RMX)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nob_r = 0.5+0.5*sin(2*time);;\nob_g = 0.5+0.5*sin(1.23*time);;\nob_b = 0.5+0.5*sin(time*1.321);;\nwave_a =0;;\nq8 =oldq8+ 0.003*(pow(1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,6)/fps);;\noldq8 = q8;;\nwarp=0;",
+        "perVertex": "rot = 0.1*(rad+cos((5+5*sin(q8*1.211)*x)-0.5) -sin(((5+5*sin(q8*0.973))*y)-0.5));;\ndx = 0.005*(cos((5+5*sin(q8*1.311)*x)-0.5) -sin(((5+5*sin(q8*0.9431))*y)-0.5));;\ndy = 0.005*(cos((5+5*sin(q8*1.021)*x)-0.5) -sin(((5+5*sin(q8*0.987))*y)-0.5));;\nzoom =1- 0.005*(rad+cos((5+5*sin(q8*0.943)*x)-0.5) -sin(((5+5*sin(q8*1.0961))*y)-0.5));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#80664d"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "LuxXx - Sinful World, Glory to God I",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.10462;\nsy = 1;\nwarp = 67.16532;\ncx = 0.5;\ncy = 0.5;\n//krash's beat detection code;\nvolume = 0.3*(bass+mid+att);;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate);;\nlastbeat = lastbeat + ((lastbeat) == (0))*time;;\nmeanbass_att = 0.1*(meanbass_att*9 + bass_att);;\npeakbass_att = max(bass_att,peakbass_att);;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\npeakbass_att = beat*bass_att + (1-beat)*peakbass_att*(((time - lastbeat) > (2*beatrate))*0.95 + (1-((time - lastbeat) > (2*beatrate)))*0.995);;\nlastbeat = beat*time + (1-beat)*lastbeat;;\npeakbass_att = max(peakbass_att,1.1*meanbass_att);;\nbeat = ((volume) > (0.8))*((peakbass_att - bass_att) < (0.05*peakbass_att))*((time - lastbeat) > (0.1 + 0.5*(beatrate - 0.1)));;\nbeatcounter = beatcounter + beat;;\nmode = if(beat*((beatcounter%2) == (0)),1-mode,mode);;\nflip = 2*mode-1;;\nmonitor=flip;;\nq8=flip;;\ndecay=1;;\n//zoom=1.002;;\nvol=(bass_att+mid_att+treb_att)*0.25;;\nvol=vol*vol;;\nmtime=mtime+vol*0.05*flip;;\nq1=mtime*0.4;;\nmusictime=musictime+(mid*mid*mid*mid)*0.01*flip;;\nxpos=sin(musictime*0.6)*0.3;;\nypos=sin(musictime*0.4)*0.3;;\nq4=xpos;;\nq5=ypos;;\nwarp=0.0",
+        "perVertex": "cx=0.5+q4;;\ncy=0.5-q5;;\nrd=sqrt( sqr( (x-0.5-q4)*2) + sqr( (y-0.5+q5)*1.5 ) );;\nzm=(1-(rd/5));;\nsx=zm;;\nsy=zm;;\n//rot=((rd) > (0.7))*(rd-0.7)*sin(time*0.3);;\ntm=time+(sin(time)*rad);;\nvar=tan(tm+time)*treb;;\nzoom=.91+(rd/100)+0.1;;\n//rot=((rad/100)+(var/400))*sin(time);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

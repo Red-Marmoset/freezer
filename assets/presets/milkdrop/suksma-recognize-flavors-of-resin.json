@@ -1,0 +1,23 @@
+{
+  "name": "suksma - recognize flavors of resin",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.25*sin(1.4*time) + 0.25*sin(2.25*time);;\nwave_g = wave_g + 0.25*sin(1.7*time) + 0.25*sin(2.11*time);;\nwave_b = wave_b + 0.25*sin(1.84*time) + 0.25*sin(2.3*time);;\nwarp = 0;",
+        "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nzoom = zoom - (0.5-y*rad*0.2*abs(cos(rad*bass-0.7*sin(ang*12))))*0.1;;\ndy = dy + dy_r;;\ndx = dx + dx_r;;\nsx = sx - dx_r;;\nsy = sy + (0.4*rad)-cos(3*treb*sin(ang*12)*0.3-rad)*0.1;;\nsx = sx + (0.4*rad)-cos(3*treb*sin(ang*12)*0.3-rad)*0.1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 2.221,
+      "alpha": 0.6,
+      "orient": 0
+    }
+  ]
+}

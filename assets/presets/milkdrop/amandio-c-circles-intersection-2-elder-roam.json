@@ -1,0 +1,32 @@
+{
+  "name": "amandio c - circles intersection 2 elder roam",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nwave_a=0;;\nzoom=1;;\ndecay=0;;\nq6=aspecty;;\nq1=.3+.15*sin(.2*time);        //// zoom;\n///// 2 circles intersection (n x n times) /////;\nind=0;  i1=0;  loop(20,;\nxa=sin(.3*time+.314*i1);    ya=cos(.3*time+.314*i1);                               /// circle A position;\nra=abs(10*sin(-.2*time+.314*i1))*q1;                                               /// circle A radius;\ngmegabuf(10000+3*i1)=xa;   gmegabuf(10001+3*i1)=ya;   gmegabuf(10002+3*i1)=ra;;\ni2=0;  loop(20,;\nxb=sin(.3*time+.314*i2);    yb=cos(.3*time+.314*i2);                               /// circle B position;\nrb=abs(10*sin(-.2*time+.314*i2))*q1;                                               /// circle B radius;\nd=sqrt(sqr(xa-xb)+sqr(ya-yb));     p=(ra*ra-rb*rb+d*d)/(2*d);;\nh=sqrt(ra*ra-p*p);                 c=pow(-1,instance);;\nx=xa+p*(xb-xa)/d;                  y=ya+p*(yb-ya)/d;;\nx=x-c*h*(yb-ya)/d;                 y=y+c*h*(xb-xa)/d;               /// intersection points;\na=if(((d) > (ra+rb)),0,1);                                           /// hide when one circle is outside other;\na=if(((d) < (abs(ra-rb))),0,a);                                      /// hide when one circle is inside other;\na=if(((d) == (0)),0,a);                                               /// hide when circles have the same center;\ngmegabuf(3*ind)=x;      gmegabuf(3*ind+1)=y;   gmegabuf(3*ind+2)=a;;\nind=ind+1;   i2=i2+1;);    i1=i1+1;);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    }
+  ]
+}

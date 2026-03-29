@@ -1,0 +1,23 @@
+{
+  "name": "martin - city lights",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndt = 1/fps;;\ndec_m = 1 - 6*dt; dec_s = 1 - 2*dt; dec_xs = 1-dt;;\nvol = bass+mid+treb;;\nvol_ = vol_*dec_m + (1-dec_m)*vol;;\nis_beat = ((vol) > (.4+vol_+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * vol + (1-is_beat)*peak*dec_m;;\nindex = (index + is_beat) %32;;\nindex2 = (index2 + is_beat*bnot(index))%8;;\nindex3 = (index3 + is_beat* if(bnot(rand(8)%2),-1,1)*bnot(index%16))%6;;\nnum_res = 200; MINBPM = 50; MAXBPM = 200;;\ntess = 0; maxind = 0; qavg = 0.001; i=0;;\nloop (num_res,;\nn = i*8;;\nFreq  = (i/(num_res-1)+minbpm/(maxbpm-minbpm))*(maxbpm-minbpm)/60;;\nFeder = sqr(Freq*6.2832); //Res.f = sqrt (Feder)/2pi (Hz);\nExcite = (vol-vol_);;\ngmegabuf (n+4) = gmegabuf(n+2); //alte pos;\ngmegabuf (n+1) *= 1-0.2*dt; //damping;\nEC_Steps = int (20*Freq*dt)+1;;\nloop (EC_Steps, // Euler-Cauchy steps;\nKraft = Excite - Feder*gmegabuf(n + 2) ;;\ngmegabuf (n+1) += Kraft         * dt/EC_Steps;;\ngmegabuf (n+2) += gmegabuf(n+1) * dt/EC_Steps;;\n);;\nbeatcos = gmegabuf(n+1);  beatsin = gmegabuf(n+2)*Freq*6.2832;;\nquad = sqrt (pow(beatsin,2) + pow(beatcos,2));;\ngmegabuf (n+3) = gmegabuf(n+3) *dec_m +  quad* (1-dec_m);;\nif (gmegabuf(n+3) > gmegabuf (maxind*8+3), maxind =i,0);;\nqavg = qavg+pow (gmegabuf(n+3),2);;\ntess += beatsin* pow(gmegabuf(n+3)/gmegabuf(maxind*8+3),1)*5;;\ni += 1;;\n);;\nqavg = sqrt (qavg/num_res);;\ncertain = gmegabuf(maxind*8+3)/qavg;;\ndbl_beat = gmegabuf(maxind*8+2) * gmegabuf (maxind*8+4) < 0;;\nbcount += dbl_beat;;\nis_rbeat  = dbl_beat && (bcount%2==0);;\nbcount2 += is_rbeat;;\nis_rbeat2 =is_rbeat * (bcount%2==0);;\nis_rbeat4 =is_rbeat * (bcount%4==0);;\nis_rbeat8 =is_rbeat * (bcount%8==0);;\nFreq  = (maxind/(num_res-1)+minbpm/(maxbpm-minbpm))*(maxbpm-minbpm)/60;;\nFreq_ = Freq_* dec_s + (1-dec_s)*Freq;;\ntrad1 = trad1 + Freq_*dt*6.28/8;;\nspeed_ = speed_*dec_xs + (1-dec_xs)*Freq_*1.2;;\ntrig = (index==4) && is_beat;;\nif (trig, dyang = 0.007*(rand(100)-50)* rand(10)/10, 0);;\npyr = pyr*dec_xs + (1-dec_xs)*dyang;;\npyr2 = pyr2*dec_xs + (1-dec_xs)*pyr;;\ntest = 0;;\nfwx = fwx + (speed_)* sin(zang+test)*0.02/fps;;\nfwy = fwy + (speed_)* cos(zang+test)*0.02/fps;;\n//#############################################;\nq5 = fwx; q6 = fwy; q7 =  0.3;;\nyang = pyr2;;\ntrig = is_beat * (index==26);;\nran1 = if (trig,  int(rand(4))*-0.7/3-0.08, ran1);;\nxang =  ran1;;\nxang = -0.7 * (1.1-pow(cos(trad1/16),12));;\nzang = zang + yang/6/fps*speed_/xang;;\npos_x = 0;;\npos_y = 0;;\npos_z = 0.24* (1+0.125*sin(2*zang))* aspecty*( 1.5- abs(xang)/2);;\nq30 = .1/pos_z*cos(xang);;\nox = -pos_x; oy = -pos_y; oz = pos_z;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;oz = mz;;\nq11=ox; q12 = oy; q13 = oz; //Position;\n//Vektor x nach rechts;\nox = 1; oy = 0; oz = 0;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;oz = mz;;\nq14=ox; q15 = oy; q16 = oz;;\n//Vektor z nach hinten;\nox = 0; oy = 0; oz = 1;;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;;\noz = mz;;\nq17=ox; q18 = oy; q19 = oz;;\nq20 = xang;;\nq21 = yang;;\nq22 = zang;;\nq32 = aspecty;;\nq4 = min(max(0,vol-vol_),4);;\nq4 *= max(0,3*cos(trad1)-2)*8;;\nq2 = is_rbeat;;\nq3 = gmegabuf(maxind*8+2)>0;;\n//q3 = bcount2%2;;\nmonitor = freq_*60;",
+        "perVertex": "zoom = 1; rot = 0; dx = 0; dy = 0; warp = 0.002;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

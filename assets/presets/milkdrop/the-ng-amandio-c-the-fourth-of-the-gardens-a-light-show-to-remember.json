@@ -1,0 +1,16 @@
+{
+  "name": "The NG + amandio c - The Fourth of the Gardens (A Light Show To Remember)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.98;;\nzoom=1.000;;\nq1=time*0.4;",
+        "perVertex": "dx=sin(y*14)*sin(y*34+time)*0.002;;\ndy=cos(x*19+time)*cos(x*34)*0.002;;\ndy=dy"
+      },
+      "gridSize": 48
+    }
+  ]
+}

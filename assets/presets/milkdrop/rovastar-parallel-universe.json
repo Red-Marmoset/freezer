@@ -1,0 +1,43 @@
+{
+  "name": "Rovastar - Parallel Universe",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_r = 0.5+0.5*sin(time);;\nwave_r = 0.5+0.5*sin(time);;\nxwave_a = 0;;\nib_b = 0.5+0.3*sin(time*2.314);;\nib_r = 0.7+0.3*sin(time*1.867);;\nq8 = if(((bass) > (1.2)),2*bass,0.5);;\nq7 = if(((bass_att) > (1.2)),2*bass_att,0.5);;\nq6 = if(((bass+bass_att) > (2.3)),bass+bass_att,0.5);;\nwarp =0;;\nq5 = if(((treb+treb_att) > (2.8)),1,0);;\nmonitor = q5;;\nib_g = q5;",
+        "perVertex": "myx = x-0.5;;\nmyy = y-0.5;;\nq1 =0.1*sqrt(x*x+y*y);;\nq1 = 0.05*(x+y);;\ndy = q1*abs(sin(50*bass));;\ndx = q1*abs(sin(50*bass_att));;\ndy = 0.2*q1*q6;;\ndx=0.2*q1*q6;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.999609,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

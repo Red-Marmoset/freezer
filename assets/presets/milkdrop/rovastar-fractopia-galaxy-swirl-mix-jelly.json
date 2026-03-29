@@ -1,0 +1,32 @@
+{
+  "name": "Rovastar - Fractopia (Galaxy Swirl Mix) (Jelly)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nvolume = 0.3*(bass+mid+att);;\nwave_x = 1-(xpos + 0.5);;\nwave_y = ypos + 0.5;;\nmv_r = 0.5 + 0.499*(0.60*sin(3.980*time) + 0.40*sin(1.047*time) );;\nmv_g = 0.5+ 0.499*(0.60*sin(0.835*time) + 0.40*sin(1.081*time) );;\nmv_b = 0.5 + 0.499*(0.60*sin(0.814*time) + 0.40*sin(1.011*time) );;\nq1 = (x_pos+0.5);;\nq2 = 1- (ypos+0.5);;\nwave_a =0;;\nwarp=0;;\nzoom =1;;\nmovement =movement + 0.5*(((bass+bass_att + 0.075*pow((bass+0.6*bass_att+0.2*treb_att),3)))/fps);;\nmovement = if(((movement) > (10000)), 0, movement);;\nrot =-0.04+ 0.01*(sin(movement*0.696)+cos(movement*0.463)+sin(movement*0.365));;\ncx = 0 + 0.1*(sin(movement*0.247)+cos(movement*0.373)+sin(movement*0.187));;\ncy = 0 + 0.1*(sin(movement*0.317)+cos(movement*0.209)+sin(movement*0.109));;\nob_b = q4+0.25*sin(movement*3.816);;\nob_g = q4+0.25*sin(movement*0.744);;\nob_r = q4+0.25*sin(movement*0.707);;\nwrap = ((bass+bass_att) < (3));;\nzoom = 0.99 + 0.0035*(sin(movement*0.217)+cos(movement*0.413)+sin(movement*0.311));",
+        "perVertex": "myy = y-(0.250025);;\nmyx = x-0.5;;\ndx = 2*(2*myx*myy);;\ndy = 2*((myy*myy) - (myx*myx));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

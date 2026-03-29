@@ -1,0 +1,16 @@
+{
+  "name": "Flexi - self similarity - martin must become (oops)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.585",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//martin no religion / my omniversal absence for changing the background light;\nvb = vb*0.95 + (1-vb)*pow(abs(bass-bass_att),2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(abs(mid-mid_att),2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(abs(treb-treb_att),2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nrunbass=runbass+vvb;;\nrunmids=runmids+vvm ;;\nruntreb=runtreb+vvt;;\npi23=4*asin(-1)*.33333333333333;;\natime=(runtreb+runmids+runbass)*1.85;;\nq8= (sin(atime-0*pi23)+1)*.4;;\nq9= (sin(atime-1*pi23)+1)*.4;;\nq10=(sin(atime-2*pi23)+1)*.4;;\nvb = vb*0.95 + (1-vb)*pow(abs(bass-bass_att),2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(abs(mid-mid_att),2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(abs(treb-treb_att),2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = (vvt+vvm+vvb)*100;;\nq2 = (vvt+vvm+vvb)*100;;\nq3 = (vvt+vvm+vvb)*100;;\nq4 =(vvt+vvm+vvb)*100;;\nq5 =(vvt+vvm+vvb)*100;;\nq6 =(vvt+vvm+vvb)*100;;\nq4 =(vvt+vvm+vvb)*100;;\nq5 =(vvt+vvm+vvb)*100;;\nq6 =(vvt+vvm+vvb)*100;;\nq7 =(vvt+vvm+vvb)*100;;\nq11=(vvt+vvm+vvb)*100;;\nq12=(vvt+vvm+vvb)*100;;\nq13=(vvt+vvm+vvb)*100;;\nq14=(vvt+vvm+vvb)*100;;\nq15=(vvt+vvm+vvb)*100;;\nq16=(vvt+vvm+vvb)*100;;\nq17=(vvt+vvm+vvb)*100;;\nq18=(vvt+vvm+vvb)*100;;\nq19=(vvt+vvm+vvb)*100;;\nq20=(vvt+vvm+vvb)*100;;\nq21=(vvt+vvm+vvb)*100;;\nq22=(vvt+vvm+vvb)*100;;\nq23=(vvt+vvm+vvb)*100;;\nq24=(vvt+vvm+vvb)*100;;\nq25=(vvt+vvm+vvb)*100;;\nq26=(vvt+vvm+vvb)*100;;\nq27=(vvt+vvm+vvb)*100;;\nq28=(vvt+vvm+vvb)*100;;\nq29=(vvt+vvm+vvb)*100;;\nq30=(vvt+vvm+vvb)*100;;\nq31=(vvt+vvm+vvb)*100;;\nq32=(vvt+vvm+vvb)*100;;\nvvb = if(((vvb) < (0)),0,vvb);;\nvvm = if(((vvm) < (0)),0,vvm);;\nvvt = if(((vvt) < (0)),0,vvt);;\nvvb = if(((vvb) > (1)),1,vvb);;\nvvm = if(((vvm) > (1)),1,vvm);;\nvvt = if(((vvt) > (1)),1,vvt);;\nvb = vb*0.85 + (1-vb)*pow(bass,2)*0.01;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.2;;\nvm = vm*0.85 + (1-vm)*pow(mid,2)*0.01;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.2;;\nvt = vt*0.85 + (1-vt)*pow(treb,2)*0.01;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.2;;\nq1 = vvb;//0.5 + vb - vvb;;\nq2 = vvm;//0.5 + vm - vvm;;\nq3 = vvt;//0.5 + vt - vvt;;\nv=0.03*(60/fps);;\nd = 0;//v*0.35;;\nbb = bb + vvb*v - d;;\nmm = mm + vvm*v - d;;\ntt = tt + vvt*v - d;;\nq6 = bb;;\nq5 = mm;;\nq4 = tt;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

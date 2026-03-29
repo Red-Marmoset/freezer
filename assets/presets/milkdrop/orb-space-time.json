@@ -1,0 +1,16 @@
+{
+  "name": "ORB - Space Time",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.745",
+        "perFrame": "zoom = 1.06;\nrot = -0.04;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.011;\ncx = 0.5;\ncy = 0.5;\nbass_clip = ((bass_att) > (bass_clip))*2 + (1-((bass_att) > (bass_clip)))*((bass_clip-1.3)*0.96+1.3);;\nbasstime = basstime + (bass_att*0.03);;\n//increment;\nstate = state + ((bass_clip) == (2));;\nstate = if(((state) > (3)),0 , state);;\nq1 = state;;\nq2 = basstime;;\nq3 = bass_clip;;\nzoom = 1.05;;\nsx = 1;;\nsy = 1;;\nrot = 0;",
+        "perVertex": "zoom = 1;;\nsx = 1;;\nsy = 1;;\nrot = 0.0;;\nzoom = 1.0 - (rad- 0.5)*0.05 + ((q1) == (0))*x*0.1*rad -;\n((q1) == (1))*(x-1)*0.1*rad;\n+ ((q1) == (2))*y*0.1*rad;\n- ((q1) == (3))*(y-1)*0.1*rad;;\nrot = 0; + (rad - 0.5)*0.05;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

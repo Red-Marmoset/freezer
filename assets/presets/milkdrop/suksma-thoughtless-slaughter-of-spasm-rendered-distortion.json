@@ -1,0 +1,43 @@
+{
+  "name": "suksma - thoughtless slaughter of spasm rendered distortion",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 1.064;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.88027;\nsy = 1.00183;\nwarp = 0;\ncx = 0.5;\ncy = 0.5;\nib_r = 0.9 + 0.499*( 0.60*sin(0.933*time*3) + 0.40*sin(1.045*time*3) );;\nib_g = 0.9 + 0.499*( 0.60*sin(0.900*time*3) + 0.40*sin(0.956*time*3) );;\nib_b = 0.9 + 0.499*( 0.60*sin(0.910*time*3) + 0.40*sin(0.920*time*3) );;\nwave_a=0;;\ndecay =.99;;\nzoom =-1;;\nrot=0;;\nwarp=0;;\nq1 = oldq1+0.005*(bass+bass_att+(bass*bass_att)-2);;\noldq1 = ((q1) < (30000))*q1;;\nmonitor =q1;;\nq20=(bass+treb+mid)*.3;",
+        "perVertex": "//dx=0.01*(bass*bass+bass_att)*sin((atan(sqrt(4)-rad))*5+(rad*5*sin(q1)))*y;;\n//dy=0.01*(bass*bass+bass_att)*cos((tan(sqrt(4)-rad))*5+(-rad*5*sin(q1)))*x;;\nsx=(sin(time*3)*8)*rad;;\nsx=(cos(time/3)*8)*rad;;\nwarp=tan(time);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

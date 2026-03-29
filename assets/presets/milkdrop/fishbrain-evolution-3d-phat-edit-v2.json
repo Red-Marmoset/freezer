@@ -1,0 +1,23 @@
+{
+  "name": "fiShbRaiN - evolution (3d)_phat_edit_v2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.999513;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.999999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nzoom=1.13;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.006595,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

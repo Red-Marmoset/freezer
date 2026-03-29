@@ -1,0 +1,32 @@
+{
+  "name": "Geiss and Rovastar - Many More Colours",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.014;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.467;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.50*( 0.60*sin(0.980*time) + 0.40*sin(1.047*time) );;\nwave_g = wave_g + 0.50*( 0.60*sin(0.835*time) + 0.40*sin(1.081*time) );;\nwave_b = wave_b + 0.50*( 0.60*sin(0.814*time) + 0.40*sin(1.011*time) );;\nrot = rot + 0.030*( 0.60*sin(0.381*time) + 0.40*sin(0.479*time) );;\ncx = cx + 0.110*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );;\ncy = cy + 0.110*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );",
+        "perVertex": "zoom = zoom -0.005- 0.05*log(sqrt(2)-rad);;\nzoom_exp = sin(time)*100;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

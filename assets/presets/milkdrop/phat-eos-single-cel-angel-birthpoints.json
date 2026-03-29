@@ -1,0 +1,16 @@
+{
+  "name": "phat + EoS - single cel angel birthpoints",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.005;\ndy = 0;\nsx = 0.9999;\nsy = 1.0018;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.98;;\ndx=0;dy=0;sx=1.000001;sy=0.999999;;\nmv_r=.360+(((cos(time/5)*0.3)+0.5*0.5)*0.1);;\nmv_g=.390+(((sin(time/7)*0.3)+0.5*0.5)*0.1);;\nmv_b=.500+((sin((time/7)+0.9)+0.5*0.5)*0.1);",
+        "perVertex": "//adv=min( (bass*bass*bass), 1);;\n//warp=1*((( atan(time/3) *0.5+0.5)*3)* (x*rad)*2 )+( (y*ang)*2 )*rad;;\n//warp=warp*adv;;\n//dx=(cos(y+bass )*0.005*rad)*treb;;\n//dy=(sin(x+bass*5 )*0.005*rad)*treb;;\n//rot=rad/(bass*100);;\nzoom=1+ 0.001;;\n//Do people that don't do drugs make shit like this??"
+      },
+      "gridSize": 48
+    }
+  ]
+}

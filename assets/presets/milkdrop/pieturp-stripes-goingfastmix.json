@@ -1,0 +1,23 @@
+{
+  "name": "PieturP - stripes-goingFastMix",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9459",
+        "perFrame": "zoom = 1.0018;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.001829;\nsy = 1.008151;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ncx=0;;\ncy=0;;\nzoom=1;;\nsx=10;;\nsy=1;;\ndecay=1;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.254851,
+      "alpha": 1,
+      "orient": 2
+    }
+  ]
+}

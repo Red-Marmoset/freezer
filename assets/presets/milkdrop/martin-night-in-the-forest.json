@@ -1,0 +1,23 @@
+{
+  "name": "martin - night in the forest",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.9, 30/fps);;\ndec_slow = pow (0.99, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.5+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %8;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = bass + mid + treb;;\nk1 =  is_beat*((index) == (0));;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_med * p2+ (1-dec_med)*p1;;\np3 = dec_med * p3+ (1-dec_med)*p2;;\nrott = p3 * 3.1416/2;;\nq27 = index + 1;;\nmovz = movz + .006*30/fps*(1.5+sin(rott));;\nq29 = movz ;;\nmovx = movx + .01*30/fps*(sin(time/5));;\nq28 = movx;;\nq30 = sin(time/9)+2;",
+        "perVertex": "//rot = q1/10* (rad;\nwarp = .02;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.999998,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

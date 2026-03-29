@@ -1,0 +1,23 @@
+{
+  "name": "mine idiosphuhrer (throw it all away) satan m anticipating my arrival in hell nz+2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1.11363;\nrot = 0;\ndx = -1;\ndy = 1;\nsx = 1;\nsy = 1;\nwarp = 100;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.8, 30/fps);;\ndec_slow = pow (0.95, 30/fps);;\n//dec_xlow = pow (0.999, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.2+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %32;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nq22 = peak;;\nq24 = is_beat;;\nq26 = bass_att + mid_att + treb_att;;\nvol = vol*dec_med + (1-dec_med)*q26;;\nq27 = index + 1;;\nq28 = index2 +1;;\np2 = .3*sin(time) + .3*cos(time/3);;\n//*****tunnel tilting;\nq1 = cos(p2 * 3.1416/4);;\nq2 = sin(p2 * 3.1416/4);;\nq3 = -q2;;\nq4 = q1;;\n//****tunnel viewpoint x,y;\nvtrig = is_beat * bnot(index%2);;\nvx = vx * bnot(vtrig) + vtrig * (int(rand(100))/100-.5);;\nvy = vy * bnot(vtrig) + vtrig * (int(rand(100))/100-.5);;\nvx = vx* ((index%15) < (5)); //###;\nvy = vy* ((index%15) < (5));;\nq5 = vx*10;;\nq6 = vy*12;;\n//***tunnel width;\nq21 = (1+sin(time/12))/8+.01;;\n//**floor proximity;\nprox = prox - ((vy) > (.3))*prox*2;;\nq32 = .5 + .2*prox;;\nmonitor = prox;;\n//****tunnel rotation;\nrota = rota +.01*((index%16) < (8))/fps*30;;\nrota1 = rota1*dec_med + (1-dec_med)*rota;;\nq7 = rota1;;\n//****tunnel speed;\nmovez = movez + 1.2/(1+abs(vx)+abs(vy))/fps;;\nq8 = movez * (1+q21/4);;\n//dyn. Aenderung von q21 bewirkt auch Richt.wechsel;\n//***********************;\ntrig1= q24*bnot(index%12);;\ntrig2= q24*bnot((index+4)%12);;\ntrig3= q24*bnot((index+8)%12);;\ntrel = trel + vol/fps;;\nz0 = 1;;\nspeed = vol/2;;\nhx = sin(trel);;\nhy = cos(trel);;\np1z = bnot(trig1)* (p1z + (5+p1z)*speed/fps)+trig1*z0;;\np1z = max(p1z,.1);;\nq9 = hx/(p1z);;\nq10 = hy/(p1z);;\nq11 = p1z;;\nq12 = .1+.02*q26*bnot((index+2)%3)*p1z*exp(-p1z/100);;\np2z = bnot(trig2)* (p2z + (5+p2z)*speed/fps)+trig2*z0;;\np2z = max(p2z,.1);;\nq13 = 2*hx/(p2z);;\nq14 = -.5*hy/(p2z);;\nq15 = p2z;;\nq16 = .1+.02*q26*bnot((index+2)%3)*p2z*exp(-p2z/100);;\np3z = bnot(trig3)* (p3z + (5+p3z)*speed/fps)+trig3*z0;;\np3z = max(p3z,.1);;\nq17 = -1.4*hx/(p3z);;\nq18 = 2*hy/(p3z);;\nq19 = p3z;;\nq20 = .1+.02*q26*bnot((index+2)%3)*p3z*exp(-p3z/100);;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq20=if(((chng) > (cthr)),rand(3),mq20);;\nmq19=if(((chng) > (cthr)),rand(3),mq19);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq30=if(((chng) > (cthr)),rand(1)*.3,mq30);;\nmonitor=chng;;\nq20=mq20;q19=mq19;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q30=mq30;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq1=.4+sin(atime*.006        )*.4;;\nq2=.4+cos(atime*.00613828348)*.4;;\nq3=.4+sin(atime*.00598593455)*.4;;\nmonitor=q3;;\nwarp = 0;;\ntv = tv + 1/fps+((bass_att*treb_att) > (4));;\nmv_r = sin(tv*2.)/2+.5;;\nmv_g= sin(tv*.2312)/2+.5;;\nmv_b = sin(tv*.203)/2+.5;;\nwave_b = if(((treb) < (1.8)),1-.025*int(rand(10)),0);;\nwave_g = wave_g*sqr(.01*int(rand(100)));;\ndecay = .9999+.0001+0*if(((frame % 10) == (0)),.95,1);;\nmonitor = wave_g;;\ncx=.5+.3*cos(time*.21);;\ncy=.5+.3*sin(time*.1);;\n//cx=cx+(bass-1.2)*.1;;\n//cy=cy+(treb_att-1)*.1;;\nmv_a=bass_att*.4;;\n//mv_g=mv_r*1;;\nwave_x = cx;;\nwave_y=1-cy;;\nmonitor=(3.14159+atan(-.1))/3.14159;;\nq1=cx;;\nq2=cy;;\nq21=sin(time*.7);;\n//q22=.01;",
+        "perVertex": "radc=sqr(q1-x)+sqr(q2-y);;\nnear=((radc) < (.015));;\nnotnear = 1- near;;\n//sy=max(0.3,pow(bass_att,.2))*near + notnear;;\n//sx=1/sy*near + notnear;;\n//rot = .01*sin(x*5+time)*notnear-.015;;\nrot = .015*notnear;;\n//zoom = 1+ notnear*.01*(.5+sin(ang*5+time));;\nangc=atan((y-cy)/(x-cx))+((x) < (cx))*sign(y-cy)*3.14159;;\n//dx=(x-cx)*.03*(cos(angc*3)*3+2);//*notnear;;\n//dy=(y-cy)*.03*(sin(angc*3)*3+2);//*notnear;;\n//zoom=1-angc/3.14159*.07;;\nshift = -.02*(pow(cos(angc*.5-time*1.1-pow(radc,.4)*8),6)-.6)*notnear;;\ndx=cos(angc)*shift;;\ndy=sin(angc)*shift;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

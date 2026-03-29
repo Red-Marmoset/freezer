@@ -1,0 +1,16 @@
+{
+  "name": "EoS - angels of decay 02 + Phat - soulmate",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.98;;\nzoom=-1.002;;\nmidtime=midtime+ mid_att*mid_att*0.005;;\nq1=midtime;;\ntrebtime=trebtime+ treb_att*treb_att*0.005;;\nq2=midtime",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

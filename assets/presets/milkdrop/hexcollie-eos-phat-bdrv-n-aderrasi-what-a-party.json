@@ -1,0 +1,23 @@
+{
+  "name": "Hexcollie, EoS, Phat, bdrv n Aderrasi - What a party",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.00034;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 2.15546;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.500*(0.60*sin(1.933*time) + 0.40*sin(1.045*time));;\nwave_g = wave_g + 0.500*(0.60*sin(0.909*time) + 0.40*sin(1.956*time));;\nwave_b = wave_b + 0.500*(0.60*sin(2.910*time) + 0.40*sin(0.992*time));;\ncog = ocog+0.005*(bass+bass_att+(bass*bass_att)-2);;\nocog = ((cog) < (30000))*cog;;\nq4 = cog;;\nxy1 = x*((sin(time)) > (0))+y*((sin(time)) < (0));;\nxy2 = x*((sin(time)) < (0))+y*((sin(time)) > (0));;\nq1 = xy1;;\nq2 = xy2;;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\n//echo_orient = echo_orient + 50*dy_r;;\n//echo_alpha = echo_alpha + 50*dx_r;;\n//decay = min(0.995+abs(0.05*sin(time)),1);;\npfthresh = ((bass_att) > (pfthresh))*2+(1-((bass_att) > (pfthresh)))*((pfthresh-1.3)*0.96+1.3);;\npfdx_r = ((pfthresh) == (2))*0.015*sin(5*time)+(1-((pfthresh) == (2)))*pfdx_r;;\npfdy_r = ((pfthresh) == (2))*0.015*sin(6*time)+(1-((pfthresh) == (2)))*pfdy_r;;\nrg1 = abs(sin(4.2*q4));;\nrg2 = 0*((rg1) > (0.5)) + 1*((rg1) < (0.5));;\nrg3 = if(((pfthresh) == (2)),rg2,rg3);;\n//invert = rg3;;\n//darken = 1-invert;;\n//brighten = invert;;\nq1 = wave_r;;\nq2 = wave_g;;\nq3 = wave_b;;\nq5 = rg3;;\nob_r = int(rand(100))*0.1;;\nob_g = int(rand(100))*0.1;;\nob_b = int(rand(100))*0.1;",
+        "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nzoom = zoom + abs(0.05*(3*(0.5-rad)*bass_att*4));;\nzoom = zoom + if(((bass_att) > (1.2)),(0.06*sin(24*time)),0);;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\ntg1 = abs(sin(time));;\ntg2 = 8*((tg1) > (0.75)) + 12*((tg1) < (0.25)) + 16*((tg1) > (0.25))*((tg1) < (0.5));;\n24*((tg1) > (0.5))*((tg1) < (0.75));;\ntg3 = if(((thresh) == (2)),tg2,tg3);;\nzoom = zoom + 0.1*abs(dx_r*q4)*((rad) > (0.5*sin(8*q4)));;\ndx = dx + dx_r*sin(sin(3+(tg3*y)))*(sin(3+(tg3*x)));;\ndy = dy + dy_r*sin(sin(3+(tg3*y)))*(sin(3+(tg3+x)));;\nzoom = zoom - 0.3*abs(cos(3*q4));;\nrot = rot + 0.4*sin(q4)*12*dx_r;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 21.843,
+      "alpha": 0.8,
+      "orient": 0
+    }
+  ]
+}

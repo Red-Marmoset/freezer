@@ -1,0 +1,23 @@
+{
+  "name": "shifter - blueshift_1 - death shit",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.16217;\ncx = 0.5;\ncy = 0.5;\nbl = 3.8;;\nul = 7.9;;\nrate = 29;;\ncha = .01;;\nib_size = 1;;\nib_r = 1;;\nib_g = 0;;\nib_b = 0;;\n//warp = 0;;\ngv = if(((gv) > (bl)),  if(((gv) < (ul)),  if(((fps) > (rate)),gv + cha,gv - cha),  ul-.1),bl+.1);;\ngamma = gv;;\nmonitor = gv;;\ntic = min(time-tin,.1);;\ntin = time;;\nra = 1/tic*.25;;\nvav = tic*(vav*(1/tic - ra) + ra*(bass+treb+mid)*.33333);;\ndy = .004*(1.6+vav*.4);;\n//monitor = ra;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.484,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

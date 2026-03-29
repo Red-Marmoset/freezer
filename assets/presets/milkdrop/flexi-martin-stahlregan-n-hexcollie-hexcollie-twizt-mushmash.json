@@ -1,0 +1,43 @@
+{
+  "name": "flexi, martin, stahlregan n hexcollie - hexcollie twizt mushmash",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.95",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.9, 30/fps);;\ndec_slow = pow (0.99, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.4+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %12;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nindex3 = (index3 + is_beat*bnot(index)*bnot(index2))%3;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = bass + mid + treb;;\nq27 = index + 1;;\nq28 = index2;;\nk1 =  is_beat*((index%2) == (0));;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_med * p2+ (1-dec_med)*p1;;\nrott = p2 * 3.1416/4;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\ndrot = (index%4-2) * 30/fps;;\np3 = p3*dec_slow + (1-dec_slow)*30/fps * drot;;\nq30 = p3 ;;\nstag = (q27+index2*1);;\nstag = max(stag,1);;\np4 = dec_med*p4 + (1-dec_med)*stag;;\nq31 = p4;;\nzoom = 1 + .05*q1;;\nrot = -0.007 * index;;\nq32 = pow(0.996, 30/fps); //fade;\nmonitor = index2;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 0
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

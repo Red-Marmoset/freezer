@@ -1,0 +1,39 @@
+{
+  "name": "suksma - taking turns with sharae and charise - bristle grizzle",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.95",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndb=(bass-lbass)*fps;;\ndt=(treb-ltreb)*fps;;\nltreb=treb;;\nlbass=bass;;\navgdb=avgdb*.9+abs(db)*.1;;\navgdt=avgdt*.9+abs(dt)*.1;;\n//beatdection;\nrawbeatb=(((db)) > (avgdb*2));;\nbeatb=rawbeatb*((time-lbbtime) > (avgbbeatrate*.75));;\nbeatb2=beatb*(((dt)) > (avgdb*1.5));;\nbeatbhard=beatb2*((db)-avgdb*3);;\n//beatrate calc;\n//avgbbeatrate=beatb2*(avgbbeatrate*.9+(time-lbbtime2)*.1)+(1-beatb2)*(avgbbeatrate+(3-avgbbeatrate)*.001);;\navgbbeatrate=beatb*(avgbbeatrate*.99+(time-lbbtime)*.01)+(1-beatb)*(avgbbeatrate+(3-avgbbeatrate)*.00001);;\nlbbtime2=time*beatb2+(1-beatb2)*lbbtime2;;\nlbbtime=time*beatb+(1-beatb)*lbbtime;;\nph=(time-lbbtime2)*(60/avgbbeatrate)*const;;\nphase=max(min( ph, 1 ),0);;\nconst=const*(1-beatb2)+beatb2*( const+ (.001*bool) );;\nbool=((phase) < (.98))*(.99-ph)-((phase) > (.98))*(ph*.5);;\nbc=bc+beatb;;\nmtime=mtime+(abs(dt)*.001+beatbhard*beatb2)*(1/fps);;\nmtime2=mtime2+(abs(db)*.001+beatbhard*beatb2)*(1/fps);;\nmtime3=mtime3+avgdt*.1*(1/fps);;\nmtime4=mtime4+avgdb*.1*(1/fps);;\nwarp=0;;\ndecay=1;;\nob_a =.9+phase*.1;;\n//mv_a = if(beat,1,0.05);;\n//invert=((sin(time*200)) > (0));;\nq1=rawbeatb;;\nq2=beatbhard;;\nq3=phase;;\nq4=60/avgbbeatrate;;\nq5=mtime-mtime4;;\nq6=mtime3-mtime2;;\nmv_r=sin(mtime2)*.5+.5;;\nmv_g=sin(mtime4)*.4+.4;;\nmv_b=sin(mtime3)*.5+.5;;\nmonitor=q6;;\nc1=((bc%8) == (0));;\ntx=tx*(1-c1)+c1*mtime*10;;\nty=ty*(1-c1)+c1*mtime2*10;;\ntrot=trot*(1-c1)+c1*(sin((mtime3+mtime4))+2);;\nrot=trot;;\nccx=.5+sin(tx*.1)*.4;;\nccy=.5+sin(ty*.1)*.4;;\nq7=ccx;;\nq8=ccy;;\ncx=ccx;;\ncy=ccy;",
+        "perVertex": "dy = 0.005*sin(10*x+0.459*q6) + 0.005*sin(14*x+0.325*q6) + 0.005*sin(1.231*q8);;\ndx = 0.005*sin(9*y+0.612*q5) + 0.005*sin(13*y+0.429*q5) + 0.005*sin(1.027*q7);;\ncrad=pow(pow((cy-y),2)+pow((cx-x),2),.5);;\nzoom=1+sin((q5+q6)+sin(1-q3+crad*3.14))*.01;;\nrot=rot+sin(crad*3.14+q7)*1*sin(rot-q7);;\n//rot=0;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

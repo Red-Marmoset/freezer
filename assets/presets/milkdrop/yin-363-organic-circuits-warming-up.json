@@ -1,0 +1,16 @@
+{
+  "name": "yin - 363 - Organic circuits (warming up)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.898999",
+        "perFrame": "zoom = 0.999999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nzoom=1.01;;\ndecay=1;;\ndt=1/FPS;;\ncontbass=(1-.7*dt)*contbass+.7*dt*bass;;\ncontbass=min(contbass,1.2);;\nmytime=mytime + dt*.25 + ((bass-mypbass) > (0))*(bass-mypbass)*.01;;\nq1=.3+.49*abs(sin(.1*time+.543));;\nq2=1+cos(2*mytime+.43+sin(10*mytime+1.043));;\nob_size=1;;\ncoef=3*(q1-.1)/.75;;\nob_a=.01+75*dt*coef*.00333*sqr(contbass/1.2);;\nhue=2-q2;;\nh=6*(hue-int(hue));;\nsw1=((h) < (1)); sw2=(1-sw1)*((h) < (2)); sw3=(1-sw1)*(1-sw2)*((h) < (3)); sw4=(1-sw1)*(1-sw2)*(1-sw3)*((h) < (4));;\nsw6=((h) > (5)); sw5=(1-sw1)*(1-sw2)*(1-sw3)*(1-sw4)*(1-sw6);;\nob_r=sw1+sw2*(2-h)+sw5*(h-4)+sw6;;\nob_g=sw1*h+sw2+sw3+sw4*(4-h);;\nob_b=sw3*(h-2)+sw4+sw5+sw6*(6-h);;\nsolarize=((frame%(2*FPS)) < (FPS));",
+        "perVertex": "warp=10*pow(abs(x-.5),3)"
+      },
+      "gridSize": 48
+    }
+  ]
+}

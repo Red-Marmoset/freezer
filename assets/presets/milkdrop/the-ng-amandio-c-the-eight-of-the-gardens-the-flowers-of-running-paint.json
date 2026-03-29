@@ -1,0 +1,16 @@
+{
+  "name": "The NG + amandio c - The Eight of the Gardens (The Flowers of Running Paint)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.96;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.00052;\ncx = 0.5;\ncy = 0.5;\n//t2=t2+ sign(-20+(time%40)) * .5/fps;;\nt2=t2+ sign(-20+(time%40)) * .4*bass/fps ;;\nq1=t2;;\nmonitor=q1;;\nwave_a=0;;\nwarp=0;;\nzoom=.995",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

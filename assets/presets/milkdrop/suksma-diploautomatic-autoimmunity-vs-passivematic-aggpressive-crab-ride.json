@@ -1,0 +1,16 @@
+{
+  "name": "suksma - diploautomatic autoimmunity vs passivematic aggpressive - crab ride",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.985;;\nvol= (bass+mid+treb)*0.25;;\nvol = vol*vol;;\nq8=vol;;\nmtime=mtime+vol*0.01*(75/fps);;\nq7 = mtime;;\nmonitor=512/8;;\nwarp=0;;\nq1=mtime*0.9;;\nbeat = ((vol) > (1.5));;\nbc = max(bc,0);;\nbc = if( ((bc) == (0)) , bc+beat , bc-(1/fps)/4 );;\ntrigger = ((bc) == (1));;\nmonitor=bc;;\nsize = size + trigger;;\nsize = if( ((size) > (9)) ,6 , size );;\nmainangle=q1*0.255*0.75;;\nkick= if(((trigger) == (1)),2,1);;\ndx=cos(mainangle)*.003*kick;;\ndy=sin(mainangle)*.003*kick;;\nzoom=1-(vol*.005)*abs(cos(mainangle));;\nq2=int(size); //cubesize",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

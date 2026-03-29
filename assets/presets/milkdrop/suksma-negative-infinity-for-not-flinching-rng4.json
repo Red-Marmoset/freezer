@@ -1,0 +1,27 @@
+{
+  "name": "suksma - negative infinity for not flinching - rng4",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nq1 = .6+.3*sin(time*.95242);;\nq2 = .6+.3*sin(time*1.332211);;\nq3 = .6+.3*sin(time*.44556);",
+        "perVertex": "zoom = .995+pow(abs(y-.5),1.4)*(bass*.4);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

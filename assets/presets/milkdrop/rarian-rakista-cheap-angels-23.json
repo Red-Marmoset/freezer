@@ -1,0 +1,23 @@
+{
+  "name": "rarian rakista - Cheap Angels 23",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.995",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.001;\ncx = 0.5;\ncy = 0.5;\nwave_x = pow(sin(time*.3011101),5)*.4+.5;;\nwave_y = pow(cos(time*.3),3)*.4+.5;;\nwave_r = sin(time*.874)*.5+.5;;\nwave_g = sin(time*1.54)*.5+.5;;\nwave_b = sin(time*1.1)*.5+.5;;\nvol= (bass+treb+mid)*.3;;\nvol_cap = (max(min(vol,1),.5)-.5)*2;;\nwave_r = wave_r*vol_cap;;\nwave_g = wave_g*vol_cap;;\nwave_b = wave_b*vol_cap;;\nob_size =1;;\nob_r=wave_r*.0;;\nob_g=wave_g*.0;;\nob_b=wave_b*.0;;\nq1=wave_x;;\nq2=1-wave_y;;\nbeat=if(((bass*bass_att) > (2.7)),1,0);;\ndm=dm-sign(dm)*bass*beat;;\nvang=vang+.3*dm/fps;;\nq3 = vang;;\nmonitor = vang;;\n//mv_a = 1; decay = 0.81;",
+        "perVertex": "//cen_x = cos(time)*.2+.3;;\n//cen_y = sin(time)*.5+.5;;\ncen_x = q1;;\ncen_y = q2;;\nradxy = sin(time*.1)*.15+.3;;\ndist_x = (x-cen_x)/(radxy*(sin(time*.2*0)*.3+cos((cen_x-x+ (cen_y-y))*10+time*2)*.3+1));;\ndist_y = (y-cen_y)/(radxy*(sin(time*.2*0)*.3+sin((cen_x-x+ (cen_y-y))*10+time*2)*.3+1));;\nin = ((abs(dist_x)) < (1))*((abs(dist_y)) < (1));;\n//in = bnot(in);;\nout = bnot(in);;\ninx =(cen_x-q1)+.08*sign(dist_x)*sqr(1-abs(dist_x));;\niny =(cen_y-q2)+.08*sign(dist_y)*sqr(1-abs(dist_y));;\n//**********outside;\nvang=q3; //time*.1;;\nvx = (x-.5)*cos(vang) - (y-.5)*sin(vang)+.5;;\nvy = (x-.5)*sin(vang) +(y-.5)*cos(vang)+.5;;\ndvx=.01*sin(time+vy*60*radxy);;\ndvy=.01*cos(time+vx*60*radxy);;\noutx = dvx*cos(vang) - dvy*sin(vang);;\nouty = -dvx*sin(vang) - dvy*cos(vang);;\ndx=in*inx+out*outx;;\ndy=in*iny+out*outy;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

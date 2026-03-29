@@ -1,0 +1,32 @@
+{
+  "name": "Telek - Target Practice",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.001;\ncx = 0.5;\ncy = 0.5;\nxx = sin(time*.13)*.5+.5;;\nbeat = ((bass*bass_att) > (4.5))+bnot(xx);;\n//xx = if(beat,0,xx);;\nx = if(beat,int(rand(10))*.1,x);;\ny = if(beat,int(rand(10))*.1,y);;\nwave_x = x;;\nwave_y = y;;\nwave_mystery = xx*1.7-.5;;\nwave_r= sin(time*.197)*.5+.5;;\nwave_g=cos(time*.201)*.5+.5;;\nwave_b=sin(time*.215)*.5+.5;;\nxx=sin(xx*62.82)*.5+.5;;\nwave_r = xx+(1-xx)*wave_r;;\nwave_g = xx+(1-xx)*wave_g;;\nwave_b = xx+(1-xx)*wave_b;;\n//wave_b= wave_g;;\n//rot = .015;;\nmonitor = xx;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "bouynyunsee all the pigs are lined-up, boy does it make me feel buttre",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.999",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nq4=sin(atime*.03);;\nq5=cos(atime*.030383824);;\nq6=tan(atime*.029384834);;\nbscale=.95+treb_att*.05;;\ntscale=.95+bass_att*.05;;\nmscale=.95+bass_att*.05;;\nbeatb=((bass) > (bass_att*bscale));;\nbeatbhard=if(beatb,bass-bass_att*bscale,beatbhard);;\nbeatm=((mid) > (mid_att*mscale));;\nbeatmhard=if(beatm,mid-mid_att*mscale,beatmhard);;\nbeatt=((treb) > (treb_att*tscale));;\nbeatthard=if(beatt,treb-treb_att*tscale,beatthard);;\nvol=bass+mid+treb;;\nvol_att=bass_att+mid_att+treb_att;;\nq1=beatb;;\nq2=beatbhard;;\nq3=beatm;;\nq4=beatmhard;;\nq5=beatt;;\nq6=beatthard;;\ndecay=.999+q1*.001;;\nworp=0;;\nob_r=q2*.5+q3*.5;;\nob_g=q6+q4*q3;;\nob_b=.4-q2;;\nq26=sin(time);;\nq27=cos(time*.84583);;\nq30=(bass+treb+mid)*2;",
+        "perVertex": "bbc=bbc+q1*q2;;\ntbc=tbc+q5*q6;;\ncx=sin(bbc*3.14)*.5+.5;;\ncy=sin(tbc*3.14)*.5+.5;;\nrot=q3*q4*.4+((rad) > (.5))*q6*.4;;\nzoom=1+((1-rad*2-q2*3)*.1)+((rad) < (.5))*(q2*.1)*rad"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 4.013,
+      "alpha": 0.5,
+      "orient": 2
+    }
+  ]
+}

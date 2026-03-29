@@ -1,0 +1,16 @@
+{
+  "name": "va ultramix2 - 151_1",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 13.290894;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.008264;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\n//vol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=1;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;",
+        "perVertex": "tm=time/rad;;\na = q1;;\nb = q2;;\n//testcode;\n//a=0.5;b=0.5;;\nmx = x-a;;\nmy = y-b;;\nzm = -.45;;\nzm= if( ((sin(time*2.1)) > (0.95)) , 0.45 , zm);;\n//test code;\n//zm= -0.5;;\ndis = pow(mx*mx + my*my,.5)*.70710678;;\nrot = rot*(1-dis);;\nrot=rot*20*q8 ;;\n//testcode;\n//q3=3.1;;\ndx = zm*mx*dis*cos(my*3.14)*q3;;\ndy = zm*my*dis*cos(mx*3.14)*q3;;\nmyy = y-(0.250025);;\nmyx = x-0.5;;\ndx = 2*(2*myx*myy);;\ndy = 3*((myy*myy) - (myx*myx));;\nsw = ang/6.2832 + 1;;\nsw = sw*8;;\nbl = ((int(sw)%2) == (0));;\nsw = sw - int(sw);;\nsw = if(bl,sw,1-sw)*3;;\nrd = pow(rad*.8,.9);;\nrd = rd*6.2832*2 - (q2+sw)*3;;\nzm = .01 + .01*sin(rd);;\ndx = (x-.5)*zm;;\ndy = (y-.5)*zm;;\nw=sin(ang*8+rad*11+sin(time/8) )/2+.5;;\ndd=w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w;;\nw=sin(ang*8-rad*11+sin(time/8) )/2+.5;;\ncc=w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w*w;;\nrot=dd/8-cc/8;;\n//rot=.0031;;\ncrx=.5;;\ncra=.37;;\nci=1-rad;;\ncr=pow(sin(ci*5.9)/2+.5,10)*crx+cra;;\ncrr=if( ((ci) > (.25)),cr,crx+cra);;\ndy=0;;\n//zoom=cr;;\n//cx=1-cx;;\n//rot=sin(time/19)/1.2 ;;\nzoom=crr;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

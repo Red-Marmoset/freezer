@@ -1,0 +1,23 @@
+{
+  "name": "EVET - Superstrings 2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.77",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01743;\ncx = 0.5;\ncy = 0.5;\nq1 = 0;;\nv = 0.4;;\nj1 = j1*0.95 + sqr(bass*4)*v;;\nj2 = j2*0.95 + sqr(mid*4)*v;;\nj3 = j3*0.95 + sqr(treb*4)*v;;\nn = n + j1*0.0052;;\nn1 = n1 + j2*0.0052;;\nn2 = n2 + j3*0.0052;;\nq2 = n*0.01;;\nq3 = n1*0.01;;\nq4 = n2*0.01;;\nk = k*0.99 + sqr(mid_att*2);;\nq5 = k*0.00;;\nzoom = 1.0016;;\nwarp = 0;;\nrot = -0.00;;\nq9 = aspectx;;\nq10 = aspecty;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.631,
+      "alpha": 0.41,
+      "orient": 2
+    }
+  ]
+}

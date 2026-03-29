@@ -1,0 +1,23 @@
+{
+  "name": "Martin - QBikal - Surface Turbulence IIz5 (by hakanh mash-up)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.0783;\ncx = 0.5;\ncy = 0.5;\nwave_r = mv_b;;\nwave_b = mv_g;;\nwave_g = mv_r;;\nb=max(bass-1,0);;\nm=max(mid-1,0);;\nt=max(treb-1,0);;\nmv_r=.6*abs(sin(time*2.6+1.23+cos(time*4.87+2.145)))+(b/30);;\nmv_g=.6*abs(sin(time*4.451+2.89+cos(time*3.74+.78)))+(m/30);;\nmv_b=.6*abs(sin(time*3.845+1.23+cos(time*2.6+3)))+(t/30);;\nq1=(3.14*cos(time*1.45 + 1.54 + cos((bass_att*.1)+time+ 3.22)));;\nq2=(3.14*cos(time*2.4 + 2.69 + cos((bass_att*.1)+time+.65)));;\nq3=time%50;;\nf=if(((endframe) == (0)),1,0);;\nbeat_avg=if(((beat_avg) == (0)),bass,beat_avg);;\nbeat_avg=(beat_avg+bass)/2;;\nmax_bass = if( beat*((f*bass_att) > (max_bass)),0.99*bass_att, max_bass );;\nmax_bass = if( ((frame%3000) == (0)),0.8*max_bass,max_bass*.9999);;\nmax_bass=if( ((max_bass) > (10*beat_avg)),10*beat_avg,max_bass);;\ntrig=if( ((beat) == (1))*((bass_att) > (max_bass)),1,0);;\nendframe=if(((trig) == (1))*((endframe) == (0)), frame+4*min(interval,FPS),endframe);;\ntrig=if(((frame) == (endframe)),0,trig);;\nendframe=if(((frame) > (endframe)),0,endframe);;\nq4=if(((endframe) > (0)),1,0);;\nwave_a=0;;\nrot=.1*sin(time*1.53+cos(time*4.676+3.43));;\nrot=rot*(1+.4*q4);;\nob_size=.3+.7*abs(cos(time*2.45 + 1.566 +sin(time*5 +2.43)));;\nob_r=mv_r*(rand(100)/100);;\nob_g=mv_g*(rand(100)/100);;\nob_b=mv_b*(rand(100)/100);;\nob_a=.05*abs(cos(time*2.45 + 1.566 +sin(time+2)));;\nmv_x=if(((q4) == (1)),54+10*cos(time*10),64);;\nzoom=if(((rand(40+60*(q4))) == (25)),1.6,zoom);;\n// -------------------------------- Beat Detective 007 ----------------------------------;\nsure=if(((sure) == (0)),.6,sure);;\ninterval=if(((interval) == (0)),40,interval);;\nlastbeat=if(((lastbeat) == (0)),frame-FPS,lastbeat);;\ndbass=(bass-pbass)/FPS;;\nbeat=((dbass) > (.6*maxdbass))*((frame-lastbeat) > (FPS/3));;\nsure=if(beat*((abs(frame-(interval+lastbeat))) < (FPS/5)),;\nmin(.095+sure,1),beat*(sure-.095)+(1-beat)*sure*.9996);;\nsure=max(.5,sure);;\ncheat=if(((frame) > (lastbeat+interval+ int(FPS/10)))*((sure) > (.91)),1,cheat);;\nbeat=if(cheat,1,beat);;\nsure=if(cheat,.95*sure,sure);;\nmaxdbass=max(maxdbass*.999,dbass);;\nmaxdbass=max(.012,maxdbass);;\nmaxdbass=min(.02,maxdbass);;\ninterval=if(beat, frame-lastbeat,interval);;\nlastbeat=if(beat,frame-cheat*int(FPS/10),lastbeat);;\ncheat=0;;\npbass=bass;;\n// ----------------------------------------------------------------------------------------------;\nzoom = if(((beat) == (1)),zoom+bass*.7,zoom);;\nmonitor=sx;;\n//monitor=60*FPS/interval;",
+        "perVertex": "dx= if( ((abs(ang-q1)) < (.4*sqrt(rad))),dx+(1-q4)*(.02*rad*sin(q1)),dx);;\ndy=if( ((abs(ang-q1)) < (.4*sqrt(rad))),dy+(1-q4)*(.02*rad*cos(q1)),dy);;\nzoom=if(((abs(ang-q1)) < (.4*sqrt(rad))),zoom+(1-q4)*(.2*rad*bass),zoom);;\ndx= if( ((abs(ang-q2)) < (.4*sqrt(rad))),dx+(1-q4)*(.02*rad*sin(q2)),dx);;\ndy = if(((abs(ang-q2)) < (.4*sqrt(rad))),dy+(1-q4)*(.02*rad*cos(q2)),dy);;\nzoom = if(((abs(ang-q2)) < (.4*sqrt(rad))),zoom+(1-q4)*(.2*rad*bass), zoom);;\nzoom=zoom-(1-q4)*.04*rad +q4*.1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

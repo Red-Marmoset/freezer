@@ -1,0 +1,32 @@
+{
+  "name": "Beat it up AdamFX REMIX 2 Zylot - In death there is life (Geiss Layered Mix) Swelling Spiral Including Martin Remix",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nwave_r = wave_r + .2*sin(time*1.33)+bass*.3;;\nwave_g = wave_g + .2*sin(time)+treb*.3;;\nwave_b = wave_b + .2*sin(time*.988)+mid*.3;;\nzoom = 1+bass*.01;",
+        "perVertex": "zoom = zoom + (rad*.01)*treb;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "suksma - diamond wing as leverage in divorce - reload not backspace",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.004;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9996;\nsy = 0.9999;\nwarp = 0.19788;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nmv_a=treb_att;;\n//ib_a=bass_att*0.3;\nib_g=-1*((sin(time/3)*0.5+0.5)*0.5)+0.5;;\nib_b=-1*((cos(time/3)*0.5+0.5)*0.1)+0.2;;\nob_g=-1*(sin(time/3)*0.5+0.5);;\nob_r=-1*((cos(time/3)*0.5+0.5)*0.3)+0.7",
+        "perVertex": "flxa=(sin(time)*0.5)+0.3;;\nflxb=(cos(time)*0.5)+0.3;;\ndxa=(atan( (rad*4)+time/2 ))*0.10;;\ndxb=(sin( (rad*4)+time/2 ))*0.02;;\ndya=(atan( (ang*4)+time/2 ))*0.10;;\ndyb=(cos( (ang*4)+time/2 ))*0.02;;\ndy=(dya*flxa)+(dyb*flxb)*0.1;;\ndx=(dxa*flxa)+(dxb*flxb)*0.1;;\nzoom=-1;;\nrot=(cos(time*0.311) )*0.1;;\nsx=((sin(time/3)*0.5+0.5)*0.186)+.896"
+      },
+      "gridSize": 48
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "fishbrain and flexi - box of tricks 14 polar borders [logarithmic] --- Isosceles edit",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.8",
+        "perFrame": "zoom = 1.0173;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01605;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.9, 30/fps);;\ndec_slow = pow (0.99, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.5+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %2;;\nd_x = if(is_beat, (rand(2000)-1000)*0.001 , d_x);;\nd_y = if(is_beat, (rand(2000)-1000)*0.001 , d_y);;\nr = if(is_beat, (rand(2000)-1000)*0.001 , r);;\nz = if(is_beat, rand(1000)*0.001 , z);;\nzoom = 1.03 + z*0.06;;\nrot = r*0.06;;\ndx = d_x*0.01;;\ndy = d_y*0.01;;\nq1 = 1;;\nq23 = rand(1000)/1000;;\nq24 = rand(1000)/1000;;\nq25 = (rand(1000)/1000)*6.28;;\nq26 = q25 - 3.14;;\nq27 = (rand(1000)/12000)+0.04;;\nq28 = rand(1000)/1000;;\nq29 = rand(1000)/1000;;\nq30 = (rand(1000)/1000)*6.28;;\nq31 = q30 - 3.14;;\nq32 = (rand(1000)/14000)+0.04;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

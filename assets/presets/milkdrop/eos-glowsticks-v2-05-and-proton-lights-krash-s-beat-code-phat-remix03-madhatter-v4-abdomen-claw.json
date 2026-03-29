@@ -1,0 +1,27 @@
+{
+  "name": "EoS - glowsticks v2 05 and proton lights (+Krash's beat code) _Phat_remix03 madhatter_v4 abdomen claw",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.033;\ncx = 0.5;\ncy = 0.5;\nzoom=1;;\n//krash's beat detection code;\nvolume = 0.3*(bass+mid+att);;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate);;\nlastbeat = lastbeat + ((lastbeat) == (0))*time;;\nmeanbass_att = 0.1*(meanbass_att*9 + bass_att);;\npeakbass_att = max(bass_att,peakbass_att);;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\npeakbass_att = beat*bass_att + (1-beat)*peakbass_att*(((time - lastbeat) > (2*beatrate))*0.95 + (1-((time - lastbeat) > (2*beatrate)))*0.995);;\nlastbeat = beat*time + (1-beat)*lastbeat;;\npeakbass_att = max(peakbass_att,1.1*meanbass_att);;\nbeat = ((volume) > (0.8))*((peakbass_att - bass_att) < (0.05*peakbass_att))*((time - lastbeat) > (0.1 + 0.5*(beatrate - 0.1)));;\nbeatcounter = beatcounter + beat;;\nmode = if(beat*((beatcounter%2) == (0)),1-mode,mode);;\nflip = 2*mode-1;;\nmonitor=flip;;\nq8=flip;;\ndecay=1;;\nzoom=1.002;;\nvol=(bass_att+mid_att+treb_att)*0.25;;\nvol=vol*vol;;\nmtime=mtime+vol*0.4*flip;;\nq1=mtime*0.4;;\nwarp=0.0;;\ncx=sin(mtime*0.2)*0.4 + 0.5;;\ncy=sin(mtime*0.33);;\ncys=sign(cy);;\ncy=cy*cy*cys;;\ncy=cy*0.4+0.5;",
+        "perVertex": "//tm=time+(sin(time)*rad);;\n//var=tan(time)*treb*treb;;\nvar=-2*treb*treb*0.75;;\nrdd=max( abs(x-0.5) , abs(y-0.5) )*4;;\nzm=1+(rdd/40)+(var/40);;\nsx=zm;;\nsy=zm;;\n//rot=((rad/100)*var)*sin(time);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997,
+      "alpha": 0.5,
+      "orient": 2
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

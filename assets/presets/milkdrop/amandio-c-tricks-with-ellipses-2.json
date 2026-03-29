@@ -1,0 +1,16 @@
+{
+  "name": "amandio c  - tricks with ellipses 2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nq6=aspecty;    decay=0;;\nt=time*.6;;\nq1=t;;\nq2= .6*sin(.79*t)+.4*cos(.36*t);;\nq3= .4*sin(.34*t)+.6*cos(1.03*t);;\nq4= .6*sin(.57*t)+.4*cos(1.41*t);;\nq5= .4*sin(1.12*t)+.6*cos(.85*t);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

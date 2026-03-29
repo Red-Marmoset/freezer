@@ -1,0 +1,20 @@
+{
+  "name": "suksma - crow bowalls2 ap4+",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.0505;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.0303;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//per frame less reactive volume for all unused q vars, put before other q vars are set for cop out mashing;\nvb = vb*0.95 + (1-vb)*pow(bass_att*treb_att*mid_att,2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(mid_att,2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(treb_att,2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = vvb*2;//0.5 + vb - vvb;;\nq2 = vvm*2;//0.5 + vm - vvm;;\nq3 = vvt*2;//0.5 + vt - vvt;;\nv=2;;\nbb = bb - vvb*v;;\nmm = mm - vvm*v;;\ntt = tt - vvt*v;;\nq4 = -bb;;\nq5 = -mm;;\nq6 = -tt;;\nq4=(q1+q2+q3)*5;;\nq5=(q1+q2+q3)*5;;\nq6=(q1+q2+q3)*5;;\nq7=(q1+q2+q3)*5;;\nq8=(q1+q2+q3)*5;;\nq9=(q1+q2+q3)*5;;\nq10=(q1+q2+q3)*5;;\nq11=(q1+q2+q3)*5;;\nq12=(q1+q2+q3)*5;;\nq13=(q1+q2+q3)*5;;\nq14=(q1+q2+q3)*5;;\nq15=(q1+q2+q3)*5;;\nq16=(q1+q2+q3)*5;;\nq17=(q1+q2+q3)*5;;\nq18=(q1+q2+q3)*5;;\nq19=(q1+q2+q3)*5;;\nq20=(q1+q2+q3)*5;;\nq21=(q1+q2+q3)*5;;\nq22=(q1+q2+q3)*5;;\nq23=(q1+q2+q3)*5;;\nq24=(q1+q2+q3)*5;;\nq25=(q1+q2+q3)*5;;\nq26=(q1+q2+q3)*5;;\nq27=(q1+q2+q3)*5;;\nq28=(q1+q2+q3)*5;;\nq29=(q1+q2+q3)*5;;\nq30=(q1+q2+q3)*5;;\nq31=(q1+q2+q3)*5;;\nq32=(q1+q2+q3)*5;;\nvol=(bass+mid+treb_att)*.3333;;\nredsine=.5+.15*bass*sin(time*3);;\ngreensine=.5+.15*mid*sin(time*2);;\nbluesine=.5+.15*treb*sin(time);;\nredif=if(((bass) > (1.2)),redsine,if(((redif) > (.95)),0,redif*.85));;\ngreenif=if(((mid) > (1.2)),greensine,if(((greenif) > (.95)),0,greenif*.85));;\nblueif=if(((treb) > (1.2)),bluesine,if(((blueif) > (.95)),0,blueif*.85));;\nwave_r=redif;;\nwave_g=greenif;;\nwave_b=blueif;",
+        "perVertex": "zoom = zoom - 0.4*(1*rad)*(((bass) > (1.1))*((rad) < (0.3)));;\nzoom = zoom + 0.04*(sin(32*ang))*((rad) > (.3))*((rad) < (.4));;\nrot=.008*sin(time)"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

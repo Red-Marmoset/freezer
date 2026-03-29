@@ -1,0 +1,23 @@
+{
+  "name": "Blendin to myself AdamFX Twist 2 martin - glassball dance with Cope",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1.00022;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0;\ncx = 0.5;\ncy = 0.5;\n// sensor - alpha;\n// le = signal level; desired average value = 2;\n// th = threshold;\nle=1.4*bass_att+.1*bass+.5*treb;;\npulse=band(((le) > (th)),((le-th) > (block)));;\nblock=le-th;;\nth=if(((le) > (th)),le+114/(le+10)-7.407,;\nth+th*.07/(th-12)+((th) < (2.7))*.1*(2.7-th));;\nth=if(((th) > (6)),6,th);;\n// pulse cycler;\npcl=if(pulse,pcl+1,pcl);;\nq1=pcl;;\nib_r=.5+.5*sin(pcl)+.3*sin(time*2.2);;\nib_g=.5+.5*sin(pcl*1.1)+.3*sin(time*2.1);;\nib_b=.5+.5*sin(pcl*1.2)+.3*sin(time*2);;\nmv_r=ib_g;;\nmv_g=ib_b;;\nmv_b=ib_r;;\nwave_r=1-ib_r;;\nwave_g=1-ib_g;;\nwave_b=1-ib_b;;\n// level cycler;\nlevccl=levccl+le;;\nq2=.1*levccl;;\nmvx=if(pulse,int(rand(2))*int(rand(25)),mvx);mv_x=mvx;;\nmvy=if(pulse,int(rand(2))*int(rand(19)),mvy);mv_y=mvy;;\nq3=.5+.2*sin(23*pcl)+.2*sin(.023*levccl);;\nwave_x=q3;;\nq4=.5+.2*sin(24*pcl)+.2*sin(.02*levccl);;\nwave_y=1-q4;;\nthavg=.5*thavg+.5*th;;\nq6=.2*thavg;",
+        "perVertex": "// coordinates transfomation;\n// q3,q4 = position; q6 = 1/size;;\naang=atan2(y-q4,x-q3);;\narad=sqrt(sqr(y-q4)+sqr(x-q3))*q6;;\natx=cos(aang)*arad;;\naty=sin(aang)*arad;;\nboxzone=((arad) < (.1));;\nfxzone=band(band(((x) > (.1)),((x) < (.9))),;\nband(((y) > (.1)),((y) < (9))));;\nzoom=zoom+(1-boxzone)*if(fxzone,(-.2+.3*sin(3*q1)),-.2);;\nrot=(1-boxzone)*fxzone*(3.142*sin(12*q1));;\ndx=.01*bor(band(((x) > (.05)),((x) < (.1))),above;\n(x,.95))-.01*bor(((x) < (.05)),band(((x) > (.9)),((x) < (.95))));;\ndy=.01*bor(band(((y) > (.05)),((y) < (.1))),above;\n(y,.95))-.01*bor(((y) < (.05)),band(((y) > (.9)),((y) < (.95))));;\ndx=if(boxzone,.1*atx,dx+fxzone*(.05*sin(q1+(9+4*sin(q1*2.3))*x+;\n(6+3*sin(q1*2.4))*y+q2)+sin(q1*13)));;\ndy=if(boxzone,.1*aty,dy+fxzone*(.05*sin(q1+(8+4*sin(q1*2.2))*x+;\n(5+3*sin(q1*2.1))*y+q2*1.2)+sin(q1*14)));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

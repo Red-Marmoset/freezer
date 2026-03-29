@@ -1,0 +1,16 @@
+{
+  "name": "Mstress - Color Rain",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99553;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.013213;\ncx = 0.5;\ncy = 0.5;\nwarp =0;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

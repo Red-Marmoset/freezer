@@ -1,0 +1,23 @@
+{
+  "name": "Hexcollie - Duality",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.985",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.001;\ncx = 0.5;\ncy = 0.5;\n//wave_r = (bass)-1.5;;\n//wave_b = wave_r*treb*.5;;\nwave_r = wave_r + 0.35*sin(4*time) + 0.15*sin(2.5*time);;\nwave_g = wave_g + 0.35*sin(3.7*time) + 0.15*sin(2.11*time);;\nwave_b = wave_b + 0.35*sin(3.84*time) + 0.15*sin(2.3*time);;\nob_r = wave_r;;\nob_g = wave_g;;\nob_b = wave_b;;\nmonitor = wave_r;",
+        "perVertex": "cx = .25+.5*((x) > (.5));;\na=6;;\nb=(x*a)%(a+1);;\ncx = b/a;;\ncy =.5;;\ndy = -(b%2)*.05+.025;;\n//cy = .5+sin(time)*(((x) > (.5))-.5)*1.5;;\nrot =(.16*(((x) > (.5))-.5)-sqr(y-.5)*.16);//*sin(time+bass_att*.5);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

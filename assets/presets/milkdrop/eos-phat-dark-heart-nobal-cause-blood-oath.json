@@ -1,0 +1,23 @@
+{
+  "name": "EoS_Phat Dark_heart_nobal_cause_Blood_Oath",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.072135;\nsy = 1.072135;\nwarp = 0.080814;\ncx = 0.5;\ncy = 0.5;\ndecay=.997;;\n//zoom=1.008;;\nms=sin(time*0.6)*0.15;;\nmss=mss+ms*0.001;;\nq1=ms;;\n//rot=sin(time)*0.01;;\n//echo_zoom=1 + ( sin(time*0.6)*0.5+0.5 )*3;;\ndx=0;dy=0",
+        "perVertex": "it = 0.3*bass_att;;\nradm = rad*500;;\nrot = 0.02*atan((radm+it)*30)/((rad+0.1)*(bass_att*500));;\nvar=4+(bass_att*4);;\nmod = cos(ang*var)+(bass_att*2);;\nmod = mod*rad;;\nzoom = .95 - abs(0.02*mod)+(bass_att*0.01);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 2.695692,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

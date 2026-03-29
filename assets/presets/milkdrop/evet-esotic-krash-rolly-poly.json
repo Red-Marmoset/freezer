@@ -1,0 +1,39 @@
+{
+  "name": "EVET + Esotic & Krash - Rolly Poly",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.9699;\nrot = 0;\ndx = 0.001;\ndy = 0.005;\nsx = 0.9999;\nsy = 0.9999;\nwarp = 1.5088;\ncx = 0.5;\ncy = 0.5;\nvolume = 0.3*(bass+mid+att);;\nbeatrate = if(((beatrate) == (0)),1,if(((volume) < (0.01)),1,beatrate));;\nlastbeat = if(((lastbeat) == (0)),time,lastbeat);;\nmeanbass_att = 0.1*(meanbass_att*9 + bass_att);;\nbeat = if(((volume) > (0.8)),if(((peakbass_att - bass_att) < (0.05*peakbass_att)),if(((time - lastbeat) > (0.1+0.5*(beatrate-0.1))),1,0),0),0);;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.5*(beatrate + time - lastbeat),beatrate),beatrate),0.1);;\npeakbass_att = if(((beat) == (0)),if(((time - lastbeat) > (2*beatrate)),peakbass_att*0.95,peakbass_att*0.995),bass_att);;\nlastbeat = if(beat,time,lastbeat);;\npeakbass_att = max(if(beat,bass_att,peakbass_att),1.1*meanbass_att);;\nq1=beat;;\nwave_y = 1.39176798*int(-0.68471563*int(1.67088366*sign(peakbass_att * dy)));;\nwave_x = beat * ib_r;;\nwave_g = 0.02662969*abs(bor(min(ib_r * wave_y , ib_a * wave_mystery) , rot * dx));;\nwarp = 1.72149348*int(volume * ib_b);;\nwave_mystery = min(0.97296047*int(mv_b - sx) , decay + mv_b);;\nwave_b = 0.89972925*log10(0.64274526*sqrt(ib_a + sx));;\ncx = beatrate + wave_x;;\nwarp=if(((warp) < (0.01)), 0.01, warp);;\nwarp=if(((warp) > (100.0)), 100.0, warp);;\ncx=if(((cx) < (-1.0)), -1.0, cx);;\ncx=if(((cx) > (2.0)), 2.0, cx);;\nwave_b=if(((wave_b) < (0.0)), 0.0, wave_b);;\nwave_b=if(((wave_b) > (1.0)), 1.0, wave_b);;\nwave_g=if(((wave_g) < (0.0)), 0.0, wave_g);;\nwave_g=if(((wave_g) > (1.0)), 1.0, wave_g);;\nwave_x=if(((wave_x) < (0.0)), 0.0, wave_x);;\nwave_x=if(((wave_x) > (1.0)), 1.0, wave_x);;\nwave_y=if(((wave_y) < (0.0)), 0.0, wave_y);;\nwave_y=if(((wave_y) > (1.0)), 1.0, wave_y);;\nwave_mystery=if(((wave_mystery) < (-1.0)), -1.0, wave_mystery);;\nwave_mystery=if(((wave_mystery) > (1.0)), 1.0, wave_mystery);",
+        "perVertex": "rot=if(((bnot(1*bass)) > (bnot(1*treb))),rot*sin(rad*sin(time)),-rot*sin(rad*cos(time)));;\ncy = sigmoid(x * q2 , q3 - x);;\nrot = bor(sigmoid(rot * q1 , x * x) , rot * q3);;\nrot=if(((rot) < (-1.0)), -1.0, rot);;\nrot=if(((rot) > (1.0)), 1.0, rot);;\ncy=if(((cy) < (-1.0)), -1.0, cy);;\ncy=if(((cy) > (2.0)), 2.0, cy);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#2f422a"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.001,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

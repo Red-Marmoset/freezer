@@ -1,0 +1,16 @@
+{
+  "name": "flexi - a julia fractal for hexcollie",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.025;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.63735;\ncx = 0.5;\ncy = 0.5;\nzoom = 1.0;;\nwave_a = 0;;\n//warp = 0;;\nr = r*0.96 + (bass-treb)*0.1;;\nrr = rr*0.94 + r*0.1;;\nrot = rr*0.1;;\nq1 = 5.5 + sin(time*0.1)*5.5;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

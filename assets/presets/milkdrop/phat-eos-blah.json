@@ -1,0 +1,16 @@
+{
+  "name": "Phat + EoS - blah",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9998;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 0.9998;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nbeatfade = if( beat, 1 , beatfade);;\nbeatfade=beatfade-0.02;;\nbeatfade=max(beatfade,0);;\nnext= if( beat , next+1 , next);;\nnext= if( ((next) > (2)) , 0 , next );;\nq3 = time;;\nq4 = time*0.7;;\nq5 = time*0.62;;\nq6 = frame%2;;\nmonitor=next;;\ndecay=0.95",
+        "perVertex": "cx=0.5+q1;;\ncy=0.5-q2;;\nrd=sqrt( sqr( (x-0.5)*2) + sqr( (y-0.5)*1.5 ) );;\n//zm=(1.1-(rd/4));;\n//sx=zm;;\n//sy=zm;;\n//rot=((rd) > (0.7))*(rd-0.7)*sin(time*0.3);;\nzoom=1.01+(rd/10000);;\nrot=rd/10000 * sin(ang*3);;\nhedge=if (((x) > (0.5)) , x , 1-x)*2;;\nhedge=1- pow(1-hedge,2);;\nvedge=if (((y) > (0.5)) , y , 1-y)*2;;\nvedge=1- pow(1-vedge,2);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

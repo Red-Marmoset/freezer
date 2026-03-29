@@ -1,0 +1,23 @@
+{
+  "name": "EoS_Phat blah_blah",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.0201;\nsy = 1.0201;\nwarp = 0.080814;\ncx = 0.5;\ncy = 0.5;\ndecay=0.99;;\n//zoom=1.008;;\nms=sin(time*0.6)*0.15;;\nmss=mss+ms*0.001;;\nq1=ms;;\n//rot=sin(time)*0.01;;\n//echo_zoom=1 + ( sin(time*0.6)*0.5+0.5 )*3;;\nvol= (bass+mid+treb)*0.65;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.2;;\nq5=sin(musictime*0.01)*0.2;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;",
+        "perVertex": "rd=sqrt( sqr( (x-0.5-q4)*0.7) + sqr( (y-0.5+q5)*1.2 ) );;\ncx=0.5+q4;;\ncy=0.5-q5;;\ntm=time*rad;;\nit = 0.3*sin(tm*0.2);;\nradm = rad*0.5;;\n//rot = 0.02*sin((radm+it)*30)/((rad+0.1)*((sin(time)*0.4+0.5)*20));;\nmod = sin(ang/rd);;\nmod = mod*mod;;\n//ring=pow(tan(rd*3+time),3)*0.01;;\nzoom = 1- (1-rd)*0.15 + ring;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.996628,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

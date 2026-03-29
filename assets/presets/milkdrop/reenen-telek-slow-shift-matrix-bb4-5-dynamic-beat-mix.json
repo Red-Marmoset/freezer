@@ -1,0 +1,16 @@
+{
+  "name": "Reenen & Telek - Slow Shift Matrix (bb4-5 (Dynamic Beat) Mix)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.001;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nrate = fps/(fps+2);;\nbv = bass*.1+.7*bv;;\ntt=tt+bv*0.05;;\nbeat = ((bass*bass_att) > (bthresh));;\nbthresh = beat*15 + (1-beat)*((bthresh - 4.5)*rate + 4.5);;\nbeat2 = ((mid) > (bthresh2));;\nbthresh2 = beat2*15 + (1-beat2)*((bthresh2 - 1.5)*rate + 1.5);;\nwarp = beat2*3 + (1-beat2)*ow;;\now = warp*rate*rate;;\ntt = if(beat,rand(32768),tt);;\nwave_x =-1;;\ndx = .3*sin(tt*.12)+10*sin(tt*.015);;\ndy = .39*sin(tt*.21)+20*sin(tt*.041);;\nrot = 1*sin(tt*.15);;\ncx = sin(tt*.16)*.5+.5;;\ncy = cos(tt*.46)*.5+.5;;\nib_r = sin(tt*.51)*.5+.5;;\nib_g = sin(tt*.71)*.5+.5;;\nib_b = sin(tt*.81)*.5+.5;;\nib_a = 1-pow(.5,(mid_att + bass_att + treb_att)/3);;\nmonitor = 1-pow(.5,mid_att + bass_att + treb_att);",
+        "perVertex": "zoom = .8-.2*pow(1-rad,1);;\n//cx = q8*(0&(x*10-0.5))*0.1+0.05;;\n//cy = q8*(0&(y*10-0.5))*0.1+0.05;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

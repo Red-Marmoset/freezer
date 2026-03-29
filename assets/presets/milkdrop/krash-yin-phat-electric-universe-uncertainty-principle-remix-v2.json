@@ -1,0 +1,20 @@
+{
+  "name": "Krash & yin + Phat - Electric universe (uncertainty principle)_remix_v2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9998;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 0.9998;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n// -------------------------------- Beat Detective v0.07 ----------------------------------;\nsure=if(((sure) == (0)),.6,sure);;\ninterval=if(((interval) == (0)),40,interval);;\nlastbeat=if(((lastbeat) == (0)),frame-FPS,lastbeat);;\ndbass=(bass-pbass)/FPS;;\nbeat=((dbass) > (.6*maxdbass))*((frame-lastbeat) > (FPS/3));;\nsure=if(beat*((abs(frame-(interval+lastbeat))) < (FPS/5)),;\nmin(.095+sure,1),beat*(sure-.095)+(1-beat)*sure*.9996);;\nsure=max(.5,sure);;\ncheat=if(((frame) > (lastbeat+interval+ int(FPS/10)))*((sure) > (.91)),1,cheat);;\nbeat=if(cheat,1,beat);;\nsure=if(cheat,.95*sure,sure);;\nmaxdbass=max(maxdbass*.999,dbass);;\nmaxdbass=max(.012,maxdbass);;\nmaxdbass=min(.02,maxdbass);;\ninterval=if(beat, frame-lastbeat,interval);;\nlastbeat=if(beat,frame-cheat*int(FPS/10),lastbeat);;\ncheat=0;;\npbass=bass;;\n// ----------------------------------------------------------------------------------------------;\nwarp=0;;\nzoom=1;;\ntemp=(time/6.2831-int(time/6.2831));;\nq7=abs(temp*6.2831-3.1415)/3.1415;;\nq8=beat;;\n// this echoes the value of the \"beat\" variable for one more frame after a beat so that both \"sparks\" are drawn highlighted (on consecutive frames);\nq8=q8+((frame-lastbeat) == (1));;\norient = if(alpha,orient,int(rand(3))+1);;\necho_orient = orient;;\ntrans = if(((alpha) == (0)),0,if(((alpha) == (1)),0,trans));;\ntrans = if(((trans) == (0)),beat,trans);;\nalphadir = if(alpha,if(alpha-1,alphadir,-1),1);;\nalpha = alpha + trans*alphadir*(1/fps);;\nalpha = max(alpha,0); alpha = min(alpha,1);;\necho_alpha = alpha;;\n// ------------------ Indecision Code ----------------------;\n// xpos and ypos are calculated as springs being acted on by a variable force, comprised of vol and bass_att or treb_att.;\nvol = 0.167*(bass+mid);;\nxamptarg = if(((frame%15) == (0)),min(0.5*vol*bass_att,0.5),xamptarg);;\nxamp = xamp + 0.5*(xamptarg-xamp);;\nxdir = if(((abs(xpos)) > (xamp)),-sign(xpos),if(((abs(xspeed)) < (0.1)),2*((xpos) > (0))-1,xdir));;\nxspeed = xspeed + xdir*xamp - xpos - xspeed*0.1*((abs(xpos)) < (xamp));;\nxpos = xpos + 0.001*xspeed;;\nyamptarg = if(((frame%15) == (0)),min(0.3*vol*treb_att,0.5),yamptarg);;\nyamp = yamp + 0.5*(yamptarg-yamp);;\nydir = if(((abs(ypos)) > (yamp)),-sign(ypos),if(((abs(yspeed)) < (0.1)),2*((ypos) > (0))-1,ydir));;\nyspeed = yspeed + ydir*yamp - ypos - yspeed*0.1*((abs(ypos)) < (yamp));;\nypos = ypos + 0.001*yspeed;;\n// ---------------------------------------------------------;\nq1 = xpos;;\nq2 = ypos;;\nob_g = max(min(0.5*(sin(1.345*time)+sin(0.987*time))+0.2,0.4),0);;\nob_b = max(min(0.5*(sin(1.543*time)+sin(0.789*time))+0.2,0.4),0);;\nob_r = max(min(0.5*(sin(0.876*time)+sin(0.543*time))+0.1,0.2),0);;\nib_g = max(min(0.5*(sin(1.246*time)+sin(0.864*time))+0.2,0.4),0);;\nib_b = max(min(0.5*(sin(1.642*time)+sin(0.468*time))+0.2,0.4),0);;\nib_r = max(min(0.5*(sin(0.765*time)+sin(0.654*time))+0.1,0.2),0);;\nbasschange = 0.1*basschange+0.01*bass;;\nmidchange = 0.1*midchange+0.01*mid;;\ntrebchange = 0.1*trebchange+0.01*treb;;\nbasstime = basstime + basschange;;\nmidtime = midtime + midchange;;\ntrebtime = trebtime + trebchange;;\nq3 = basstime;;\nq4 = midtime;;\nq5 = trebtime;;\nq6 = frame%2;",
+        "perVertex": "cx=0.5+q1;;\ncy=0.5-q2;;\nrd=sqrt( sqr( (x-0.5-q4)*2) + sqr( (y-0.5+q5)*1.5 ) );;\n//zm=(1.1-(rd/4));;\n//sx=zm;;\n//sy=zm;;\n//rot=((rd) > (0.7))*(rd-0.7)*sin(time*0.3);;\nzoom=1.01+(rd/10000);;\nrot=rd/10000;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

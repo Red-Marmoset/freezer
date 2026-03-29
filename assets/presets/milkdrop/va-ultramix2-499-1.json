@@ -1,0 +1,32 @@
+{
+  "name": "va ultramix2 - 499_1",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.999999;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nvolume = 0.3*(bass+mid+att);;\nwave_x = 1-(xpos + 0.5);;\nwave_y = ypos + 0.5;;\nmv_r = 0.5 + 0.499*(0.60*sin(3.980*time) + 0.40*sin(1.047*time) );;\nmv_g = 0.5+ 0.499*(0.60*sin(0.835*time) + 0.40*sin(1.081*time) );;\nmv_b = 0.5 + 0.499*(0.60*sin(0.814*time) + 0.40*sin(1.011*time) );;\nq1 = (x_pos+0.5);;\nq2 = 1- (ypos+0.5);;\nwave_a =0;;\nwarp=0;;\nzoom =1;;\nmovement =movement + 0.5*(((bass+bass_att + 0.075*pow((bass+0.6*bass_att+0.2*treb_att),3)))/fps);;\nmovement = if(((movement) > (10000)), 0, movement);;\nrot =-0.04+ 0.01*(sin(movement*0.696)+cos(movement*0.463)+sin(movement*0.365));;\ncx = 0 + 0.1*(sin(movement*0.247)+cos(movement*0.373)+sin(movement*0.187));;\ncy = 0 + 0.1*(sin(movement*0.317)+cos(movement*0.209)+sin(movement*0.109));;\nob_b = q4+0.25*sin(movement*3.816);;\nob_g = q4+0.25*sin(movement*0.744);;\nob_r = q4+0.25*sin(movement*0.707);;\nwrap = ((bass+bass_att) < (3));;\nzoom = 0.99 + 0.0035*(sin(movement*0.217)+cos(movement*0.413)+sin(movement*0.311));",
+        "perVertex": "myy = y-(0.250025);;\nmyx = x-0.5;;\ndx = 2*(2*myx*myy);;\ndy = 2*((myy*myy) - (myx*myx));;\ncr1=0;;\ncr2=1;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25      ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncrr=if( ((ci) > (.25+cb)),cr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nkdx=dx;;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;;\ncx = (0&(x*10-0.5))*0.1+0.05;;\ncy = (0&(y*10-0.5))*0.1+0.05;;\nnewx = q1-x;;\nnewy = q2-y;;\nnewrad = sqrt((newx)*(newx)+0.5625*(newy)*(newy))*2;;\nnewzoom = pow(1.05 + 0.03*newrad, pow(0.01+sin(newrad*newrad), newrad*2-1));;\ndx = (newx)*newzoom - newx;;\ndy = (newy)*newzoom - newy;;\ndx =dx*0.1;;\ndy=dy*0.1;;\nrot = 2.41*newrad*(0.5*(0.65-rad));;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);;\nykdx=dx;//////////////////////////////////////////;\nykdy=dy;;\nyksx=sx;;\nyksy=sy;;\nykrt=rot;;\nykzm=zoom;;\nykcx=cx;;\nykcy=cy;;\nykwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;/////////////////////////////////////////////////////;\nkdx=dx;;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;;\ncr1=0.2;;\ncr2=.81;;\ncrx=cr2-cr1;;\nci=x*1.5+.25;;\ncb=.25 ;//   +sin(time/5)/6;;\ncrs=11;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nzoom=crr;;\ncr1=45*.01;;\ncr2=90*.01;;\ncrx=cr2-cr1;;\nci=rad;;\nci=y*3-.5;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);;\n///////////////////////////////////////;\ncr1=.5+sin(time/5)*.5;;\ncr2=cr1;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\nyjdx=dx;;\nyjdy=dy;;\nyjsx=sx;;\nyjsy=sy;;\nyjrt=rot;;\nyjzm=zoom;;\nyjcx=cx;;\nyjcy=cy;;\nyjwp=warp;;\ndx=(jx1*yjdx+kx1*ykdx);;\ndy=(jx1*yjdy+kx1*ykdy);;\nsx=(jx1*yjsx+kx1*yksx);;\nsy=(jx1*yjsy+kx1*yksy);;\nrot=(jx1*yjrt+kx1*ykrt);;\nzoom=(jx1*yjzm+kx1*ykzm);;\ncx=(jx1*yjcx+kx1*ykcx);;\ncy=(jx1*yjcy+kx1*ykcy);;\nwarp=(jx1*yjwp+kx1*ykwp);////////////////////////////////////////////////////"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

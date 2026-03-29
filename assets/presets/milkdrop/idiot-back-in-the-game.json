@@ -1,0 +1,27 @@
+{
+  "name": "idiot - Back in the game",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.995",
+        "perFrame": "zoom = 0.999514;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//Title - Back in the game;\n//Author - idiot <ryan@vague.us>;\n//Date - January 12, 2005;\n//Made while listening too:;\n//A Perfect Circle - Thirteenth Step;\n//Placebo - Once More With Feeling;\n//Bastard Warp;\nwarp = 0;;\n//Beat Reaction (Borrowed From Geiss preset);\nbass_thresh = ((bass_att) > (bass_thresh))*2 +    (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.3)*0.96+1.3);;\ntreb_thresh=((treb_att) > (treb_thresh))*2+;\n(1-((treb_att) > (treb_thresh)))*((treb_thresh-1.3)*0.96+1.3);;\nmid_thresh=((mid_att) > (mid_thresh))*2+;\n(1-((mid_mid_att) > (mid_thresh)))*((mid_thresh-1.3)*0.96+1.3);;\nq1 = bass_thresh; q2 = treb_thresh; q3 = mid_thresh;;\n//Motion Vectors;\nmv_l = mv_l + 10 * sin(q1 * q2);;\nmv_dx = mv_dx + 1 * sin(time / q1);;\nmv_dy = mv_dy - 1 * sin(time / q2);;\n//Vector Colours;\nmv_r = 0 + .5 * sin(q1);;\nmv_b = 1 - .5 * sin(q2);;\nmv_g = .5 + .5 * sin(q2 * q1);;\n//Gamma;\ngamma = time & (q1 * q2);",
+        "perVertex": "zoom = zoom + .1 * sin ((if(((q1) > (q2)),rad,ang)) * 3.14 / (q1 * q2) * (time * .01));;\nrot = (zoom * ang/rad) * sin(time & ((q1 * .01) * (q2 * .01)));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.999527,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "suksma - arbitrary psychoses",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//spiral collide frame;\nt = t + 2.5/fps;;\nt = if(((t) > (2)),t-2,t);;\nq22 = -t;;\n// Flexis dampened sound response functions;\ndb = db*0.98 + bass_att*0.2; // dampener;\nbb = bb + db*0.1; // accumulation, replace time expressions with this ;);\ndt = dt*0.98 + treb_att*0.2;;\ntt = tt + dt*0.1;;\ndm = dm*0.98 + mid_att*0.2;;\nmm = mm + dm*0.1;;\n//***** [q11-q18] variables for Flexis caleidoscope shader code *****;\n// change;\nq13 = 0.5 + sin((bb-mm)*0.1)*0.25; // center x;\nq14 = 0.5 + sin((tt-mm)*0.1)*0.25; // center y;\nw = (bb-tt)*0.1;                   // angle;\nq16 = 0.8 - (db-dt)*0.04;         // size;\n//don't change;\nq11 = sin(w);;\nq12 = cos(w);;\nq17 = sin(-w);;\nq18 = cos(-w);;\nq15 = 1/q16;;\ndb=bass-lbass;;\nlbass=bass;;\nvol=1+bass+mid+treb;;\nmaxdb=max(maxdb*.9999,abs(db));;\nrs=((abs(db)) > (maxdb));;\ndrs=1-rs;;\nbeatrate=1*rs+beatrate*drs;;\navgbeatrate=1*rs+avgbeatrate*drs;;\nbbtime=1*rs+bbtime*drs;;\nlbbtime=1*rs+lbbtime*drs;;\navgdb=1*rs+avgdb*drs;;\nbc=bc*drs+1*rs;;\navgdb=avgdb*.999+abs(db)*.001;;\nrawbeatb=((db) > (avgdb*1.3));;\nbeatb=rawbeatb*((time-lbbtime) > (.5*avgbeatrate));;\nbbtime=time*beatb;;\nbeatrate=beatb*(bbtime-lbbtime)+(1-beatb)*beatrate;;\navgbeatrate=beatb*(avgbeatrate*.999+beatrate*.001)+(1-beatb)*avgbeatrate;;\nlbbtime=time*beatb+(1-beatb)*lbbtime;;\ncc=bc+beatb;;\nq5=beatb;;\nq1=time*.001*avgdb*avgbeatrate;;\nq2=((bc%4) == (0))*beatb;;\nq3=bc;;\nq4=60/avgbeatrate;;\nmonitor=bc;;\ndecay=1;;\nwarp=0;;\nwrap=1;;\ncr1=cr1*(1-q2)+(1-cr1)*q2;;\ncr2=cr2*(1-q2)+(1-cr2)*q2;;\nq6=cr2;;\nq8=cr1;;\nq7=1-cr1;;\nq6=sin(time*q4*.1);;\ncc=sin(bc*.3);;\nzoomexp=150*(1-cc)+cc*.1;",
+        "perVertex": "c1=q6;;\nzoom=(1+sin(q3*bass_att)*.005)*c1+(1-c1);;\nrot=sin(time*q4*.1)*.1*(1-rad)*c1;;\ncx=(sin(time*q4*rad)*.5*bass_att+.5)*c1;;\ncy=(cos(time*q4*rad)*.5*bass_att+.5)*c1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

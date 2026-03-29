@@ -1,0 +1,16 @@
+{
+  "name": "EoS+ Phat - magnetosphere 13 - pulsar d",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.069609;\ncx = 0.5;\ncy = 0.5;\ndecay=0.99;;\nwarp=0.0;;\necho_zoom=1;;\nzoom=1.03+pow( (bass+mid+treb)*0.33,2)*0.03;;\n//zoom=zoom*-1;;\ngamma=1 + min(treb*treb*treb*0.3, 0.9);;\nrmod=sin(time*0.3)*0.5+0.5;;\ngmod=sin(time*0.3 + 2.08)*0.5+0.5;;\nbmod=sin(time*0.3 + 4.17)*0.5+0.5;;\nq1=rmod*0.3;;\nq2=gmod*0.3;;\nq3=bmod*0.3;;\nmidtime=midtime+mid*mid*0.015;;\nq4=midtime;",
+        "perVertex": "edge=(rad-0.48) * ((rad-0.5) > (0)) * 0.15;;\nedge2=(rad-0.48) * ((rad-0.5) < (0)) * 0.08;;\nedgemod=sin(ang*3+time)*0.5+0.5;;\n//zoom=(-1*(bass_att*1))+(edge*edgemod*1.5)+edge2;;\n//zoom=1 + sin(ang*3)*0.005;\nrot=sin(q4)*0.03*((ang/2)/(rad*5));"
+      },
+      "gridSize": 48
+    }
+  ]
+}

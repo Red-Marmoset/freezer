@@ -1,0 +1,39 @@
+{
+  "name": "Serge circles006",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0.02;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.8, 30/fps);;\ndec_slow = pow (0.95, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.5+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %8;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nindex3 = (index3 + is_beat*bnot(index)*bnot(index2))%3;;\nmonitor = index4;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = bass_att + mid_att + treb_att+1;;\nq20 = max(q20-1,0);;\nop1 = dec_med*op1 + q20*(1-dec_med);;\nop2 = dec_med*op2 + q20*op1;;\nq10 = atan(op2*1.5)/1.2;;\n//k1 =  is_beat*bnot(index)*bnot(index2);;\nk1 =  is_beat*((index) == (0));;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_slow * p2+ (1-dec_slow)*p1;;\np3 = dec_slow * p3+ (1-dec_slow)*p2;;\nrott = p3 * 3.14159265359/4;;\nq27 = 8-index;;\nq28 = index2;;\n//q28 = sin(time)+1;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\nt_rel = t_rel + .02*30/fps*q1*q1;;\nq5 = cos(t_rel);;\nq6 = sin(t_rel);;\nq7 = -q6;;\nq8 = q5;;\npuls1 = puls1*dec_med + q24*(1-dec_med);;\npuls2 = puls2*dec_med + puls1*(1-dec_med);;\nq25 = puls2;;\nroty = roty + .003*30/fps;;\nq29=roty;;\nzoom = 1+.0*q22;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffa6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "shifter - lazerspecs_phat_edit",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.91",
+        "perFrame": "zoom = 0.999513;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\narot = 1.5708;;\nq1 = .2;;\ndecay = 1;;\nq2 = .020;;\ntic = min(time-tin,.1);;\ntin = time;;\nra = 12;;\nvav = tic*(vav*(1/tic - ra) + ra*(bass+treb+mid)*.33333);;\nvt = vt + tic*vav;;\nq3 = vt;;\nq4 = time*24.3;;\nq5 = .6;",
+        "perVertex": "sx=-1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.347319,
+      "alpha": 0.8,
+      "orient": 1
+    }
+  ]
+}

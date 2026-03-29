@@ -1,0 +1,23 @@
+{
+  "name": "EoS - ddg_phat_mix - Bitcore Tweak",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=8;;\nzoom=1.000;",
+        "perVertex": "tm=sin(time*0.5)*3;;\ntm2=cos(time)*3;;\nzooma=((sin(x*6.28*3+tm)) > (0)) * ((sin(y*6.28*2+tm2)) > (0));;\nzooma=min(sin(x*6.28*3+tm)+1,1) * min(sin(y*6.28*2+tm)+1,1);;\nvol=((2*bass)*(2*mid*treb))/1.5;;\nzoom= 0.9*(zooma) + 0.99*(1-zooma);;\nrot=0.9*zooma*(vol*0.008)-0.03;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.99663,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

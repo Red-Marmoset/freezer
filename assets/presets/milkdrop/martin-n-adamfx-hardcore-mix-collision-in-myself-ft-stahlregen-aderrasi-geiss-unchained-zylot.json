@@ -1,0 +1,23 @@
+{
+  "name": "Martin n AdamFX - Hardcore Mix Collision in Myself ft Stahlregen - Aderrasi - Geiss - Unchained - Zylot ",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (.4, 30/fps);;\ndec_slow = pow (0.95, 30/fps);;\n//dec_xlow = pow (0.999, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (-.2+avg+peak)) * ((time) > (t0+.1));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %32;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nindex3 = (index2 +index3 + is_beat*bnot(index))%4;;\nis_beat2 = ((time) > (t1+.1));;\nt1 = is_beat*time + (1-is_beat)*t1;;\nq22 = peak;;\nq24 = is_beat;;\nq26 = bass_att + mid_att + treb_att;;\nvol = vol*dec_med + (1-dec_med)*q26;;\nq27 = index + 1.5;;\nq28 = index2 +1;;\np2 = .3*sin(time) + .3*cos(time/3);;\n//*****tunnel tilting;\nq1 = cos(p2 * 3.1416/4);;\nq2 = sin(p2 * 3.1416/4);;\nq3 = -q2;;\nq4 = q1;;\n//****tunnel viewpoint x,y;\nvtrig = is_beat * bnot(index%2);;\nvx = vx * bnot(vtrig) + vtrig * (int(rand(100))/100-.5);;\nvy = vy * bnot(vtrig) + vtrig * (int(rand(100))/100-.5);;\nvz = vz * bnot(vtrig) + vtrig * (int(rand(100))/100-.5);;\nvx = vx* ((index%32) < (24)); //###;\nvy = vy* ((index%32) > (16));;\nq5 = vx*5;;\nq6 = vy*5;;\n//***tunnel width;\nq21 = (1+sin(time))/4+.05;;\n//**floor proximity;\nprox = prox - ((vy) > (.3))*prox*2;;\nq32 = .5 + .2*prox;;\nmonitor = prox;;\n//****tunnel rotation;\nrota = rota +.02*((index%16) < (8))/fps*30;;\nrota1 = rota1*dec_med + (1-dec_med)*rota;;\nq7 = rota1;;\n//****tunnel speed;\nmovez = movez + .8/(1+abs(vx)+abs(vy))/fps;;\nq8 = movez * (1+q21/400);;\n//dyn. Aenderung von q21 bewirkt auch Richt.wechsel;\nq15 = -1+8*((index) > (26));;\n//***********************;\nvxs = vxs * dec_med + (1-dec_med)*vx*20;;\nvys = vys * dec_med + (1-dec_med)*vy*20;;\nvzs = vzs * dec_med + (1-dec_med)*vz*20;;\nz0 = 20+vzs;;\np1z = z0;;\nq9 = vxs/(p1z);;\nq10 = vys/(p1z);;\nq11 = p1z;;\nq12 = ((index) < (24));;\nq13 = ((index) > (16));;\nq14 = 1; // x;\nq16 = 0; // y;\nq17 = -1;;\nq18 = 0;;\nq20 = q9;;\nq19 = q4*5;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

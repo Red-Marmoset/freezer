@@ -1,0 +1,23 @@
+{
+  "name": "EVET - Many Colors_Secondary Voyager",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.985",
+        "perFrame": "zoom = 0.976681;\nrot = 0.12;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.198054;\ncx = 0.65;\ncy = 0.5;\nwave_r = wave_r + 0.350*( 0.60*sin(0.380*bass) + 0.40*sin(1.047*time) );;\nwave_g = wave_g + 0.350*( 0.60*sin(0.835*time) + 0.40*sin(1.081*time) );;\nwave_b = wave_b + 0.350*( 0.60*sin(0.814*time) + 0.40*sin(1.011*time) );;\nrot = rot + 0.030*( 0.60*sin(0.381*time) + 0.40*sin(0.479*time) );;\ncx = cx + 0.110*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );;\ncy = cy + 0.110*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );;\nzoom=zoom+.3*sin(time*.2);;\nmonitor=zoom",
+        "perVertex": "warp=(warp-1)*rad+1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.82495,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

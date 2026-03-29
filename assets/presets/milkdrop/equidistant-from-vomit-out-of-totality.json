@@ -1,0 +1,23 @@
+{
+  "name": "equidistant from vomit (out of totality)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.983",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0;\ncx = 1;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\ndecay=1;;\nob_r=1-abs(sin(time/2));;\nob_g=1-abs(sin(time/2));;\nob_b=1-abs(sin(time/2));;\nib_r=1-abs(cos(time/3));;\nib_g=1-abs(cos(time/3));;\nib_b=1-abs(cos(time/3));;\nq1 = if(((abs(ob_size - ib_size)) > (0.06)),17,0.8);;\nob_size=abs(sin(time/(5*q1))/13);;\nib_size=0.08-ob_size;;\nvolume = (bass_att+mid_att+treb_att)/3;;\nbeat_threshold = 1.7/((tb+tt)*0.5);;\ntime_threshold = 0.8;;\nhighpitch = 0.9 * treb_att + 0.1 * mid_att;;\nlowpitch = bass_att;;\nbeat_bass = if(((lowpitch) > (last_bass*beat_threshold)),1,0);;\nbeat_treb = if(((highpitch) > (last_treb*beat_threshold)),1,0);;\ntimegap_bass = if(((beat_bass) == (1)), (time-ltb), tgb);;\ntimegap_treb = if(((beat_treb) == (1)), (time-ltt), tgt);;\ntgb = timegap_bass;;\ntgt = timegap_treb;;\nlast_time_bass = if(((beat_bass) == (1)), time, ltb);;\nlast_time_treb = if(((beat_treb) == (1)), time, ltt);;\nltb = last_time_bass;;\nltt = last_time_treb;;\ntempo_bass = if(((beat_bass) == (1)), (tb * 0.92 + 0.08 * tgb), tb);;\ntempo_treb = if(((beat_treb) == (1)), (tt * 0.92 + 0.08 * tgt), tt);;\ntb = tempo_bass;;\ntt = tempo_treb;;\nq2 = beat_bass;;\nq3 = beat_treb;;\nq4 = ob_r;;\nq5 = ib_r;;\nq6 = volume;;\nmonitor = downbeat;;\nlast_treb = highpitch;;\nlast_bass = lowpitch;;\nrot=sin(time/5.3);;\nbeat = 0;;\ndx= sin(time/4.4)/5;;\ndy= cos(time/3.6)/5;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.334,
+      "alpha": 1,
+      "orient": 3
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "ORB - Limelight",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.96;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.00052;\ncx = 0.5;\ncy = 0.5;\nbasstime = basstime + bass*0.03;;\nbasstime2 = basstime + bass*0.03;;\nq1 = basstime2;;\n//start in most active range;\nbasstime = if(((basstime) < (1000)),1000,basstime);;\n//basstime = if(((basstime) > (495)),450,basstime);;\nbasstime = basstime + bass_att*0.03;;\nvol = pow(bass+mid+treb,2);;\nbasssum = vol;;\nstickybit = time%2;;\n//avg vol;\n//buffer 1;\nvolAvg = volAvg + vol*((stickybit) == (1));;\n//number of samples 1 or framerate;\nsample1 = sample1 + ((stickybit) == (1));;\n//buffer 2;\nvolAvg2 = volAvg2 + vol*((stickybit) == (0));;\n//number of samples 2;\nsample2 = sample2 + ((stickybit) == (0));;\n//transision;\nedge = bnot(((bit2) == (stickybit)));;\nvolAvg = volAvg - volAvg*edge*stickybit;;\nvolAvg2 = volAvg2 - volAvg2*edge*((stickybit) == (0));;\nsample1 = sample1  - sample1*edge*stickybit;;\nsample2 = sample2  - sample2*edge*((stickybit) == (0));;\n//test vol against avg buffer lvl;\ndiff = if(((stickybit) == (1)), (basssum/(volAvg2/sample2)) , 0);;\ndiff = if(((stickybit) == (0)), (basssum/(volAvg/sample1)), diff);;\nq3 = diff;;\nbit2 = time%2;;\ndifftime = difftime + diff*0.03;;\nq2 = difftime;;\n//fix a strange error;\ndifftime = if(((difftime) > (2000)),0, difftime);;\nq10= cos(q1*0.0000004);;\nq11 = sin(q1*0.000004);;\nq13 = 1;;\n//rot = 0.02;",
+        "perVertex": "zoom = 1;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

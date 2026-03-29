@@ -1,0 +1,16 @@
+{
+  "name": "Boz-buckwild",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9622",
+        "perFrame": "zoom = 1.072131;\nrot = 1;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 2;\ncy = -1;\nrot=rot+.10*sin(time/20);;\nob_r=ob_r + time*sin(bass);;\nob_b=ob_b + time*sin(treb+1);;\nob_g=ob_g + time*sin(mid/1.5);;\nCX=2*sin(time);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

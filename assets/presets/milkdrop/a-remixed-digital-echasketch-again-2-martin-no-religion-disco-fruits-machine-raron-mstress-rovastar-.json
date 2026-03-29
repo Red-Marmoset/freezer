@@ -1,0 +1,23 @@
+{
+  "name": "A Remixed Digital Echasketch  Again 2 martin - no religion  + disco Fruits Machine + Raron + mstress + Rovastar (AdamFX Remix)4",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.00564;\ncx = 0.5;\ncy = 0.5;\nzoom =sin( echo_zoom-q4);;\ncx = (sin((time/2)*1.5)*0.8 + 0.5);;\ncy = (sin(time*1.1)*0.8 + 0.5);;\nob_r = 2*(time*.7);;\nob_b = 2*(time*.6);;\nob_g = 2*(time*.5);;\nib_r = 1*(time*.5);;\nib_b = 1*(time*.6);;\nib_g = 1*(time*.7);;\nrot = 0.1;;\ndecay = .999999;;\nwec=sin(time-1);;\nweconz=(q4-q2)*wec;;\nwecrut=(tri*3)-(sin(time-rad));;\ntri= q8;;\nt1 = wec+x;;\nt3 = tri*weconz;;\nt6 = wecrut;;\nt7 = wec * time;;\nq1 = wec;;\nq2 = tri-t1;;\nq6 = (weconz*2)/time;",
+        "perVertex": "bamx=sin(time-bass);;\nboom=sin(((bamx%boom)*bass)*time);;\nbom=(rand(0.1*(time-boom)*(time-bamx))*2);;\nspeed = sin(((speedA-speedB)*(speedB-speedA)))%speedC;;\nspeedA =  sin((bass*3 - speedB )* time);;\nspeedB =  sin((mid*3 + speedC ) * time);;\nspeedC = sin((treb*3 - speedA ) * time);;\nshox = cos(q3 - q8)*speed;;\nrhox = sin(q5 + speedB)%speed;;\nrox = (shox - rhox)/2;;\ndaz=((speed*(time-1))*bass)* 0.5 + 0.5;;\nwec=sin(time-1);;\nweconz=t4-q4;;\nwecrut=(tri*3)-(sin(time-rad));;\ntri= q8;;\nwarp = 1.420;;\nq3 = treb*bom;;\nq8 = bass* boom;;\nq5 = mid*rox;;\nq6 = rox%speed;;\nq4 = daz - q4;;\nwec=sin(time-1);;\nweconz=(q4-q2)*wec;;\nwecrut=(tri*3)-(sin(time-rad));;\ntri= q8;;\nt1 = wec+x;;\nt3 = tri*weconz;;\nt6 = wecrut;;\nt7 = wec * time;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

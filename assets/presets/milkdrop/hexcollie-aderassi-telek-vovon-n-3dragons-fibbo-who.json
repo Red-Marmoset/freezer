@@ -1,0 +1,31 @@
+{
+  "name": "Hexcollie, Aderassi, Telek, vovon n 3dRaGoNs - Fibbo-who",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.991829;\nrot = 0.2;\ndx = -0.02;\ndy = -0.006;\nsx = 1.000995;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay = 0.98;;\nwave_x = .5;;\nwave_y = .5;;\nwave_r = min(.7,max(0,0.2*bass));;\nwave_g = min(.7,max(0,0.2*mid));;\nwave_b = min(.7,max(0,0.2*treb));;\nmv_r = .1+.1*sin(time*.45);;\nmv_g = .1+.1*sin(time*.32);;\nmv_dy = mv_dy + .11*sin(time*5);",
+        "perVertex": "mx= x-.5;;\nmy = y-.5;;\nzoom= zoom - ((rad-0.18) > (0))*0.05*rad*.9;;\ndx = ((rad-(2-bass_att)*.2) > (0))*0.015*(mx/if(((rad) > (0)),rad,.1));;\ndy = ((rad-(2-bass_att)*.2) > (0))*0.015*(my/if(((rad) > (0)),rad,.1));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.010137,
+      "alpha": 0.5,
+      "orient": 1
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

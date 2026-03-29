@@ -1,0 +1,16 @@
+{
+  "name": "shifter - fuzzball_1",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.999514;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a = 0;;\nvol = (bass_att + treb_att + mid_att)*.333333;;\ntic = time-tin;;\ntin = time;;\ntm = tm + tic*vol;;\nq1 = tm;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

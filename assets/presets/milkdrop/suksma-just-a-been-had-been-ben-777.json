@@ -1,0 +1,16 @@
+{
+  "name": "suksma - just a been had been ben - 777",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9999;\nrot = 0.1;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nwave_r = wave_r + 0.45*(0.5*sin(time*0.701)+ 0.3*cos(time*0.438));;\nwave_b = wave_b - 0.4*(0.5*sin(time*4.782)+0.5*cos(time*0.722));;\nwave_g = wave_g + 0.4*sin(time*1.931);;\nwave_r = 0.2125*wave_r + 0.7154*wave_g + 0.0721*wave_b;;\nwave_g = wave_r;;\nwave_b = wave_r;;\nvol = 0.167*(bass+mid);;\nxamptarg = if(((frame%15) == (0)),min(0.5*vol*bass_att,0.5),xamptarg);;\nxamp = xamp + 0.5*(xamptarg-xamp);;\nxdir = if(((abs(xpos)) > (xamp)),-sign(xpos),if(((abs(xspeed)) < (0.1)),2*((xpos) > (0))-1,xdir));;\nxspeed = xspeed + xdir*xamp - xpos - xspeed*0.055*((abs(xpos)) < (xamp));;\nxpos = xpos + 0.001*xspeed;;\nwave_x = 1.25*xpos + 0.5;;\nyamptarg = if(((frame%15) == (0)),min(0.3*vol*treb_att,0.5),yamptarg);;\nyamp = yamp + 0.5*(yamptarg-yamp);;\nydir = if(((abs(ypos)) > (yamp)),-sign(ypos),if(((abs(yspeed)) < (0.1)),2*((ypos) > (0))-1,ydir));;\nyspeed = yspeed + ydir*yamp - ypos - yspeed*0.055*((abs(ypos)) < (yamp));;\nypos = ypos + 0.001*yspeed;;\nwave_y = 1.25*ypos + 0.5;;\ndx = dx + dx_residual;;\ndy = dy + dy_residual;;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.3)*0.96+1.3);;\ndx_residual = ((bass_thresh) == (2))*0.003*sin(time*7) + (1-((bass_thresh) == (2)))*dx_residual;;\ndy_residual = ((bass_thresh) == (2))*0.001*sin(time*9) + (1-((bass_thresh) == (2)))*dy_residual;;\nrot = 0.1;;\nvol=(bass+mid+treb)*0.25;;\nvol=vol*vol;;\nmtime=mtime + vol*0.01;;\nq8=mtime;;\nq1=sin(mtime) * sin(mtime*3) * 0.4 + 0.5;;\nq2=cos(mtime*1.3) * sin(mtime*5.4) * 0.4 + 0.5;;\nib_r = tan(time);;\nib_r = min(1, max(ib_r,0));;\nib_g = tan(time+2.1);;\nib_g = min(1, max(ib_g,0));;\nib_b = tan(time+4.2);;\nib_b = min(1, max(ib_b,0));;\nq3 = 10+8*(0.6*sin(0.223*time) + 0.4*sin(0.153*time));;\nq4 = 1/q3;;\nq5 = 0.5*sign(xpos);;\nq6 = 0.5*sign(ypos);;\nq31=pixelsx;;\nq32=pixelsy;;\nq20=(bass+mid+treb)*.3;",
+        "perVertex": "cx = ((0&(x*q3-q5))+q5)*q4;;\ncy = ((0&(y*q3-q6))+q6)*q4;;\nnewx = q1-x;;\nnewy = q2-y;;\nnewrad = sqrt((newx)*(newx)+0.5625*(newy)*(newy))*2;;\nnewzoom = pow(1.05 + 0.03*newrad, pow(0.01+sin(newrad*newrad), newrad*2-1));;\ndx = (newx)*newzoom - newx;;\ndy = (newy)*newzoom - newy;;\ndx =dx*0.1;;\ndy=dy*0.1;;\nrot = 2*newrad*(0.5*(0.5-rad)+0.1);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

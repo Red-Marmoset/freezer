@@ -1,0 +1,16 @@
+{
+  "name": "camel llama nz",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.995",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.44772;\nsy = 1.64462;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nrot=sin(time*.2);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

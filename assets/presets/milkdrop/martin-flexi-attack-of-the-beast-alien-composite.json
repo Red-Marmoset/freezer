@@ -1,0 +1,23 @@
+{
+  "name": "martin + flexi - attack of the beast [alien composite]",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.8, 30/fps);;\ndec_b = pow (0.9, 30/fps);;\ndec_slow = pow (0.9, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (avg+peak)) * ((time) > (t0+.1));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %32;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq24 = is_beat;;\nq26 = bass_att + mid_att + treb_att;;\nq27 = index +1;;\nq28 = index2;;\nlight = light * dec_med + (1-dec_med)*q22;;\nlight = min(light,3);;\nq15 = light/3;;\nph1 = ((q27) < (8));;\nph2 = ((q27) > (8))*((q27) < (16));;\nph2a = ((q27) > (29)); // open mouth;\nph3 = ((q27) > (30));;\nblend = ((q27) > (30))+((q27) < (2));;\nblend_ = dec_b*blend_ + (1-dec_b)*blend;;\nq19 = blend_;;\nq18 = 1-blend_;;\ndist = if(ph1,3,dist);;\ndist = if(ph2,max(dist -1/fps,1.8),dist);;\ndist = if(ph3,max(dist - 8/fps,-1),dist);;\ndist_ = dist_ * dec_med + dist*(1-dec_med);;\nq11 = dist_;//q11 = 2;;\nopen = if(ph2a,open*dec_slow,4);;\nq16 = 4-open+q27/16+q15/2;;\nq17 = ((q27) > (16)); //drool;\ntrel1 = trel1 + 1/fps * (1 + q15*2*((q27%2)-.5));;\ntrel2 = trel2 + 1/fps * (1 + q15*2*((q27%4)-1.5));;\npx_ = sin(trel1)/5;;\npy_ = cos(trel2)/5-.1;;\npx__ = dec_slow*px__ + px_ * (1-dec_slow);;\npy__ = dec_slow*py__ + py_ * (1-dec_slow);;\nq5 = px_+.1*sin(time);;\nq6 = py_+.1*cos(2*time); //light pos;\nq9 = px__*sqrt(dist_)/2;  //head pos;\nq10 = py__*sqrt(dist_)/2;;\ntrig = ((q27) == (31))*q24;;\ncrumple = if(trig,rand(20)-5,crumple);;\nmwidth =  if(trig,.2+rand(20)/20,mwidth);;\nmshape =  if(trig, rand(20)/40,mshape);;\nq1 = crumple;;\nq2 = mwidth;;\nq3 = .1; //y-pos mouth;\nq4 = mshape;;\nmonitor =q4;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

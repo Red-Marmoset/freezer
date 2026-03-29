@@ -1,0 +1,16 @@
+{
+  "name": "akish - placard - how could i ever understand you",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 0.9901;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//spiral collide frame;\nt = t + 2.5/fps;;\nt = if(((t) > (2)),t-2,t);;\nq22 = -t;;\n// Flexis dampened sound response functions;\ndb = db*0.98 + bass_att*0.2; // dampener;\nbb = bb + db*0.1; // accumulation, replace time expressions with this ;);\ndt = dt*0.98 + treb_att*0.2;;\ntt = tt + dt*0.1;;\ndm = dm*0.98 + mid_att*0.2;;\nmm = mm + dm*0.1;;\n//***** [q11-q18] variables for Flexis caleidoscope shader code *****;\n// change;\nq13 = 0.5 + sin((bb-mm)*0.1)*0.25; // center x;\nq14 = 0.5 + sin((tt-mm)*0.1)*0.25; // center y;\nw = (bb-tt)*0.1;                   // angle;\nq16 = 0.8 - (db-dt)*0.04;         // size;\n//don't change;\nq11 = sin(w);;\nq12 = cos(w);;\nq17 = sin(-w);;\nq18 = cos(-w);;\nq15 = 1/q16;;\nzoom =1;// 0.999;;\nwarp = 0;;\n// a;\nscale = 8;;\nangle = -time*0.2;;\nq1 = scale*cos(angle); // the real part;\nq2 = scale*sin(angle); // the imaginary part;\n// b;\nq3 = 0; // the real part;\nq4 = 0.3; // the imaginary part;\n// c;\nscale = 0.8;;\nangle = time*0.2;;\nq5 = scale*cos(angle); // the real part;\nq6 = scale*sin(angle); // the imaginary part;\n// d;\nq7 = -0.25; // the real part;\nq8 = 0.2; // the imaginary part;\nq11 = 1/asin(1);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

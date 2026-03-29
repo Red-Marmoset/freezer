@@ -1,0 +1,16 @@
+{
+  "name": "amandio c - woofer",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.0099;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nq6=aspecty;",
+        "perVertex": "z1=gmegabuf((.5*512*rad)%512);;\nz2=gmegabuf((512*ang/6.28)%512);;\nz3=gmegabuf((512*x)%512);;\nz4=gmegabuf((512*y)%512);;\nzoom=1+.5*(z1-z2);;\nrot=.2*(z4-z3);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

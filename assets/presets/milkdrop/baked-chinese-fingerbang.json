@@ -1,0 +1,32 @@
+{
+  "name": "baked - Chinese Fingerbang",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.999514;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a = 0;;\nrot = 3.5  ;;\ndx = sin(time*.5);;\ndy = sin(time*.18) * 3  ;;\nob_r = 0.5 + cos(0.068*time) - time;;\nob_g = 0.5 - sin(0.067*time) - time;;\nob_b = 0.5 + tan(0.075*time) - time;;\nib_r = ob_r*1.001;;\nib_g = ob_g*1.001;;\nib_b = ob_b*1.001;;\ndecay = 0.9999;;\nbasstemp= bass + bass_att + bass_thresh;;\ntrebtemp= treb + treb_att + treb_thresh;;\ntrasstemp= (max(basstemp, trebtemp));;\ntrassave= (trasstemp/3);;\nbasst= max(bass + bass_att, treb + treb_att);;\ntrebb= min(basst + bass_thresh, basst + treb_thresh);;\nmidbeat= trebb/3;;\nmidtb= max(midbeat + mid, midbeat + mid_att);;\nmtb= midtb/2.25;;\nbeetA= (max(treb, bass) + min(treb_att, bass_att)) /2;;\nbeetB= (max(mid, beetA) + min(mid_att, beetA*0.5)) /2;;\nbeetAB= (beetA+beetB)/2;;\nbeetC= (max(mid, treb) + min(mid_att, treb_att)) /2;;\nbeetD= (max(bass, beetC) + min(bass_att, beetC*0.5)) /2;;\nbeetCD= (beetC+beetD)/2;;\nbeet= (beetAB+beetCD) /2;;\nmadbeat= (trassave+mtb+beet) /3;",
+        "perVertex": "zoom = .905;;\nwarp = .905 *  (1-(bass*.01));;\nbasstemp= bass + bass_att + bass_thresh;;\ntrebtemp= treb + treb_att + treb_thresh;;\ntrasstemp= (max(basstemp, trebtemp));;\ntrassave= (trasstemp/3);;\nbasst= max(bass + bass_att, treb + treb_att);;\ntrebb= min(basst + bass_thresh, basst + treb_thresh);;\nmidbeat= trebb/3;;\nmidtb= max(midbeat + mid, midbeat + mid_att);;\nmtb= midtb/2.25;;\nbeetA= (max(treb, bass) + min(treb_att, bass_att)) /2;;\nbeetB= (max(mid, beetA) + min(mid_att, beetA*0.5)) /2;;\nbeetAB= (beetA+beetB)/2;;\nbeetC= (max(mid, treb) + min(mid_att, treb_att)) /2;;\nbeetD= (max(bass, beetC) + min(bass_att, beetC*0.5)) /2;;\nbeetCD= (beetC+beetD)/2;;\nbeet= (beetAB+beetCD) /2;;\nmadbeat= (trassave+mtb+beet) /3;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffa6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    }
+  ]
+}
