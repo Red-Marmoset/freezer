@@ -187,17 +187,19 @@ btnPresets.addEventListener('click', () => {
 
 // --- File Loader ---
 
+// Persistent file input for Load button (some browsers block dynamic input.click())
+const _fileInput = document.createElement('input');
+_fileInput.type = 'file';
+_fileInput.accept = '.avs,.json';
+_fileInput.style.cssText = 'position:absolute;top:-9999px;left:-9999px;';
+document.body.appendChild(_fileInput);
+_fileInput.addEventListener('change', () => {
+  if (_fileInput.files.length > 0) loadPresetFile(_fileInput.files[0]);
+  _fileInput.value = ''; // reset so same file can be re-loaded
+});
+
 btnLoadPreset.addEventListener('click', () => {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.avs,.json';
-  input.style.display = 'none';
-  document.body.appendChild(input);
-  input.onchange = () => {
-    if (input.files.length > 0) loadPresetFile(input.files[0]);
-    document.body.removeChild(input);
-  };
-  input.click();
+  _fileInput.click();
 });
 
 // --- Editor Panel ---
