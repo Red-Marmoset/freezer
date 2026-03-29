@@ -5,6 +5,7 @@ import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
+import { loadAvsImage, getFallbackTexture } from '../image-loader.js';
 
 const MAX_POINTS = 4096;
 
@@ -112,8 +113,14 @@ export class Texer2 extends AvsComponent {
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     this._camera.position.z = 1;
 
-    // Create procedural fallback texture
-    this._blobTexture = createGaussianBlobTexture();
+    // Start with fallback, load real image async
+    this._blobTexture = getFallbackTexture();
+    if (this.imageSrc) {
+      loadAvsImage(this.imageSrc).then(tex => {
+        this._blobTexture = tex;
+        if (this._material) this._material.uniforms.tSprite.value = tex;
+      });
+    }
 
     // Build instanced geometry
     const quadVerts = new Float32Array([

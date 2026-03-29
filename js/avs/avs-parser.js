@@ -352,6 +352,7 @@ function parseBuiltinComponent(code, typeName, r, endPos) {
     case 0x29: return parseInterferences(r, endPos);
     case 0x2A: return parseDynamicShift(r, endPos);
     case 0x23: return parseDynamicDistanceModifier(r, endPos);
+    case 0x22: return parsePicture(r, endPos);
     default:
       // Return a generic component with the type name so it's visible
       return { type: typeName, enabled: true, _unsupported: true };
@@ -1070,6 +1071,20 @@ function parseDynamicDistanceModifier(r, endPos) {
     type: 'DynamicDistanceModifier',
     code: { init, perFrame, onBeat, perPoint },
   };
+}
+
+// ---- Picture (0x22) ----
+
+function parsePicture(r, endPos) {
+  const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const blendMode = r.hasBytes(4) ? r.uint32() : 0;
+  // Image filename is null-terminated string in remaining data
+  let imageSrc = '';
+  if (r.pos < endPos) {
+    imageSrc = r.ntString();
+  }
+  const onBeatBlendMode = r.hasBytes(4) ? r.uint32() : blendMode;
+  return { type: 'Picture', enabled, blendMode, onBeatBlendMode, imageSrc };
 }
 
 // ---- DLL/APE components ----
