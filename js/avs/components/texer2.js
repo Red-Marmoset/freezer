@@ -86,10 +86,6 @@ export class Texer2 extends AvsComponent {
     this.onBeatFn = compileEEL(code.onBeat || '');
     this.perPointFn = compileEEL(code.perPoint || '');
 
-    // Debug: log if code was parsed
-    if (code.perPoint) {
-      console.log('Texer II perPoint code loaded:', code.perPoint.slice(0, 80) + '...');
-    }
 
     this.imageSrc = opts.imageSrc || '';
     this.wrap = opts.wrap !== false;
@@ -205,9 +201,7 @@ export class Texer2 extends AvsComponent {
 
     // Run init on first frame
     if (this.firstFrame) {
-      try { this.initFn(s, lib); } catch (e) {
-        console.warn('Texer II init error:', e.message);
-      }
+      try { this.initFn(s, lib); } catch {}
       this.firstFrame = false;
     }
 
@@ -222,12 +216,7 @@ export class Texer2 extends AvsComponent {
     s.skip = 0;
 
     // Run perFrame
-    try { this.perFrameFn(s, lib); } catch (e) {
-      if (!this._frameErrorLogged) {
-        console.warn('Texer II perFrame error:', e.message);
-        this._frameErrorLogged = true;
-      }
-    }
+    try { this.perFrameFn(s, lib); } catch {}
 
     // Run onBeat
     if (ctx.beat) {
@@ -260,9 +249,7 @@ export class Texer2 extends AvsComponent {
       s.v = waveform ? (waveform[sampleIdx] - 128) / 128 : 0;
 
       // Run perPoint code
-      try { this.perPointFn(s, lib); } catch (e) {
-        if (i === 0) console.warn('Texer II perPoint error:', e.message);
-      }
+      try { this.perPointFn(s, lib); } catch {}
 
       // Skip if requested (any nonzero value)
       if (s.skip !== 0) continue;
