@@ -375,9 +375,19 @@ async function loadPreset(preset) {
     const url = `assets/presets/${preset.file}`;
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const buffer = await resp.arrayBuffer();
-    if (loadPresetCallback) {
-      loadPresetCallback(buffer, preset.title + '.avs', preset.id);
+
+    if (preset.format === 'json' || preset.file.endsWith('.json')) {
+      // JSON presets (MilkDrop conversions, Geiss, etc.) — load directly
+      const json = await resp.json();
+      if (loadPresetCallback) {
+        loadPresetCallback(json, null, preset.id);
+      }
+    } else {
+      // Binary .avs presets — pass as ArrayBuffer for parsing
+      const buffer = await resp.arrayBuffer();
+      if (loadPresetCallback) {
+        loadPresetCallback(buffer, preset.title + '.avs', preset.id);
+      }
     }
   } catch (err) {
     console.error(`Failed to load preset ${preset.title}:`, err);

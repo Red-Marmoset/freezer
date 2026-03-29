@@ -157,9 +157,16 @@ function loadPresetFile(file) {
 
 // --- Preset Library ---
 
-initPresetBrowser((buffer, filename, presetId) => {
+initPresetBrowser((bufferOrJson, filename, presetId) => {
   try {
-    const json = parseAvsFileWithName(buffer, filename);
+    let json;
+    if (filename === null && typeof bufferOrJson === 'object' && !(bufferOrJson instanceof ArrayBuffer)) {
+      // JSON preset (MilkDrop/Geiss) — already parsed
+      json = bufferOrJson;
+    } else {
+      // Binary .avs preset — parse it
+      json = parseAvsFileWithName(bufferOrJson, filename);
+    }
     loadPresetJSON(json, presetId);
     dismissSplash();
   } catch (err) {
