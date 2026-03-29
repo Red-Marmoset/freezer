@@ -183,10 +183,16 @@ const PRETTY_NAMES = {
   LEFT: 'Left', RIGHT: 'Right', CENTER: 'Center',
   DOTS: 'Dots', LINES: 'Lines', SOLID: 'Solid',
   TOP: 'Top', BOTTOM: 'Bottom', CARTESIAN: 'Cartesian', POLAR: 'Polar',
-  // Line blend modes (integer keys for SetRenderMode)
-  0: 'Replace', 1: 'Additive', 2: 'Maximum', 3: '50/50',
-  4: 'Sub (Dst-Src)', 5: 'Sub (Src-Dst)', 6: 'Multiply',
-  7: 'Adjustable', 8: 'XOR (TODO)', 9: 'Minimum',
+  BEAT_RANDOM: 'Beat Random', BEAT_SEQUENTIAL: 'Beat Sequential', NONE: 'None',
+  '(R+G+B)/2': '(R+G+B)/2', '(R+G+B)/3': '(R+G+B)/3',
+};
+
+// Context-aware pretty names for numeric dropdown values
+const NUMERIC_PRETTY = {
+  action: { 0: 'Save', 1: 'Restore', 2: 'Restore Alt. Lines' },
+  clearMode: { 0: 'Clear', 1: 'No Clear' },
+  mode: { 0: 'Mode 0', 1: 'Mode 1', 2: 'Mode 2', 3: 'Mode 3' },
+  colorFilter: { 0: 'Off', 1: 'On (Multiply)' },
 };
 
 const BLEND_OPTIONS = ['REPLACE', 'ADDITIVE', 'FIFTY_FIFTY', 'MAXIMUM', 'MINIMUM', 'MULTIPLY', 'SUB_DEST_SRC', 'SUB_SRC_DEST', 'EVERY_OTHER_LINE', 'EVERY_OTHER_PIXEL', 'XOR', 'ADJUSTABLE'];
@@ -208,6 +214,12 @@ const SELECT_FIELDS = {
   onBeatAction: ['NONE', 'RANDOM', 'REVERSE'],
   sourceChannel: ['ZERO', 'RED', 'GREEN', 'BLUE'],
   coordinates: ['POLAR', 'CARTESIAN'],
+  coord: ['POLAR', 'CARTESIAN'],
+  action: [0, 1, 2],
+  clearMode: [0, 1],
+  key: ['RED', 'GREEN', 'BLUE', '(R+G+B)/2', 'MAX', '(R+G+B)/3'],
+  mapCycleMode: ['NONE', 'BEAT_RANDOM', 'BEAT_SEQUENTIAL'],
+  colorFilter: [0, 1, 2, 3],
   mode: [0, 1, 2, 3],
 };
 
@@ -293,8 +305,11 @@ function escHtml(s) {
 
 function getSliderRange(key, val) {
   const k = key.toLowerCase();
-  // Speed/opacity values (0-1 range)
-  if (k === 'speed' || k === 'opacity' || k === 'alpha' || k === 'adjustblend') {
+  // Speed: FadeOut uses 0-92 integers, others use 0-1 float
+  if (k === 'speed') {
+    return val > 1 ? { min: 0, max: 92, step: 1 } : { min: 0, max: 1, step: 0.005 };
+  }
+  if (k === 'opacity' || k === 'alpha' || k === 'adjustblend') {
     return { min: 0, max: 1, step: 0.005 };
   }
   // Zoom/scale values
@@ -620,7 +635,8 @@ function buildDetailDom(container, comp, path) {
         for (const opt of SELECT_FIELDS[key]) {
           const o = document.createElement('option');
           o.value = opt;
-          o.textContent = PRETTY_NAMES[opt] || opt;
+          const numPretty = NUMERIC_PRETTY[key] && NUMERIC_PRETTY[key][opt];
+          o.textContent = numPretty || PRETTY_NAMES[opt] || opt;
           if (String(val) === String(opt)) o.selected = true;
           sel.appendChild(o);
         }

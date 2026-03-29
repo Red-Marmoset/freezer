@@ -321,9 +321,10 @@ export class Movement extends AvsComponent {
       this._reversed = !this._reversed;
     }
 
-    // User-defined with displacement map fallback: compute disp map
-    if (this.effectIndex === 13 && this._useDispMap && this.codeFn) {
+    // User-defined with displacement map fallback: compute disp map once
+    if (this.effectIndex === 13 && this._useDispMap && this.codeFn && !this._dispComputed) {
       this._computeDispMap(ctx);
+      this._dispComputed = true;
     }
 
     // Read from active, write to back, swap

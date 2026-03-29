@@ -420,11 +420,12 @@ function parseSuperScope(r, endPos) {
 // ---- FadeOut (0x03) ----
 
 function parseFadeOut(r, endPos) {
+  // Speed is 0-92 in the original AVS (fadelen). NOT normalized.
   const speed = r.uint32();
   const color = r.color();
   return {
     type: 'FadeOut',
-    speed: speed / 255, // normalize 0-255 to 0-1
+    speed,
     color,
   };
 }
