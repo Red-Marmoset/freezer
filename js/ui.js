@@ -187,6 +187,7 @@ const DISPLAY_NAMES = {
   'Acko.net: Texer II': 'Texer II',
   'Render: Triangle': 'Triangle',
   'Picture II': 'Picture II',
+  'EelTrans': 'AVSTrans Automation',
 };
 
 // Components confirmed as finished/working by the user.
