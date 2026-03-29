@@ -1,0 +1,39 @@
+{
+  "name": "PieturP - circles_progressive",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9359",
+        "perFrame": "zoom = 1.0018;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.001829;\nsy = 100;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndoen=((bass) > (1.2));;\ndoen2=doen+(doen2*.9);;\nmonitor=doen2;;\nrot=((doen) > (0));;\ndecay=1-(doen2*.05);;\nwave_x=sin(time)*.2+.5;;\nwave_y=cos(time)*.2+.5;;\nwarp=0;;\n//zoom=0.998;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nwave_r = sin(time*.4)*.99;;\nwave_g = sin(time*.6)*.99;;\nwave_b = sin(time*.7)*.99;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffa6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.674618,
+      "alpha": 1,
+      "orient": 3
+    }
+  ]
+}

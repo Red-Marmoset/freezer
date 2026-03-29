@@ -1,0 +1,16 @@
+{
+  "name": "Stahlregen + Shifter + Flexi - Hypnotron V1-15 a",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1;\nrot = -0.04;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.10893;\ncx = 0.5;\ncy = 0.5;\n//Dedicated to flexi, the guy with the crazy unspellable name, hexcollie,;\n//goody, bdrv and all the other freaks at the winamp forums! :P;\n//TRUST US! COMPLY! WORK! PRODUCE! CONSUME! BUY MORE! LOVE US! OBEY! GLORY TO THE HYPNOTRON!;\nvol = (bass_att+treb_att+mid_att)*.125;;\nvolb = .7*volb + .3*vol;;\nzoom = 1.033;;\nvolt = volt + .1*volb;;\nq1 = time+volt;;\nq2 = aspectx;;\nq3 = aspecty;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

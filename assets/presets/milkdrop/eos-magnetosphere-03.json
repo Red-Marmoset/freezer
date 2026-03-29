@@ -1,0 +1,16 @@
+{
+  "name": "EoS - magnetosphere 03",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.069609;\ncx = 0.5;\ncy = 0.5;\ndecay=0.97;;\nms=sin(time*0.6);;\nmss=mss+ms*0.1;;\nq1=ms;;\nwarp=0.1;;\nrot=sin(time)*0.01;;\necho_zoom=1 + ( sin(time*0.6)*0.5+0.5 )*3;;\n//dx=sin(time*0.5)*0.001;;\n//dy=cos(time*0.5)*0.001;",
+        "perVertex": "zoom=1 + sin(ang*3)*0.02"
+      },
+      "gridSize": 48
+    }
+  ]
+}

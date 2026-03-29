@@ -1,0 +1,39 @@
+{
+  "name": "suksma - inverting your soul until you are quivering spirit meat",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.031;\nrot = 0.003;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.15899;\ncx = 0.5;\ncy = 0.5;\nwave_r = min(1,max(0,(bass_att-1)*1.2));;\nwave_g = wave_r*0.7;;\nwave_b = wave_r*0.1;;\nrot = rot + 0.010*( 0.60*sin(0.038*time) + 0.40*sin(0.054*time) );;\ndx = dx + 0.002*( 0.60*sin(0.434*time) + 0.40*sin(0.277*time) );;\ndy = dy + 0.002*( 0.60*sin(0.384*time) + 0.40*sin(0.477*time) );",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#1f0805"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

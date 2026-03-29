@@ -1,0 +1,16 @@
+{
+  "name": "Zylot - Spiral",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.997",
+        "perFrame": "zoom = 0.999514;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\ndecay = .92;",
+        "perVertex": "zoom = zoom + rad*.01;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "stahlregen - splash! (unCrystallization - Spiral flower Eyecancer)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.06151;\nrot = 0.02;\ndx = 0;\ndy = 0;\nsx = 0.9901;\nsy = 0.9901;\nwarp = 0.01817;\ncx = 0.5;\ncy = 0.5;\nbba = .5*bba + .5*bass;;\nbtr = .5*btr + .5*treb;;\nbmi = .5*bmi + .5*mid;;\nbt = bt + bbass;;\ntt = tt + btreb;;\nmt = mt + bmid;;\ntm = tm + .05*(bt+tt+mt);;\nwarp = 0;;\nq1 = sin(.25*tm);;\nq2 = cos(.25*tm);;\ndx = .00125*q1;;\ndy = .00125*q2;;\ncx = .5+.25*q2;;\ncy = .5+.25*q1;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

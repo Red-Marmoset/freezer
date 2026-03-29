@@ -1,0 +1,16 @@
+{
+  "name": "amandio c - epicenter zero improvement hackery",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.55",
+        "perFrame": "zoom = 0.99998;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.99817;\nsy = 0.99999;\nwarp = 0.10892;\ncx = 0.5;\ncy = 0.5;\nq1=aspecty;   decay=1;   warp=0;     zoom=.001;   wave_a=0;;\nq2=.5+.4*sin(.33*time);    q3=.5+.4*sin(.51*time);    //// ball coordinates;\nq4=2+sin(.12*time);    //// zoom;\np=20000;   i=0;    loop(2900,;\nx=-.0014*gmegabuf(i)/q1-.02*time;   x=int(x+1)-x;;\ny=.0014*gmegabuf(i+10000);;\nx=.5+q4*(x-.5);     y=.5+q4*(y-.5);;\nd=sqrt(sqr((x-q2)*q1)+sqr(y-q3));       ang=-atan2(y-q3,x-q2);;\nr=.8+.2*sin(10*d-4*time);     g=.5+.5*sin(7*d-3*time);;\na=.5+.3*sin(3*d-time)+.3*sin(3*ang+time);;\ngmegabuf(p+6*i)=x;    gmegabuf(p+6*i+1)=y;    gmegabuf(p+6*i+2)=r;;\ngmegabuf(p+6*i+3)=g;  gmegabuf(p+6*i+4)=a;    gmegabuf(p+6*i+5)=ang;;\ni=i+1;);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

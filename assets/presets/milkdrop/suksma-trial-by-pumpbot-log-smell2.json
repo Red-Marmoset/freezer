@@ -1,0 +1,23 @@
+{
+  "name": "suksma - trial by pumpbot - log smell2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1;\nrot = 0.02;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.56;\ncy = 0.5;\nwarp=0;;\nbass_on=if(((bass_att) > (1)),1,0);;\ntreb_on=if(((treb_att) > (1)),1,0);;\nstate=1+if(((bass_on) == (1)),1,0)+if(((treb_on) == (1)),2,0);;\nwave_r = wave_r + 0.25*(0.6*sin(0.784*time) + 0.4*sin(0.986*time))*state;;\nwave_g = wave_g + 0.25*(0.6*sin(0.671*time) + 0.4*sin(1.164*time))*(4-state);;\nwave_b = wave_b + 0.25*(0.6*sin(1.423*time) + 0.4*sin(0.687*time))*(4/state);;\nob_r=wave_g;;\nob_g=wave_b;;\nob_b=wave_r;;\nob_size=0+mid_att*.005;;\nbass_effect = if(((bass_att) > (1.4)),pow(1.1,bass_att),1);;\ntreb_effect = if(((treb_att) > (1.4)),pow(0.97,treb_att),1);;\nnet_effect = if(((bass_att) > (0.8*treb_att)),bass_effect,treb_effect);;\nzoom = net_effect;;\nwave_size=wave_size+if(((abs(state-3)) == (1)),wave_size*2,wave_size);;\nq1=state;;\nrunbass=runbass+bass;;\nruntreb=runtreb+treb;;\nrunmid=runmid+mid;;\nq30=initq30+(runbass+runtreb+runmid)*.05;;\nmonitor=q30;;\nq20=(bass+mid+treb)*.3;",
+        "perVertex": "rot = rot + if(((sin(ang)) < (0)), -rot, if(((abs(state-3)) == (1)),0.05,.1));;\nzoom=zoom-if(((sin(ang)) == (0)),0,sin(ang*q1)*rad*.3);;\ndx=dx+sin(ang*q1*3-abs(rad*4-1))*rad*.05;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 2,
+      "alpha": 0.29,
+      "orient": 0
+    }
+  ]
+}

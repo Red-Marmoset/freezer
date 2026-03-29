@@ -1,0 +1,16 @@
+{
+  "name": "stahlregen + shifter - hypnotron v 0-75",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.0201;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.10893;\ncx = 0.5;\ncy = 0.5;\nwarp = .125;;\nvol = (bass_att+treb_att+mid_att)*.125;;\nvolt = volt + .1*vol;;\nq1 = time+volt;;\nq2 = aspectx;;\nq3 = aspecty;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

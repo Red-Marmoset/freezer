@@ -1,0 +1,16 @@
+{
+  "name": "shifter + amandio c - tumbling cubes (dynamic shapes) - k you",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a = 0;;\nvol = .1*(vol*9 + (bass_att+mid_att+treb_att)*.333333);;\nq1 = .1 + vol*.3;;\ntic = time-tin;;\ntin = time;;\ntb = tb + tic*bass_att;;\nq2 = tb*.9;;\ntm = tm + tic*mid_att;;\nq3 = tm*.9;;\ntt = tt + tic*treb_att;;\nq4 = tt*.9;;\nq1 = min(q1,1);;\naq1 = .5;;\naq2 = 0;;\naq3 = 9.5;;\naq4 = 0;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

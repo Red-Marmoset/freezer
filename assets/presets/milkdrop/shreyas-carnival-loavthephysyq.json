@@ -1,0 +1,16 @@
+{
+  "name": "Shreyas - Carnival loavthephysyq",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=.67;;\ntime=time*.1;;\nti=if(((bass) > (1.3)),.3,ti*.9);;\nt1=t1+.01+ti*.1;;\nq2=sin(time)*cos(t1);;\nq3=sin(t1)*cos(t)+1;;\nq4=cos(time+1)*sin(time-6);;\nmonitor=ti;;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\n//begin beat code;\nvolume = 0.3*(bass+mid);;\nbeatrate = ((beatrate) == (0)) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate);;\nlastbeat = lastbeat + ((lastbeat) == (0))*time;;\nmeanbass_att = 0.05*(meanbass_att*19 + bass_att);;\npeakbass_att = max(bass_att,peakbass_att);;\nbeat = ((volume) > (0.8))*((peakbass_att - bass_att) < (0.05*peakbass_att))*((time - lastbeat) > (0.1 + 0.5*(beatrate - 0.1)));;\nbeatrate = max(if(beat,if(((time-lastbeat) < (2*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\n//Adjust responsiveness: To increase responsiveness, set the \"0.96 and \"0.996\" on the next line to slightly lower values. Higher values decrease responsiveness.;\npeakbass_att = beat*bass_att + (1-beat)*peakbass_att*(((time - lastbeat) > (2*beatrate))*0.96 + (1-((time - lastbeat) > (2*beatrate)))*0.996);;\nlastbeat = beat*time + (1-beat)*lastbeat;;\npeakbass_att = max(peakbass_att,1.1*meanbass_att);;\n//end beat code;\nzoom = 1;;\ndecay = 1;;\nwarp = 0;;\nwave_a = 0;;\ntic = min(time-tin,.1);;\ntin = time;;\nq2 = 1;;\nq1=1;;\nvol = vol + ((alt + bass + mid)/3-vol)*tic*1;;\nq5 = vol*vol*vol*2;;\nq8 = sin(time)*.5;;\nq9 = sin(time*.75)*.5;;\nsw = abs(sw - beat);;\nan = an + tic*.5*(1-2*sw);;\nq7 = 1+(pow(q8,2) + pow(q9,2))*1;;\nq10 = sin(an);;\nq11 = cos(an);;\nsp = sp + tic*vol*vol*.5;;\nq12 = sp;;\nmonitor = q12;",
+        "perVertex": "zoom=zoom+cos(zoom)*.1;;\nrot=rot+sin(zoom+time)*.1;;\nsx=sx+treb*.01;;\nsy=sy+mid*.01;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

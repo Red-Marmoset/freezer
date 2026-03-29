@@ -1,0 +1,23 @@
+{
+  "name": "37",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 0.9995;\nrot = 0.1;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01105;\ncx = 2;\ncy = 2;\nwarp = 0;;\n//zoom = 1;;\ntic = min(time-tin,.1);;\ntin = time;;\nvol = (bass_att + treb_att + mid_att)*.333333;;\nra = 1/tic*.25;;\ntreb_avg = tic*(treb_avg*(1/tic - ra) + ra*treb);;\nmid_avg = tic*(mid_avg*(1/tic - ra) + ra*mid);;\nbass_avg = tic*(bass_avg*(1/tic - ra) + ra*bass);;\nvav = tic*(vav*(1/tic - ra) + ra*(bass+treb+mid)*.33333);;\ntt = tt + tic*treb;;\nmt = mt + tic*mid;;\nbt = bt + tic*bass;;\nvt = vt + tic*vav;;\nq1 = tt*1.8;// wave morph speeds;\nq2 = mt*3;;\nq3 = bt*3;;\nq4 = vt; // wave colour cycle;\nrb = if(rb,rb,.2 + rand(1001)*.001*.6);;\nrc = if(rc,rc,.2 + rand(1001)*.001*.6);;\nrd = if(rd,rd,.2 + rand(1001)*.001*.6);;\nre = if(re,re,.2 + rand(1001)*.001*.6);;\nti = vt*2;;\ncx = .3 + .1*sin(ti*re) + .1*cos(ti*rc);;\ncy = .5 + .2*sin(ti*rb) + .1*cos(ti*rd);;\nq7 = 6;;\nq8 = 2.8;",
+        "perVertex": "xnum = q7;;\nynum = q8;;\npi = 3.141592654;;\nxseg = int(x*xnum);;\nyseg = int(y*ynum);;\nxsw = (((xseg+equal(yseg%2) == (0)))%2,0);;\nysw = (((yseg+1)%2) == (0));;\nox = x - xseg*(1/xnum);;\nox = if(xsw,1/xnum - ox,ox);;\noy = y - yseg*(1/ynum);;\noy = if(ysw,1/ynum - oy,oy);;\ndx = ((xseg+yseg) > (0))*(x-ox);;\ndy = ((xseg+yseg) > (0))*(y-oy);;\nrot = rot*(1-((xseg+yseg) > (0)));;\n//dx = ((seg) == (1))*(x - .5)*2;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "martin - tiling the tube",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.8, 30/fps);;\ndec_slow = pow (0.99, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.0+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %4;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nindex3 = (index3 + is_beat*bnot(index)*bnot(index2))%2;;\nmonitor = index4;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = bass_att + mid_att + treb_att + 3;;\n//q26 = 6;;\n//k1 =  is_beat*bnot(index)*bnot(index2);;\nk1 =  is_beat*((index) == (0));;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_med * p2+ (1-dec_med)*p1;;\nrott = p2 * 3.14159265359/4;;\nq27 = 1+index;;\nq28 = 2+4* (1+sin(time/5));;\nc1 = c1 *dec_med + index2*(1-dec_med);;\nq29 = 1+c1;;\ncol = dec_med*col + (1-dec_med) * 2 * (index3-.5)* (index%2);;\nq30 = col;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\nzoom = .96 + .05*q1;;\nmv_x = 64;;\nmv_y = 48;;\nmv_a = .0;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffa6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.952379,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

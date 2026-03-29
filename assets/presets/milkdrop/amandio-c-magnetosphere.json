@@ -1,0 +1,16 @@
+{
+  "name": "amandio c - magnetosphere",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.99",
+        "perFrame": "zoom = 0.96;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.0004;\ncx = 0.5;\ncy = 0.5;\nbasstime= basstime + bass*0.005;;\nq2 = sin(basstime);;\nq7 = sin(2*basstime);;\nq8 = sin(1.57+basstime);;\nq1 = sin(.3*time);;\nq3 = sin(.4*time);;\nq4=sin(2*time);;\nq5=sin(time);;\nwave_a=0;;\nwarp=0;;\nzoom=.997;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "292",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.033;\ncx = 0.5;\ncy = 0.5;\ndecay=0.98;;\nzoom=1.002;;\nvol=(bass_att+mid_att+treb_att)*0.25;;\nvol=vol*vol;;\nmtime=mtime+vol*0.1*(75/fps);;\nq1=mtime*0.4;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.997,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

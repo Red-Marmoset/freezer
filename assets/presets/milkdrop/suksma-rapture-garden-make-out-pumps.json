@@ -1,0 +1,20 @@
+{
+  "name": "suksma - rapture garden make out pumps",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.935",
+        "perFrame": "zoom = 0.06855;\nrot = 0;\ndx = 1;\ndy = 0;\nsx = 100;\nsy = 79.68974;\nwarp = 6.16591;\ncx = 0.53;\ncy = 0.5;\naaa=bass_att-0.72;;\nzoom=zoom+0.05*sin(0.3*time);;\nmv_a=mv_a+0.012*sin(time*1.33);;\nwave_r=mv_r;;\nwave_g=mv_g;;\nwave_b=mv_b;;\nrot=0.5+sin(time)*0.33+cos((time+655)*0.22);;\n//This preset was originally made for my skin - \"Kieslowski - Blue\". Do a search for it at www.1001winampskins.com",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Invert",
+      "enabled": true
+    }
+  ]
+}

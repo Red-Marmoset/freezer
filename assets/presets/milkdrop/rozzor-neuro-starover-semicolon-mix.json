@@ -1,0 +1,39 @@
+{
+  "name": "Rozzor & Neuro - Starover (Semicolon Mix)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.97",
+        "perFrame": "zoom = 32.544483;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.3*sin(time*1.254);;\nwave_g = wave_g +0.3*sin(time*0.952);;\nwave_b = wave_b + 0.3*sin(time*0.824);;\nob_r = 0.5 + 0.4*sin(time*1.324);;\nob_g = 0.5 + 0.4*cos(time*1.371);;\nob_b = 0.5+0.4*sin(2.332*time);;\nib_r = 0.5 + 0.25*sin(time*1.424);;\nib_g = 0.25 + 0.25*cos(time*1.871);;\nib_b = 0.5+0.5*sin(2.273*time);;\nvolume = 0.15*(bass+bass_att+treb+treb_att+mid+mid_att);;\nxamptarg = if(((frame%15) == (0)),min(0.5*volume*bass_att,0.5),xamptarg);;\nxamp = xamp + 0.5*(xamptarg-xamp);;\nxdir = if(((abs(xpos)) > (xamp)),-sign(xpos),if(((abs(xspeed)) < (0.1)),2*((xpos) > (0))-1,xdir));;\nxaccel = xdir*xamp - xpos - xspeed*0.055*((abs(xpos)) < (xamp));;\nxspeed = xspeed + xdir*xamp - xpos - xspeed*0.055*((abs(xpos)) < (xamp));;\nxpos = xpos + 0.001*xspeed;;\ndx = xpos;;\nyamptarg = if(((frame%15) == (0)),min(0.3*volume*treb_att,0.5),yamptarg);;\nyamp = yamp + 0.5*(yamptarg-yamp);;\nydir = if(((abs(ypos)) > (yamp)),-sign(ypos),if(((abs(yspeed)) < (0.1)),2*((ypos) > (0))-1,ydir));;\nyaccel = ydir*yamp - ypos - yspeed*0.055*((abs(ypos)) < (yamp));;\nyspeed = yspeed - cy;\nyspeed + ydir*yamp - ypos - yspeed*0.055*((abs(ypos)) < (yamp));;\nypos = ypos + 0.001*yspeed;;\ndy = ypos;;\nzoom = cx;",
+        "perVertex": "myzoom = log(sqrt(2)-rad) -0.25;;\nzoom = if(((rad) > (0.4)),myzoom,(0.5*sqrt(2)-rad));;\nmyzoom = myzoom - rot;;\ncx =  cos(myzoom);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 3.503422,
+      "alpha": 0.46,
+      "orient": 0
+    }
+  ]
+}

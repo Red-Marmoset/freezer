@@ -1,0 +1,32 @@
+{
+  "name": "goody - second collaboration (ps2-0) - #1",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5",
+        "perVertex": "//Have fun with the shaders kids!;\n//xy transform code (Yes, it is based off of Flexi's from the previous collaboration);\nxv = sin(time*.333)*x -cos(time*.667)*x;;\nyv = cos(time*.333)*y +sin(time*.667)*y;;\nx = xv; y = yv;;\n//end x/y transform code;\nsx=sx+.25*sin(x*3);;\nsy=sy+.25*sin(y*3.1);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

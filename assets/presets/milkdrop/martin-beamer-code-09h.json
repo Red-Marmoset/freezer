@@ -1,0 +1,23 @@
+{
+  "name": "Martin - beamer code 09h",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = 1- .2*30/fps;;\ndec_slow = 1-.05*30/fps;;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.2*avg+peak)) * ((time) > (t0+.1));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %16;;\nq27 = index;;\nq22 = peak;;\npeak_ = dec_med*peak_ + (1-dec_med)*peak;;\ntrig = is_beat * bnot(index%4);;\ncount = count + trig;;\nrott = rott*dec_med + (1-dec_med) * count*3.14/2;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nma = ma + (peak_-0)/fps*4*((peak_) > (0));;\nmx=mx*dec_slow+(1-dec_slow)*cos(ma);;\nmy=my*dec_slow+(1-dec_slow)*sin(ma*q1);;\nq15 = mx/2 ;;\nq16 = my/2 ;;\nq17 = ma;;\nang1 = ang1 + 8*bass*((bass) > (1))/fps*q1;;\nq18 = ang1;;\nq32 = aspecty;;\nmonitor = q1;",
+        "perVertex": "warp = .0;;\nrot = .0;;\nzoom = 1.01"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

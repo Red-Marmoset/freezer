@@ -1,0 +1,32 @@
+{
+  "name": "suksma - pus on my cat - fun bags --- Isosceles edit",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//per frame less reactive volume for all unused q vars, put before other q vars are set for cop out mashing;\nvb = vb*0.95 + (1-vb)*pow(bass_att*treb_att*mid_att,2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(mid_att,2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(treb_att,2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = vvb*2;//0.5 + vb - vvb;;\nq2 = vvm*2;//0.5 + vm - vvm;;\nq3 = vvt*2;//0.5 + vt - vvt;;\nv=2;;\nbb = bb - vvb*v;;\nmm = mm - vvm*v;;\ntt = tt - vvt*v;;\nq4 = -bb;;\nq5 = -mm;;\nq6 = -tt;;\nq4=(q1+q2+q3)*5;;\nq5=(q1+q2+q3)*5;;\nq6=(q1+q2+q3)*5;;\nq7=(q1+q2+q3)*5;;\nq8=(q1+q2+q3)*5;;\nq9=(q1+q2+q3)*5;;\nq10=(q1+q2+q3)*5;;\nq11=(q1+q2+q3)*5;;\nq12=(q1+q2+q3)*5;;\nq13=(q1+q2+q3)*5;;\nq14=(q1+q2+q3)*5;;\nq15=(q1+q2+q3)*5;;\nq16=(q1+q2+q3)*5;;\nq17=(q1+q2+q3)*5;;\nq18=(q1+q2+q3)*5;;\nq19=(q1+q2+q3)*5;;\nq20=(q1+q2+q3)*5;;\nq21=(q1+q2+q3)*5;;\nq22=(q1+q2+q3)*5;;\nq23=(q1+q2+q3)*5;;\nq24=(q1+q2+q3)*5;;\nq25=(q1+q2+q3)*5;;\nq26=(q1+q2+q3)*5;;\nq27=(q1+q2+q3)*5;;\nq28=(q1+q2+q3)*5;;\nq29=(q1+q2+q3)*5;;\nq30=(q1+q2+q3)*5;;\nq31=(q1+q2+q3)*5;;\nq32=(q1+q2+q3)*5;;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nnatr=bass_att+thresh*treb_att;;\ncha=abs(batr-natr);;\nspik=((abs(cha-addict)) > (addict));;\naddict=(addict+cha)/2;;\n//effects here;\nzoom=zoom+if((((bass*2) > (treb))-1),-1,1)*((cha*thresh) > (2))*0.1;;\n//added the rotation effect with the same code just to offer some possibilities, activate it if you dare - goody;\n//rot=rot+if((((bass*2) > (treb))-1),-1,1)*((cha*thresh) > (2))*0.1;;\n//zoomexp=2/zoom;;\nmv_r=log(thresh)*spik;;\nmv_b=abs(spik*cha-1);;\nmv_g=sin(time+thresh);;\nmv_a=spik*.75;;\n//end.;\nbatr=natr;;\nmonitor=log(thresh);;\nwave_r = wave_r + 0.35*sin(3*time) + 0.15*sin(2.5*time);;\nwave_g = wave_g + 0.35*sin(2.7*time) + 0.15*sin(2.11*time);;\nwave_b = wave_b + 0.35*sin(2.84*time) + 0.15*sin(2.3*time);;\nwave_mystery=wave_mystery*(addict);;\ncog = ocog+0.005*(bass+bass_att+(bass*bass_att)-2);;\nocog = ((cog) < (30000))*cog;;\nq1=batr;;\nq2=spik;;\n//Hai guiz, you found the secret message. What are you gonna do now?",
+        "perVertex": "//Tiles-;\n//movement first:;\ndxm=.01*sin(time*.41);;\ndym=.01*sin(time*.36);;\n//Now the tiles themselves:;\ndx=dxm+.01*sin(x*80+sin(time))+.005*sin(q1*(y*sin(time*.94)));;\ndy=dym+.01*sin(y*80+sin(time))+.005*sin(q1*(x*sin(time*.97)));;\n//end tiles"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Roosta  - Bursting",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.9995;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh))) * ((bass_thresh-1.3)*0.96+1.3);;\necho_orient = old_orient + ((bass_thresh) == (2));;\necho_orient = if(((echo_orient) == (4)), 1, echo_orient);;\nold_orient = echo_orient;;\n//echo_alpha = echo_alpha + .5*sin(time);;\ndy = dy + .2*cos(time);;\ndx = dx + .3*sin(time*1.234);;\nwave_r = wave_r + .5*sin(time*2.2);;\nwave_g = wave_g + .5*sin(time*3);;\nwave_b = wave_b + .5*sin(time*4);;\nwave_size = wave_size + bass;;\ncx = cx + sin(time*2);;\ncy = cy + cos(time*2);",
+        "perVertex": "//dx = if(((y) > (.5)), dx + .2*sin(time/2), dx - .2*sin(time/2));;\n//dy = if(((x) > (.5)), dy + .1*sin(time/2), dy - .1*sin(time/2));;\nrot = rot + ang;;\nwarp = warp + .3*rad;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=v*0.5; y=(i*2-1)*0.8"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.006493,
+      "alpha": 0.7,
+      "orient": 3
+    }
+  ]
+}

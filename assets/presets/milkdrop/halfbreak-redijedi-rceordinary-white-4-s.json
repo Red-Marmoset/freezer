@@ -1,0 +1,32 @@
+{
+  "name": "Halfbreak + RediJedi + RceOrdinary - White 4's",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndb=bass-lbass;;\nlbass=bass;;\nvol=1+bass+mid+treb;;\nrs=((abs(db)) > (maxdb));;\ndrs=1-rs;;\nbeatrate=1*rs+beatrate*drs;;\navgbeatrate=1*rs+avgbeatrate*drs;;\nbbtime=1*rs+bbtime*drs;;\nlbbtime=1*rs+lbbtime*drs;;\navgdb=1*rs+avgdb*drs;;\nfbc=fbc*drs+1*rs;;\nbc=bc*drs+1*rs;;\nfaketime=1*rs+faketime*drs;;\nlftime=1*rs+lftime*drs;;\navgdb=avgdb*.999+abs(db)*.001;;\nrawbeatb=((db*fakebeatb) > (avgdb*1.3));;\nbeatb=rawbeatb*((time-lbbtime) > (.1*avgbeatrate));;\nmaxdb=max(maxdb*.9999,abs(db));;\nbbtime=time*beatb;;\nbeatrate=beatb*(bbtime-lbbtime)+(1-beatb)*beatrate;;\navgbeatrate=beatb*(avgbeatrate*.999+beatrate*.001)+(1-beatb)*avgbeatrate;;\nlbbtime=time*beatb+(1-beatb)*lbbtime;;\nfaketime=faketime+avgbeatrate*.005;;\n//faketime=0;;\nfakebeatb=cos(faketime)*.5+.5;;\nfb=((fakebeatb) > (.9999))*((faketime-lftime) > (.5*avgfbr));;\nfbr=(1-fb)*fbr+fb*(fbr*.99+(faketime-lftime)*.01);;\navgfbr=avgbr*(1-fb)+fb*(avgfbr*.99+fbr*.01);;\nfbc=fbc+fb;;\nlftime=faketime*fb+(1-fb)*lftime;;\nbc=bc+beatb;;\nmonitor=beatb;;\nq1=beatb;//(((fbc-1)%4) == (0))*fb;;\nq2=db;;\nq3=fakebeatb;;\nq4=avgbeatrate;;\nq5=((bc%4) == (0))*beatb;;\nq6=((bc%16) == (0))*beatb;;\nq7=rawbeatb;;\ndecay=.99;;\nwarp=0;;\nwrap=1;;\nworp=0;;\ndx=.005;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Stahlregen - Squared^2 (Rainbow colored spiral Solarized)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.01;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nwave_a = 0;;\ncount = count+1;;\nbc = bc+bass;;\ntc = tc+treb;;\nmc = mc+mid;;\nbb = .5*bd+.5*bass_att;;\nbt = .5*bt+.5*treb_att;;\nmt = .5*mt+.5*mid_att;;\nbimp = if(((3.25*bass) > (bass+treb+mid)),1,0);;\ntimp = if(((3.25*treb) > (bass+treb+mid)),1,0);;\nmimp = if(((3.25*mid) > (bass+treb+mid)),1,0);;\nis_beat = if(((bb) > (bc/count)),1*bimp,if(((bt) > (tc/count)),1*timp,if(((mt) > (mc/count)),1*mimp,0)));;\nis_beat = if(((reha) > (0)),0,is_beat);;\nreha = if(is_beat,fps*.25,if(((reha) < (1)),0,reha-1));;\nq1 = is_beat;;\nq2 = .25*time+.05*(bc+tc);",
+        "perVertex": "boxx = (x>.025)*(x<.075)+(x>.125)*(x<.175)+(x>.225)*(x<.275)+(x>0.325)*(x<.375)+(x>0.425)*(x<.475)+(x>.525)*(x<.575)+(x>.625)*(x<.675)+(x>.725)*(x<.775)+(x>.825)*(x<.875)+(x>.925)*(x<.975);;\nboxy = (y>.025)*(y<.075)+(y>.125)*(y<.175)+(y>.225)*(y<.275)+(y>0.325)*(y<.375)+(y>0.425)*(y<.475)+(y>.525)*(y<.575)+(y>.625)*(y<.675)+(y>.725)*(y<.775)+(y>.825)*(y<.875)+(y>.925)*(y<.975);;\nboxa = boxx*boxy;;\nboxb = (1-boxx)*(1-boxy);;\nboxc = (1-boxx)*boxy;;\nboxd = boxx*(1-boxy);;\nsx = 1+.02*boxd;;\nsy = 1+.02*boxc;;\nzoom = zoom+.1*boxa+.02*boxb;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.25,
+      "alpha": 0.25,
+      "orient": 0
+    }
+  ]
+}

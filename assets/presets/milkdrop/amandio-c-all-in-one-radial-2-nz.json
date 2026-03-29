@@ -1,0 +1,32 @@
+{
+  "name": "amandio c - all in one radial 2 nz+",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.86;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq11=.4+sin(atime*.006        )*.4;;\nq12=.4+cos(atime*.00613828348)*.4;;\nq13=.4+sin(atime*.00598593455)*.4;;\nmonitor=q13;;\nq4=sin(atime*.03);;\nq5=cos(atime*.030383824);;\nq6=tan(atime*.029384834);;\nwave_a=0;            warp=0;        q6=aspecty;;\nt=t+.01/fps;         c=bnot(frame%2);;\ns1=10+2*sin(t);      s2=50*sin(3*t);;\ni=0;    x=0;     y=0;    p1=0;    p2=0;   p3=0;;\nloop(1024*c*4,;\np1 = s1*sin(i*s2);;\np2 = s1*cos(i*s2);;\np3=p3+p2-p1;;\nx=x+sin(p3);         y=y+cos(p3);;\ngmegabuf(2*i)=x;      gmegabuf(2*i+1)=y;;\ni=i+1;);;\n///////////;\nzoom=((time-t0) > (.1));;\nspeed = 30; //// tweak;\nt2=t2+1/fps;;\ndecay=1-t1;;\nt1=t1+2*(((.1*t2*speed)%20) == (0))/fps;;\nt1=t1*((0.2) > ((.1*t2*speed))%20);;\nmonitor=s2;;\nq2=.0008;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

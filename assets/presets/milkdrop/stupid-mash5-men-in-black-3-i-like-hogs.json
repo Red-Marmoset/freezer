@@ -1,0 +1,16 @@
+{
+  "name": "stupid mash5 - men in black 3 'i like hogs'",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99816;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1.00183;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//decay=.1+abs(sin(time*.3)*.8);;\nzoom=1;;\ndb = .75 * db + .25 * bass_att;;\nbb = bb + .1 * db;;\ndt = .75 * dt + .25 * treb_att;;\ntt = tt + .1 * dt;;\ndm = .75 * dm + .25 * mid_att;;\nmm = mm + .1 * dm;;\nq2 = sin(.225*bb+time-.25*tt);;\nq3 = cos(.25*bb+time-.235*tt);;\nq1 = .2+.9*sin(.25*mm+time-.125*tt-.125*bb);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

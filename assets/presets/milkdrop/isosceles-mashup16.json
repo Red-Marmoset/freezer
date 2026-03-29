@@ -1,0 +1,23 @@
+{
+  "name": "Isosceles mashup16",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_m = pow (0.8, 30/fps); dec_s = pow (0.94, 30/fps);;\nbeat = bass+mid+treb;;\navg = avg*dec_s + beat*(1-dec_s);;\nis_beat = ((beat) > (peak*8+1*avg)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_m;;\nindex = (index + is_beat) %16;;\nindex2 = (index2 + is_beat*bnot(index))%8;;\nq20 = avg;;\nq22 = max(0,peak-.0)+.01;;\nq24 = is_beat;;\nq27 = index +1;;\nq28 = index2;;\np1 = dec_m * p1 + (1-dec_m) * index;;\np2 = dec_m * p2 + (1-dec_m) * p1;;\np1 = index;;\nrot1 = rot1 + sin(p1*2)/fps * avg/5;;\nrot2 = rot2 + cos(p1*2/3)/fps*avg/5;;\nq1 = rot1;;\nq2 = rot2;;\npulse = pulse + (bass>.8)/fps*(bass-.8)*16;;\nq8 = int(pulse*16)%16;;\nq9  = cos(q8)*3;;\nq10 = sin(q8)*3;;\ntrig = is_beat * bnot(index%6);;\nspeed = .35 *pos_z*2 ;;\ndir  = if (trig, dir + int(rand(3)-1.5)*3.1416/2, dir);;\ndir_ = dec_m*dir_ + (1-dec_m)*dir;;\ndir__ = dec_m*dir__ + (1-dec_m)*dir_;;\nxpos = xpos + cos(dir_)/fps*speed +q24;;\nypos = ypos + sin(dir_)/fps*speed +q24;;\nq5 = xpos;;\nq6 = ypos;;\nproxy = max(min(sin((q28%2)*q27+(xpos+ypos)),.5),-.5);;\nxang =0*cos(dir); yang = 0*sin(dir);;\nzang = dir__; ;;\npos_z = .5 + proxy/2;;\nq29 = .02/pos_z;;\nox = 0; oy = 0; oz = pos_z;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;oz = mz;;\nq11=ox; q12 = oy; q13 = oz; //Position;\n//Vektor x nach rechts;\nox = 1; oy = 0; oz = 0;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;oz = mz;;\nq14=ox; q15 = oy; q16 = oz;;\n//Vektor z nach hinten;\nox = 0; oy = 0; oz = 1;;;\nmx = ox*cos(zang) - oy*sin(zang);;\nmy = ox*sin(zang) + oy*cos(zang);;\nox = mx;oy = my;;\nmx = ox*cos(yang) + oz*sin(yang);;\nmz = - ox*sin(yang) + oz*cos(yang);;\nox = mx;oz = mz;;\nmy = oy*cos(xang) - oz*sin(xang);;\nmz = oy*sin(xang) + oz*cos(xang);;\noy = my;;\noz = mz;;\nq17=ox; q18 = oy; q19 = oz;",
+        "perVertex": "dx = .02;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

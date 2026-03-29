@@ -1,0 +1,23 @@
+{
+  "name": "fiShbRaiN - molecule mind",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 0.999514;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5",
+        "perVertex": "//rot=rot+(rad*sin(time*.25));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.554078,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

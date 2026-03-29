@@ -1,0 +1,23 @@
+{
+  "name": "An Digital FX Edit 2 martin - girlie affairs Internal LightFX AdamFX g roam3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.6, 30/fps);;\ndec_slow = pow (0.9, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.2+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %4;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nindex3 = (index3 + is_beat*bnot(index)*bnot(index2))%3;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = (bass_att + mid_att + treb_att)/3+1;;\nmovez = movez + .1*(1+.3*q26)*30/fps;;\nq30 = movez;;\n//k1 =  is_beat*bnot(index)*bnot(index2);;\nk1 =  is_beat*((index) == (0));;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_slow * p2+ (1-dec_slow)*p1;;\np3 = dec_slow * p3+ (1-dec_slow)*p2;;\nrott = p3*3.1416/4;;\nq27 = 8-index;;\nq28 = index2+1;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\nmox = mox + .03*30/fps;;\nmoy = moy + .04*30/fps;;\nq5 = mox;;\nq6 = moy;;\nmv_l = q24/2+.1;;\ndx = .0*q1;",
+        "perVertex": "dx = .002*q28;;\nrot = .01*q2;;\nzoom = 1.03;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.952,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

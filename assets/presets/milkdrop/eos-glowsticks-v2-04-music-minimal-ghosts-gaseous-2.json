@@ -1,0 +1,16 @@
+{
+  "name": "EoS - glowsticks v2 04 music minimal - ghosts gaseous 2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.033004;\ncx = 0.5;\ncy = 0.5;\ndecay=0.98;;\nzoom=1.008;;\nvol=(bass_att+mid_att+treb_att)*0.25;;\nvol=vol*vol;;\nmtime=mtime+vol*0.1;;\nq1=mtime*0.1;;\n//q1=3;;\nq2 = time*1.5;;\nwarp=0",
+        "perVertex": "dx = sin( y * 6.283 * 2 + time );;\ndx = if( ((x) > (0.5)) , -dx, dx );;\nx_mirror = abs(x-0.5);;\ndy = sin( x_mirror * 6.283 * 3 + time );;\nholes = max( abs(dx), abs(dy) );;\ndx = dx * 0.001;;\ndy = dy * 0.001 - 0.0005;;\n//dx =0;;\n//dy =0;;\ndecay_r = 0.94 + holes * 0.05;;\ndecay_g = decay_r;;\ndecay_b = decay_r;;\ntm = time;;\nholesA = max( sin(x*6.283*3+tm) , sin(y*6.283*2+tm) ) * 0.5 + 0.5;;\ntm = time*1.3;;\nholesB = max( sin(x*6.283*3+tm) , sin(y*6.283*2+tm) ) * 0.5 + 0.5;;\ntm = time*0.77;;\nholesC = max( sin(x*6.283*3+tm) , sin(y*6.283*2+tm) ) * 0.5 + 0.5;;\ndecay_r = 0.93 + holesA * 0.06;;\ndecay_g = 0.93 + holesB * 0.06;;\ndecay_b = 0.93 + holesC * 0.06;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

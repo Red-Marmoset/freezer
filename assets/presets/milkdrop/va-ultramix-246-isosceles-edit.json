@@ -1,0 +1,16 @@
+{
+  "name": "va ultramix - 246 --- Isosceles edit",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 13.29089;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\n//vol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=1;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;",
+        "perVertex": "radd=rad-(time*0.0000000010);;\nq1 = 0.4*rad;;\ncy=0.5-q5;;\nrot=sin(q2*.5*q4+rad*10*sin(q2*.1))*.01;;\nit = 0.3*sin(time*0.2);;\nradm = rad*0.5;;\nrot = 0.02*sin((radm+it)*30)/((rad+0.1)*((sin(time)*0.4+0.5)*20));;\nmod = sin(ang*5);;\nmod = mod*mod;;\nzoom = .99 - abs(0.01*mod);;\nmx = (x-.5)*1.33;;\ncr1=90*.01;;\ncr2=0*.01;;\nsw = ((rad) > (.4)) + ((rad) < (.04)) + ((rad) > (.3))*((rad) < (.4))*(rad-.3)*5;;\nsw = ((rad) > (.3))*(rad-.3)*5;;\nzoom = 1 - .1*sw;;\n//rot = 0 + .2*sw;;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\nzoom = zoom + 0.01;;\n//zoom = zoom + (0.05 + 0.04*sin(time))*(0.2*sin(ang*time));;\nrot = rot + 0.01*(0.5*cos(ang*5*bass*time));;\ndx = dx + 0.1*((rad) > (0.25))*dx_r;;\ndy = dy + 0.1*((rad) > (0.25))*dy_r;;\nzoom = if(q3,0.3+0.1*q5+ 0.5*q4,zoom);;\n//zoom=1+sin(q2+rad*q6*3)*.02;;\nrot=sin(q2*.5*q4+rad*10*sin(q2*.1))*.01;;\nsx=-1.2;;\nrot=11;;\nzoom=zoom*5+0.04*sin(ang*int(q1)+tim/8);;\nsy = sy * rad;;\ndy = a * x;;\ndy=if(((dy) < (-1)), -1, dy);;\ndy=if(((dy) > (1.0)), 1.0, dy);;\nsy=if(((sy) < (0.01)), 0.01, sy);;\nsy=if(((sy) > (100.0)), 100.0, sy);;\ndx=dx-0.05*sin(time*1.35+(x*2-1)*18);;\ndy=dy-0.05*sin(time*1.79+(y*2-1)*9);;\nkdx=dx;;\nkdy=dy;;\nksx=sx;;\nksy=sy;;\nkrt=rot;;\nkzm=zoom;;\nkcx=cx;;\nkcy=cy;;\nkwp=warp;;\ndx=0;;\ndy=0;;\nsx=1;;\nsy=1;;\nrot=0;;\nzoom=1;;\ncx=.5;;\ncy=.5;;\nwarp=0;;\nzr=1-(1-abs(-2*(x+y)/2+1)+(1-abs(-2*(1-(x+(1-y))/2)+1)))/2;;\nzoom=pow(zr*1.8,2);//1-(x+(1-y))/2;;\ncr1=30*.01;;\ncr2=0*.01;;\ncrx=cr2-cr1;;\nci=rad;;\ncb=.25  ;;\ncrs=2;;\ncr=pow(sin(ci*6.3-(cb*6.3))/2+.5,crs)*crx+cr1;;\ncqr=if( ((ci) > (.25+cb)),cr,crx+cr1);crr=if( ((ci) < (1.5)),cqr,crx+cr1);;\njx1=crr;;\nkx1=1-crr;;\njdx=dx;;\njdy=dy;;\njsx=sx;;\njsy=sy;;\njrt=rot;;\njzm=zoom;;\njcx=cx;;\njcy=cy;;\njwp=warp;;\ndx=(jx1*jdx+kx1*kdx);;\ndy=(jx1*jdy+kx1*kdy);;\nsx=(jx1*jsx+kx1*ksx);;\nsy=(jx1*jsy+kx1*ksy);;\nrot=(jx1*jrt+kx1*krt);;\nzoom=(jx1*jzm+kx1*kzm);;\ncx=(jx1*jcx+kx1*kcx);;\ncy=(jx1*jcy+kx1*kcy);;\nwarp=(jx1*jwp+kx1*kwp);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "suksma - 3125 legislative pig's orbitael minimass - izOwnLeeOk",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.715",
+        "perFrame": "zoom = 1;\nrot = 0.004;\ndx = -0.012;\ndy = -0.004;\nsx = 1.8167;\nsy = 1.79871;\nwarp = 0.80322;\ncx = 0.5;\ncy = 0.5;\n// Black Rebel Motorcycle Club - Lien On Your Dreams;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.3)*0.91+1.3);;\nvol = 0.1*(vol*9 + (bass_att+mid_att+treb_att)*0.333333);;\nq11 = vol;;\nmtime = mtime+vol*0.1;;\nq10 = mtime*0.1;;\ntrel = trel + (1+vol/2)/fps;;\nq1 = trel*0.44;;\nq2 = trel*0.32;;\nq3 = trel*0.285;;\nq7 = trele*0.1;;\nq4 = 0.2*sin(trel*0.4);;\nq5 = 0.2*cos(trel*0.634);;\nq6 = -0.2*sin(trel*0.58);;\nbeat = ((bass_thresh) == (2))*1 + (1-((bass_thresh) == (2)))*beat*0.95;;\nq8 = beat;;\nmonitor=beat;;\n//suks;\npigtemp=int(pow(4,bass+treb+mid));;\nq12=if(((pigtemp) > (1024)),1024,pigtemp);;\nmonitor=q12;;\nq31=pixelsx;;\nq32=pixelsy;;\n//zyl;\nwave_r = wave_r + 0.45*(0.5*sin(time*0.701)+ 0.3*cos(time*0.438));;\nwave_b = wave_b - 0.4*(0.5*sin(time*4.782)+0.5*cos(time*0.722));;\nwave_g = wave_g + 0.4*sin(time*1.931);;\nvol=0.15*(bass_att+bass+mid+mid_att);;\nbass_eff = max(max(bass,bass_att)-1,0);;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.3)*0.96+1.3);;\nq21=bass_eff+sin(time*mytime*4);;\nq22=bas_eff+cos(time*mytime*2);;\nq13=bass_eff+abs(rad+.5)+(q2*q5);;\nq14=bass_thresh+abs(.9*5)*(dx_r*dy_r)*(dx*dy);;\nq15=bass_tresh+cos(.2*2)*(dx_r*dy_r);;\nq16=bass_thresh+0.1*(atan(abs(-rad+.5)))*q1;;\nq17=if(((bass+bass_att) > (2)),-1.5+bass+bass_att,0);;\nq18=((rad- 0.1*x) < (0.18));;\nq19=if(((rad) > (.5)),.9+rad,.5+bass*3%1000*.1);;\n//dx=q8;;\nzoom=q9+0.4;;\nq30=bass+treb+mid;",
+        "perVertex": "rot=zoom;;\nti = time*.3;;\nmx = x - .5 + .25*(sin(ti*1.1278) + sin(ti*.7458));;\nmy = y - .5 + .25*(sin(ti*.9454) + sin(ti*1.2378));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q21)*q14;;\ndx = zm*(x-mx);;\ndy = zm*(y-my);;\nmx = x - .5 + .25*(sin(ti*1.3488) + sin(ti*.8552));;\nmy = y - .5 + .25*(sin(ti*.7366) + sin(ti*1.1447));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q22)*q15;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;;\nmx = x - .5 + .25*(sin(ti*1.3544) + sin(ti*.8926));;\nmy = y - .5 + .25*(sin(ti*.9021) + sin(ti*1.2468));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q13)*q16;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 2,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

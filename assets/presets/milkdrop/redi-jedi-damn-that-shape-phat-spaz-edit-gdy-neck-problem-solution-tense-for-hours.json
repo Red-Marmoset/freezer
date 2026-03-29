@@ -1,0 +1,32 @@
+{
+  "name": "Redi Jedi - Damn that shape_Phat_spaz_edit gdy neck problem solution (tense for hours)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nff=ff+2.7;;\nbb=bb+bass+mid+treb;;\nbt=bb/ff;;\nbeat=((bass) > (bt));;\nbeathard=if(beat,bass-bt,0);;\nmonitor=t3;;\ndecay=1;;\nq1=beat;;\nq2=beathard;;\nwrap=1;;\ncx=1-q3;;\ncy=1-q4;;\nba=bass-.9;;\ntr=treb-.9;;\nmi=mid-.9;;\nxx=xx+ba*.01-tr*.001;;\nyy=yy+tr*.01-ba*.001;;\nxx=if(((1) > (xx)),if(((0) < (xx)),xx,1),0);;\nyy=if(((1) > (yy)),if(((0) < (yy)),yy,1),0);;\nq3=xx;;\nq4=yy;",
+        "perVertex": "dx=if(((x) < (q3)),abs(y)*.1,0)*q1;;\ndy=if(((x) < (q3)),abs(y)*.1*(sin(bass*3.14+treb*3.14)),0)*(1-q1);;\nrot=if(((x) > (q3)),-abs(y)*.1+x*q2*sin(bass),rot);;\nsx=-.95;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

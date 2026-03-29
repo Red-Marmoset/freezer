@@ -1,0 +1,27 @@
+{
+  "name": "suksma - imbuing terror joy - naked eye blue",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.10408;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nzoom = 1;;\ntic = min(time-tin,.1);;\ntin = time;;\nvol = (bass_att + treb_att + mid_att)*.333333;;\nra = 1/tic*.25;;\ntreb_avg = tic*(treb_avg*(1/tic - ra) + ra*treb);;\nmid_avg = tic*(mid_avg*(1/tic - ra) + ra*mid);;\nbass_avg = tic*(bass_avg*(1/tic - ra) + ra*bass);;\nvav = tic*(vav*(1/tic - ra) + ra*(bass+treb+mid)*.33333);;\ntt = tt + tic*treb;;\nmt = mt + tic*mid;;\nbt = bt + tic*bass;;\nvt = vt + tic*vav;;\nsp = abs(vav - slide)*.5;;\nslide = if(((slide) > (vav)),slide-tic*sp,slide+tic*sp) + ((slide) == (0))*vav*.2;;\nq1 = bt - (mt + tt)*.3; // rotation;\nq2 = pow(1 + vav,1) - 1; // zoom strength;\nq3 = .6 + slide*.2; // triangle radius;\nq4 = 1/q3*.64; // triangle tex_zoom;\nq5 = q1 + 4.7124 + .7851; // triangle tex_ang;\nsw = 1-sw;;\nq6 = -sw; // triangle additive value;\nmonitor = slide;",
+        "perVertex": "an = ang + q1 - .7854*.5;;\nzm = .5 + .5*sin(an*4);;\nzm = zm*.1;;\n//dx = zm*(x-.5);;\n//dy = zm*(y-.5);;\nzoom = 1 + zm*q2;;\nmod = -.01*sin((ang + q1)*4);;\nrot = 0 + mod*(1 - pow(rad,2)*3);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.98,
+      "alpha": 0.38,
+      "orient": 3
+    }
+  ]
+}

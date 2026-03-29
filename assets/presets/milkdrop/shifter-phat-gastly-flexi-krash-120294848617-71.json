@@ -1,0 +1,23 @@
+{
+  "name": "Shifter - Phat - Gastly - Flexi - Krash - 120294848617(71)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.970432755",
+        "perFrame": "zoom = 0.989246297602;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01043891632;\ncx = 0.5;\ncy = 0.5;\nvolume = 0.3*(bass+mid+att);;\nbeatrate = max(if(nbeat,if(((time-lastbeat) < (2*((beatrate) == (0))) + (1-((beatrate) == (0)))*(((volume) < (0.01)) + (1-((volume) < (0.01)))*beatrate)),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);;\nlastbeat = nbeat*time + (1-nbeat)*lastbeat + ((lastbeat) == (0))*time;;\ntic = min(time-tin,.1);;\ntin = time;;\nan = an + tic*bass*bass*.5;;\nq1 = sin(an);;\nflip = 2*mode-1;;\nmonitor = flip;;\nq3 = sin(an2);;\nq4 = cos(an2);;\nq5 = sin(an2);;\nq6 = cos(an2);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.00020696874,
+      "alpha": 0.1228655,
+      "orient": 3
+    }
+  ]
+}

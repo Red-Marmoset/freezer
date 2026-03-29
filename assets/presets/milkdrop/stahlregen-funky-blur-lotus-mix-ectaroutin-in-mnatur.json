@@ -1,0 +1,32 @@
+{
+  "name": "Stahlregen - funky Blur (lotus mix) ectaroutin in mnatur",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1.00151;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nle=1+.5+2*sin(bass_att);;\nbpulse=band(((le) > (bth)),((le-bth) > (bblock)));;\nbblock=le-bth;;\nbth=if(((le) > (bth)),le+114/(le+10)-7.407,;\nbth+bth*.07/(bth-12)+((bth) < (2.7))*.1*(2.7-bth));;\nbth=if(((bth) > (6)),6,bth);;\nbres=bpulse*sin(pulse+le*.5) + bnot(bpulse)*bres;;\nle=1+.5+2*sin(treb_att);;\ntpulse=band(((le) > (tth)),((le-tth) > (tblock)));;\ntblock=le-tth;;\ntth=if(((le) > (tth)),le+114/(le+10)-7.407,;\ntth+tth*.07/(tth-12)+((tth) < (2.7))*.1*(2.7-tth));;\ntth=if(((tth) > (6)),6,tth);;\ntres=tpulse*sin(pulse+le*.5) + bnot(tpulse)*tres;;\nle=1+.5+2*sin(mid_att);;\nmpulse=band(((le) > (mth)),((le-mth) > (mblock)));;\nmblock=le-mth;;\nmth=if(((le) > (mth)),le+114/(le+10)-7.407,;\nmth+mth*.07/(mth-12)+((mth) < (2.7))*.1*(2.7-mth));;\nmth=if(((mth) > (6)),6,mth);;\nmres=mpulse*sin(pulse+le*.5) + bnot(mpulse)*mres;;\npulse=if(((abs(pulse)) > (3.14)),-3.14,pulse+(bth+mth+tth)*.003);;\nq1=bres;;\nq2=tres;;\nq3=mres;;\nq4=sin(pulse);;\nmod_state=(((q1) > (0))+((q2) > (0))+((q3) > (0)))*(1+((q4) > (0)));;\nccl=ccl+tpulse+mpulse-bpulse;;\nq5=cos(pulse*(.5+.1*mod_state));;\nq6=sin(pulse*(.5+pow(.25,mod_state)));;\nq7=mod_state;;\nq8=ccl;;\nvol_now =  .7*bass + 0.1 * (bass_att + treb + mid);;\nvol_mean =  if(((frame%50) == (0)),vol_mean - 0.5 * (vol_mean-vol_now),0.1 * (vol_mean * 9 + vol_now));;\nbeat = if(((vol_now) > (vol_mean)),1,0);;\nying = if(((ying) < (1)),1,ying);;\nying = if (beat,ying + bnot(time*100%3),ying);;\nyin = ying%2;;\nslowtime = slowtime + bnot(time*100%47);;\nib_size = 0.02;;\n//ib_g = if(bnot(ying%11),ib_r,ib_b);;\nib_g = if(bnot(ying%11),1,0);;\nib_r = if(bnot(ying%11),ying%3,ob_g);;\nib_b = if(bnot(ying%11),ying%4,1);;\nmv_a = yin;;\nmv_b = sin(slowtime) + abs(sin(slowtime));;\nmv_r = cos(slowtime);;\nmv_g = -.8*sign(sin(slowtime))*abs(sin(slowtime));;\nob_b = cos(ying)  + abs(cos(ying));;\nob_g = abs(sin(ying)) ;;\nob_r = (-1 * cos(ying))  + abs(-1 * cos(ying)) + 0.2 * (cos(sin(ying))+(abs(cos(sin(ying)))+cos(sin(ying))));;\nq3 = if(beat,(10*abs(sin(slowtime)))%3-1,0);;\nib_size=.025+.02*q2;;\nob_size=.03+.02*q3-.002*q7;;\nwave_r=.5+.5*sin(q1*q7+slowtime*2.183);;\nwave_g=.5+.5*sin(q2*3+slowtime*1.211);;\nwave_b=.5+.5*sin(q3+slowtime*1.541);;\ndx = if(yin,.3* sin(0),if(((yin) == (yang)),0,if(((abs(dx)) < (.05)),dx-0.005,dx)));;\ndy = if(yin,.3*cos(3*0),0);;\nyang = bnot(yin);;\nob_a=.8+.2*q2;;\nmonitor = yin;",
+        "perVertex": "snee=bnot(((sin(ang)-x) > (.5))*((q2) > (0))+((y-cos(ang)) > (.5))*((q1) > (0)));;\nsnur=bnot(((x) < (.5))*((q3) > (0))+((y) < (.5))*((q7) < (4)));;\ngrid=sin(sigmoid(sin(y*6.28*q2),sin(x*6.28*q6))*(10+q7));;\nrot=bnot(((x) > (.5))+((y*q8)%q7));\n*cos(rad+3.14*if(((grid) > (0)),snur,bnot(snur))*(.5+.5*sin(rad*3.14*q1)))*q4;;\nzoom=zoom+.03*sin(rad*3.14*q2+q5)*sign(snee);;\nrot=if(rot,rot*sign(snur),.2*q6);;\ncx=if(((x) < (.5))*((y) < (.5)),.5+.2*q1,.5);;\ncy=if(((x) < (.5))*((y) < (.5)),.5+.2*q3,.5);;\nsx=sx-if(((q1) > (2)),bnot(grid)*q3*.2,.1*q2*bnot(q8%5));;\nsy=sy-if(((q1) > (3)),bnot(grid)*q2*.2,.1*q3*bnot(q8%2));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

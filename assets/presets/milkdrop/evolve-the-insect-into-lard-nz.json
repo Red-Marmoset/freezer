@@ -1,0 +1,16 @@
+{
+  "name": "evolve the insect into lard nz",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.995",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nred_value = if(((bass) > (1.15)),3*(1-bass)+abs(sin(time/3)/10),if(((treb) > (1.0)),0, sin(time/2.5)/10+0.65));;\nblue_value = if(((bass) > (1.15)),0.5+abs(sin(time/3)/10),if(((treb) > (1.0)),0.7, 0.3-treb-sin(time/2.5)/10));;\ngreen_value = if(((bass) > (1.15)),1-abs(sin(time/3)/10),if(((treb) > (1.0)),0.6, sin(time/2.5)/10+0.3));;\nwave_r = red_value;;\nwave_g = green_value;;\nwave_b = blue_value;;\nbass_effect = max(0,max(bass_att,bass)-1);;\ntreb_effect = max(0,max(treb_att,treb)-1);;\nwave_mystery = 0.015 + 0.005*sin(mid*10)+0.2*bass_effect - 0.15*treb_effect;",
+        "perVertex": "dy = if(((abs(x-0.5)) < (0.15)), if(((y) < (0.35)), -0.006, if(((y) < (0.5)), 0.00, if(((y) < (0.65)), -0.00, 0.006))), 0);;\ndy = dy - if(((y) < (0.65)), if(((y) > (0.35)), 0.1*(y-0.5) + 0.01*sin(x*30+sign(x-0.5)*time*4), 0), 0);;\ndx = if(((abs(y-0.5)) < (0.15)), if(((x) < (0.35)), -0.006, if(((x) < (0.5)), 0.00, if(((x) < (0.65)), -0.00, 0.006))), 0);;\ndx = dx - if(((x) < (0.65)), if(((x) > (0.35)), 0.1*(x-0.5) + 0.01*sin(y*30+sign(y-0.5)*time*4), 0), 0);;\nzoom = if(((abs(x-y)) < (0.05)), 1.015, if(((abs(1 - (x+y))) < (0.05)), 1.015, zoom));;\nzoom = zoom- 0.05*log(sqrt(2)-rad);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

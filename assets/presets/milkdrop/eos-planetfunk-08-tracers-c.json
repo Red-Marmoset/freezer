@@ -1,0 +1,23 @@
+{
+  "name": "EoS planetfunk-08 - tracers C",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.125206;\ncx = 0.5;\ncy = 0.5;\ndecay=0.95;;\nzoom=1.003;;\nms=sin(time*0.6)*0.15;;\nmss=mss+ms*0.001;;\nq1=ms;;\nrot=sin(time)*0.01;;\n//echo_zoom=1 + ( sin(time*0.6)*0.5+0.5 )*3;;\ndx=sin(time*0.5)*0.001;;\ndy=cos(time*0.5)*0.001;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.996629,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

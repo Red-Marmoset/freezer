@@ -1,0 +1,39 @@
+{
+  "name": "hexcollie - Falconers eye",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.25*sin(1.4*time) + 0.25*sin(2.25*time);;\nwave_g = wave_g + 0.25*sin(1.7*time) + 0.25*sin(2.11*time);;\nwave_b = wave_b + 0.25*sin(1.84*time) + 0.25*sin(2.3*time);;\nwarp = 0;;\nwave_x = wave_x + 0.3*sin(time);;\nwave_y = wave_y + 0.3*cos(time);",
+        "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nrot = rot + 0.3*(1-rad);;\nwarp = warp + ((x) < (0.51))*((y) < (0.51))*2.5*bass;;\nrot = rot + ((x) > (0.49))*((y) < (0.51))*0.025*cos(0.5*time);;\nzoom = zoom + ((x) < (0.51))*((y) > (0.49))*0.025*sin(0.5*time);;\ndx = dx - ((x) > (0.49))*((y) > (0.49))*0.01*cos(0.5*time);;\ndy = dy - ((x) > (0.49))*((y) > (0.49))*0.01*sin(0.5*time);;\nzoom = zoom - 0.01;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 2
+    }
+  ]
+}

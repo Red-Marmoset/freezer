@@ -1,0 +1,39 @@
+{
+  "name": "Serge circles003b",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.8, 30/fps);;\ndec_slow = pow (0.9, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.5+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %16;;\nindex2 = (index2 + is_beat*bnot(index))%5;;\nmonitor = index2;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = bass + mid + treb;;\nsb = sb*dec_med + q21*(1-dec_med);;\nq29 = sb;;\nk1 =  is_beat*bnot(index)*bnot(index2);;\np1 =  (index2-2);;\np2 = dec_med * p2+ (1-dec_med)*p1;;\np3 = dec_med * p3+ (1-dec_med)*p2;;\nq5 = cos(p3*3.14/2);;\nrott =  rott +  .003*30/fps*p3;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\nmovx = movx + .002*30/fps;;\nq28 = movx;;\nq15 = (1+sin(time/23))*.15;;\nq29 = 4*(.5+sin(time/17));;\nq30 = 5/(1.2+sin(time/50));;\nq31 = sin(time/38)/3;;\nq32 = 2+sin(time/18);;\nwarp = .06;;\nzoom = .998;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "martin - neon space ps3 - what",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.9, 30/fps);;\ndec_slow = pow (0.9, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (.1+avg+peak)) * ((time) > (t0+.2));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %16;;\nindex2 = (index2 + is_beat*bnot(index))%5;;\nmonitor = index2;;\nq1 = is_beat;;\nq3 = bass + mid + treb;;\nq4 = index2;;\nk1 =  is_beat*((index%2) == (0));;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_med * p2+ (1-dec_med)*p1;;\nrott_ = p2 * 3.1416/4;;\nrott =  rott +  .2*30/fps*q2;;\nq2 = sin(rott);;\nran = bnot(q1)*ran + q1 * (int(rand(50))-24);;\ntran = tan(ran);;\ntran = max(tran,-5);;\ntran = min(tran,5);;\ntrel = trel + .02*30/fps*tran+q1;;\nq5 = cos(trel);;\nq6 = sin(trel);;\nq7 = -q6;//it makes no sense, but commenting q7/8 fucks it up majorly;\nq8 = q5;;\nmovex = movex*dec_slow + .1*sin(rott)*30/fps;;\nspd = spd*bnot(q1) + q3*q1;;\nmovez = movez + .005*30/fps*spd;;\nq9 = movez;;\nmv_x = 20;;\nmv_y = 15;;\nmv_a = .1;;\nmv_l = 0;;\nq10 = sin(time/7);;\nq12 = sin(time/11);;\n//flexi mobius spiral col frame;\nt = t + 2.5/fps;;\nt = if(((t) > (2)),t-2,t);;\ndb = db*0.98 + bass_att*0.2; // dampener;\nbb = bb + db*0.1; // accumulation, replace time expressions with this ;);\ndt = dt*0.98 + treb_att*0.2;;\ntt = tt + dt*0.1;;\ndm = dm*0.98 + mid_att*0.2;;\nmm = mm + dm*0.1;;\nw = (bb-tt)*0.1;                   // angle;\nq32 = 0.8 - (db-dt)*0.04;         // size;\nq31 = sin(w);;\nq30 = cos(w);;\nq29 = sin(-w);;\nq28 = cos(-w);;\nq27 = 1/q32;;\nzoom =1;// 0.999;;\nwarp = 0;;\nscale = 8;;\nangle = -time*0.2;;\nscale = 0.8;;\nangle = time*0.2;;\nq31 = 1/asin(1);;\ndecay=.96;;\nvol= vol+(db+dm+dt)*0.002;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nob_r = 0.5 + 0.4*sin(time*1.324);;\nob_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=.97+(treb*0.02);;\nmusictime=vol;;\nq26=sin(musictime*0.2)*99.45;;\nq25=sin(musictime*0.1)*99.45;;\nq24=sin(musictime*0.21)*99.45;;\nq23=sin(musictime*0.21)*99.45;;\nq22=sin(musictime*0.12)*99.45;;\nq21=sin(musictime*0.22)*99.45;;\nq20=sin(musictime*0.13)*99.45;;\nq19=sin(musictime*0.23)*99.45;;\nq18=sin(musictime*0.24)*999.45;;\nq17=sin(musictime*0.14)*999.45;;\ndx=sin(musictime*0.2)*0.02;;\ndy=cos(musictime*0.69)*0.02;",
+        "perVertex": "zoom = 1;;\nwarp = .1;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

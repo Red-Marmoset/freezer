@@ -1,0 +1,16 @@
+{
+  "name": "ORB - World at war2",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.003505;\ncx = 0.5;\ncy = 0.5",
+        "perVertex": "zoom = 1 - 0.02*(sign(rad-(1 + sin(time + 1.04))));;\nrot =  - 0.02*(sign(rad-(1 + sin(time + 2.09))));;\nwarp =  + (sign(rad-(1 + sin(time))));;\nsx = 1  - 0.02*(sign(rad-(1 + sin(time))));"
+      },
+      "gridSize": 48
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "suksma - Chemlock - Spot (Zylot & Aderrasi equations) and martin shaders + christ's eternal damnation - ecumenical shrift",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.975",
+        "perFrame": "zoom = 0.9999;\nrot = 0.16;\ndx = 0.52;\ndy = 0;\nsx = 1.71141;\nsy = 0.79544;\nwarp = 59.23045;\ncx = 1.97;\ncy = 0.71;\n//per frame less reactive volume and different interference with existing q vars, for all unused q vars, put before other q vars are set for cop out mashing;\nvb = vb*0.95 + (1-vb)*pow(bass_att*treb_att*mid_att,2)*0.02;;\nvvb = vvb*0.95 + (1-vvb)*vb*0.01;;\nvm = vm*0.95 + (1-vm)*pow(mid_att,2)*0.02;;\nvvm = vvm*0.95 + (1-vvm)*vm*0.01;;\nvt = vt*0.95 + (1-vt)*pow(treb_att,2)*0.02;;\nvvt = vvt*0.95 + (1-vvt)*vt*0.01;;\nvvb = min(1,max(0,vvb));;\nvvm = min(1,max(0,vvm));;\nvvt = min(1,max(0,vvt));;\nq1 = q1+vvb*2;//0.5 + vb - vvb;;\nq2 = q2+vvm*2;//0.5 + vm - vvm;;\nq3 = q3+vvt*2;//0.5 + vt - vvt;;\nv=2;;\nbb = bb - vvb*v;;\nmm = mm - vvm*v;;\ntt = tt - vvt*v;;\nq4 = -bb;;\nq5 = -mm;;\nq6 = -tt;;\nq4=q4+(q1+q2+q3);;\nq5=q5+(q1+q2+q3);;\nq6=q6+(q1+q2+q3);;\nq7=q7+(q1+q2+q3);;\nq8=q8+(q1+q2+q3);;\nq9=q9+(q1+q2+q3);;\nq10=q10+(q1+q2+q3);;\nq11=q11+(q1+q2+q3);;\nq12=q12+(q1+q2+q3);;\nq13=q13+(q1+q2+q3);;\nq14=q14+(q1+q2+q3);;\nq15=q15+(q1+q2+q3);;\nq16=q16+(q1+q2+q3);;\nq17=q17+(q1+q2+q3);;\nq18=q18+(q1+q2+q3);;\nq19=q19+(q1+q2+q3);;\nq20=q20+(q1+q2+q3);;\nq21=q21+(q1+q2+q3);;\nq22=q22+(q1+q2+q3);;\nq23=q23+(q1+q2+q3);;\nq24=q24+(q1+q2+q3);;\nq25=q25+(q1+q2+q3);;\nq26=q26+(q1+q2+q3);;\nq27=q27+(q1+q2+q3);;\nq28=q28+(q1+q2+q3);;\nq29=q29+(q1+q2+q3);;\nq30=q30+(q1+q2+q3);;\nq31=q31+(q1+q2+q3);;\nq32=q32+(q1+q2+q3);;\nwave_x = wave_x +(0.48*sin(4*bass*treb*mid))*sin(time/bass);;\nwave_r = if((((time*20)%2) > (0)),0,wave_r + 0.5*sin(time));;\nwave_b=if((((time*20)%2) > (0)),1,0);;\nrot = rot + 0.0*sin(time);;\ndecay = + if (((progress) > (0.99)), 0.9, 1);;\ndy = dy - 0.01 + 0.002*sin(0.01*time);;\nob_r = .1 + if(((.2*sin(time*.444)) > (0)),.3*sin(time*.444),0);;\nob_g =.1 + if(((.2*sin(time*.777)) > (0)),.3*sin(time*.777),0);",
+        "perVertex": "warp = warp + if (((y) < (0.5)), if(((rad) < (0.9)), +0.4 + 0.2*sin(0.6*time), 0), +0.1);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    }
+  ]
+}

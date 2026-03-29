@@ -1,0 +1,32 @@
+{
+  "name": "suksma - tech ed lacquer sinus raw",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.925",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_a = 0;;\n//Thanks to Zylot for rainbow generator;\ncounter1 = if(((counter2) == (1)),if(((counter1) == (1)),0,counter1+.2),1);;\ncounter2 = if(((counter1) == (1)),if(((counter2) == (1)),0,counter2+.2),1);;\ncdelay1 = if(((cdelay2) == (1)),1,if(((colorcounter%2) == (1)),if(((counter1) == (1)),2 ,0), if(((counter2) == (1)),2,0)));;\ncdelay2 = if(((cdelay1) == (2)),1,0);;\ncolorcounter = if(((colorcounter) > (7)),0,if(((cdelay1) == (1)),colorcounter+1,colorcounter));;\nib_r = .5*if(((colorcounter) == (1)),1, if(((colorcounter) == (2)),1, if(((colorcounter) == (3)),1, if(((colorcounter) == (4)),sin(counter2+2.1), if(((colorcounter) == (5)),0, if(((colorcounter) == (6)),0,sin(counter1)))))));;\nib_g = .5*if(((colorcounter) == (1)),0, if(((colorcounter) == (2)),sin(counter2*.5), if(((colorcounter) == (3)),sin((counter1+1.75)*.4), if(((colorcounter) == (4)),1, if(((colorcounter) == (5)),1, if(((colorcounter) == (6)),sin(counter2+2),0))))));;\nib_b = if(((colorcounter) == (1)),sin(counter1+2.1), if(((colorcounter) == (2)),0, if(((colorcounter) == (3)),0, if(((colorcounter) == (4)),0, if(((colorcounter) == (5)),sin(counter1), if(((colorcounter) == (6)),1,1))))));;\nob_r=ib_r-0.5;;\nob_g=ib_g-0.5;;\nob_b=ib_b-0.5;;\nq1=ib_r;;\nq2=ib_g;;\nq3=ib_b;;\ndecay =1;;\n//echo_orient=((bass_att+mid_att+treb_att)/3)*3;;\n//solarize=((0.5) > (bass));;\n//darken=((0.4) > (treb));;\nmusictime=musictime+(mid*mid*mid)*0.02*(75/fps);;\nxpos=cos(musictime*0.6)*0.6;;\nypos=sin(musictime*0.4)*0.6;;\nq4=xpos;;\nq5=ypos",
+        "perVertex": "//flip= (-2 * ((sin(time)) > (-0.9)) )+1;;\n//var=(bass+mid+treb)/3;;\n//rot=((ang&rad/rad)/(var*20))/10;;\n//sx=.99-(var*0.01);;\n//cx=var*0.1*(ang/12);;\n//sy=sx;;\n//zoom=-1;;\nsx=-1+(bass*0.2);;\nsy=-1-(treb*0.2);;\ncx=0.5+q4;;\ncy=0.5-q5;;\nrd=sqrt( sqr( (x-0.5-q4)*2) + sqr( (y-0.5+q5)*1.5 ) );;\n//zm=(1.1-(rd/4));;\nzm=1;;\nag=atan( (y-0.5+q5)/(x-0.5-q4) );;\nstar=sin(ag*6+time)*((2-rd)-ag)/5;;\nzm=zm+star/20;;\nsx=zm*rd;;\nsy=zm*rd;;\n//rot=((rd) > (0.7))*(rd-0.7)*sin(time*0.3)"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

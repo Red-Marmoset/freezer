@@ -1,0 +1,32 @@
+{
+  "name": "Stahlregen - Eckshack's Eyeball (Geometry Mix B3 spiral - dynamic)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 0.16874;\nrot = 0;\ndx = 0.46;\ndy = 0;\nsx = 0.7644;\nsy = 0.85282;\nwarp = 1;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\ntrebc = .5*trebc+.5*treb;;\nbassc = .5*bassc+.5*bass;;\ncount = count +.025*(trebc+bassc);;\nq1 = count + .1*time;",
+        "perVertex": "//warp = .75*((rad) > (.2-.05*treb))*((rad) < (.25-.05*treb))*(bass_att-.5);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#ffffff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

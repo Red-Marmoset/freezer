@@ -1,0 +1,23 @@
+{
+  "name": "AllStarz In Milk - Martin + Stahlregen - In tha Mash(12a) - Ft Flexi - AdamFX - Armandio C - Stars In M",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//zoom = 0.99;;\nib_r = sin(time*1.25*4)*0.3+0.7;;\nib_g = sin(time*4)*0.3+0.3;;\nib_b = sin(time/3*4)*0.5+0.5;;\nxx1 = xx1*0.9 + (bass)*0.01;;\nxx2 = xx2*0.9 + (treb)*0.01;;\nyy1 = yy1*0.94 + (treb+bass)*0.0075;;\nx1 = 0.5 + (xx1-xx2)*2;;\ny1 = 0.4 + yy1;;\nx1 = max(0,min(1,x1)); y1 = max(0,min(1,y1));;\nspring = 10;;\ngrav = .5;;\nresist = 1;;\nbounce = 0.75;;\ndt = 0.0002*(60/fps);;\nvx2 = vx2*(1-resist*dt) + dt*((x1+x3-2*x2)*spring);;\nvy2 = vy2*(1-resist*dt) + dt*((y1+y3-2*y2)*spring-grav);;\nvx3 = vx3*(1-resist*dt) + dt*((x2+x4-2*x3)*spring);;\nvy3 = vy3*(1-resist*dt) + dt*((y2+y4-2*y3)*spring-grav);;\nvx4 = vx4*(1-resist*dt) + dt*((x3-x4)*spring);;\nvy4 = vy4*(1-resist*dt) + dt*((y3-y4)*spring-grav);;\nx2 = x2 + vx2;;\ny2 = y2 + vy2;;\nx3 = x3 + vx3;;\ny3 = y3 + vy3;;\nx4 = x4 + vx4;;\ny4 = y4 + vy4;;\nvx2 = if(((x2) > (0)),vx2,abs(vx2)*bounce);;\nvx2 = if(((x2) < (1)),vx2,-abs(vx2)*bounce);;\nvx3 = if(((x3) > (0)),vx3,abs(vx3)*bounce);;\nvx3 = if(((x3) < (1)),vx3,-abs(vx3)*bounce);;\nvx4 = if(((x4) > (0)),vx4,abs(vx4)*bounce);;\nvx4 = if(((x4) < (1)),vx4,-abs(vx4)*bounce);;\nvy2 = if(((y2) > (0)),vy2,abs(vy2)*bounce);;\nvy2 = if(((y2) < (1)),vy2,-abs(vy2)*bounce);;\nvy3 = if(((y3) > (0)),vy3,abs(vy3)*bounce);;\nvy3 = if(((y3) < (1)),vy3,-abs(vy3)*bounce);;\nvy4 = if(((y4) > (0)),vy4,abs(vy4)*bounce);;\nvy4 = if(((y4) < (1)),vy4,-abs(vy4)*bounce);;\nq4 = x4;;\nq8 = y4;;\nq1 = aspectx;;\nq2 = aspecty;;\nzoom = 1;;\nwarp = 0;;\nbb = bb*0.99 + bass*0.02;;\nmm = mm*0.99 + mid*0.02;;\ntt = tt*0.99 + treb*0.02;;\nmx = max(max(bb,mm),tt);;\nmn = min(min(bb,mm),tt);;\nob_r = (bb-mn)/(mx-mn);;\nob_b = (mm-mn)/(mx-mn);;\nob_g = (tt-mn)/(mx-mn);;\nq6 = atan2(vx4,vy4);;\nq5 = sqrt(vx4*vx4 + vy4*vy4);;\na = a*0.95 + q5;;\ns = s*0.9 + a;;\nq3 = s*0.1;;\nmonitor = s;;\nwave_a = 0;;\nq9 = 0.5 + 0.5*sin(time*0.1);",
+        "perVertex": "x = 0.5 + (x-0.5)*q1;;\ny = 0.5 + (y-0.5)*q2;;\nxx = q4;;\nyy = 1-q8;;\ndx = 0; dy = 0;;\nd = sqrt((x-xx)*(x-xx)+(y-yy)*(y-yy));;\nr = 0.11;;\nv = 20;;\nv2 = q5;;\ndx = (v*(sin(y-yy)*(d-r)-(x-xx)*(d-r/2)) + cos(dir)*v2)*(1.00-sigmoid(d-r,100));;\ndy = (-v*(sin(x-xx)*(d-r)+(y-yy)*(d-r/2)) -sin(dir)*v2)*(1.00-sigmoid(d-r,100));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

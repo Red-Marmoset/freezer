@@ -1,0 +1,23 @@
+{
+  "name": "EoS - cubetrace demon_Phat_edit_3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.98;;\nzoom=1.005;;\nmonitor=512/8;;\nwarp=0;;\nvol=pow( (bass+mid+treb)*0.25,2 );;\nmtime=mtime+vol*0.1;;\nq1=mtime*0.15;;\nq2=8; //cubesize",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 0.996629,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

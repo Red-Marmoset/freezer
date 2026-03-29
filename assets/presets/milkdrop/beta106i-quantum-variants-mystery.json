@@ -1,0 +1,32 @@
+{
+  "name": "beta106i - Quantum Variants (Mystery)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.98",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nwave_r = wave_r + 0.25*cos(1.12*time) +;\n0.2*(0.3*cos(1.28*time)+0.317*sin(1.8*time));;\nwave_g = wave_g + 0.25*cos(1.142*time) +;\n0.2*(0.3*cos(1.2*time)+0.32*sin(1.623*time));;\nwave_b = wave_b + 0.25*cos(1.13*time) +;\n0.2*(0.4*cos(0.9*time)+0.328*sin(1.5245*time));;\nwave_mystery = wave_mystery + 0.1*time;;\nwave_y = wave_y + 0.015*sin(0.1*time);;\nwave_x = wave_x + 0.015*cos(0.1*time);;\nwave_r = if(((bass_att) > (0.95)),-wave_g,wave_r);;\nwave_b = if(((treb_att) > (0.95)),-wave_r,wave_b);;\nwave_g = if(((mid_att) > (0.95)),-wave_b, wave_g);;\nwave_mystery = if(((bass_att) > (0.95)),wave_mystery+0.45*time,wave_mystery);;\nwave_mystery = if(((treb_att) > (0.95)),wave_mystery+0.32*time,wave_mystery);;\nwave_mysteyr = if(((mid_att) > (0.95)),wave_mystery-0.4*time,wave_mystery);",
+        "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nzoom = zoom + 0.05*pow(1.1*bass_att,1.2*treb_att);;\nrot = rot + 0.2*dx_r*cos(rad*0.5*time);;\nrot = rot + 0.2*dy_r*sin(rad*0.5*time);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
+    }
+  ]
+}

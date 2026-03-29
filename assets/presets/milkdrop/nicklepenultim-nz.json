@@ -1,0 +1,23 @@
+{
+  "name": "nicklepenultim nz+",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9896;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq30=if(((chng) > (cthr)),rand(1)*.3,mq30);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q30=mq30;;\nmonitor=mq1;;\nwave_b = int(rand(100))/100;;\nwave_r = int(rand(100))/100;;\nwave_g = int(rand(100))/100;;\nwave_y =wave_y-ypos*q3;;\nwave_x =wave_x-xpos*q3;;\nbass_eff = max(max(bass,bass_att)-1,0);;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.3)*0.96+1.3);;\nvol =bass+treb+mid;;\ndx = 0.005 + q3*( 0.60*sin(0.234*time) + 0.40*sin(0.277*time) );;\ndy = 0.005 + q3*( 0.60*sin(0.234*time) + 0.40*sin(0.277*time) );;\ndx_residual = ((bass_thresh) == (2))*0.016*sin(time*7) + (q2-((bass_thresh) == (2)))*dx_residual;;\ndy_residual = ((bass_thresh) == (2))*0.012*sin(time*9) + (q2-((bass_thresh) == (2)))*dy_residual;;\nrot = q3 + 0.030*( 0.60*sin(0.381*time) + 0.40*sin(0.479*time) );;\nob_size=mytime*q3;;\nib_a=1-mytime+bass;;\nib_r =int(rand(100))/100;;\nib_b =int(rand(100))/100;;\nib_g =int(rand(100))/100;;\nmytime=.5;;\nq1=sin(time*mytime*4);;\nq2=sin(time*mytime*2);;\nq3=abs(rad-.5)*q2;;\nxpos=.5;;\nypos=.5;;\nmonitor =q3;",
+        "perVertex": "zoom=zoom+.05*q3+.05*q3;;\ndx=.01*atan((rad)+q2*sin((xpos*dx)*10+mytime*5));;\ndy=.01*atan((rad)+q2*sin((ypos*dy)*10+mytime*5));;\nit = 0.3*sin(time*0.2);;\nradm = rad*0.5;;\nrot = 0.02*sin((radm+it)*30)/((rad+0.1)*((sin(time)*0.4+0.5)*20));;\nmod = sin(ang*5);;\nmod = mod*mod;;\nzoom = .99 - abs(0.01*mod);;\nmx = (x-.5)*1.33;;\nmy = y - .5;;\nsw = ((rad) > (.4)) + ((rad) < (.04)) + ((rad) > (.3))*((rad) < (.4))*(rad-.3)*5;;\nsw = ((rad) > (.3))*(rad-.3)*5;;\nzoom = 1 - .1*sw;;\nrot = 0 + .2*sw;;\ndx = (1-sw)*sin(ang)*.001*.75;;\ndy = (1-sw)*cos(ang)*.001;;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.015*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.015*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nzoom = zoom + 0.01;;\nzoom = zoom + (0.05 + 0.04*sin(time))*(0.2*sin(ang*time));;\nrot = rot + 0.01*(0.5*cos(ang*5*bass*time));;\ndx = dx + 0.1*((rad) > (0.25))*dx_r;;\ndy = dy + 0.1*((rad) > (0.25))*dy_r;;\nrot=0.1*pow(-ang,3)-1.18*sin(ang);;\nzoom=(1.9+sin(time/2)*0.45)*sin(-rad)+1.3+ sin(rad);;\ndx = dx + 0.09*sin(q8*0.785);;\ndy = dy + 0.09*sin(q8*0.675);;\n//zoom = zoom +q7;;\nthresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.15*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.15*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nzoom = zoom - 0.01;;\nzoom = zoom + dx_r*3*tan(dy_r*(2*(sin(3*bass_att)*0.5-rad*(2-rad)*sin(12*rad))*bass_att*4));;\nzoom = zoom - dy_r*3*tan(dx_r*(2*(sin(4*bass_att)*(0.75-rad)*sin(6*ang))*bass_att*4));"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

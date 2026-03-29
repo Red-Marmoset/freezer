@@ -1,0 +1,16 @@
+{
+  "name": "Stahlregen & Aderrasi + Flexi + Rovastar - Fractal Twist (B2)",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndb = db*0.8 + bass*0.2; //dampening the bass value;\ndt = dt*0.8 + treb*0.2;;\ndm = dm*0.8 + mid*0.2;;\nvol = (db+dt+dm)*.2;;\nvol = vol*vol;;\nvtime = vtime + .03*vol;;\nmonitor = vtime;;\nwave_r = 0.5 + 0.5*sin(1.6*vtime);;\nwave_g = 0.5 + 0.5*sin(4.1*vtime);;\nwave_b = -1 + (1-wave_r + 1-wave_g);;\nwarp = 2;;\nob_r = ob_r+wave_b*((sin(0.1*vtime)) > (0));;\nob_b = ob_b+wave_g*((sin(0.1*vtime)) > (0));;\nob_g = ob_g+wave_r*((sin(0.1*vtime)) > (0));;\nob_r = ob_r+wave_g*((sin(0.1*vtime)) < (0));;\nob_b = ob_b+wave_r*((sin(0.1*vtime)) < (0));;\nob_g = ob_g+wave_b*((sin(0.1*vtime)) < (0));",
+        "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.05*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.056*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\ntg1 = abs(sin(time));;\ntg2 = 22*((tg1) > (0.75)) + 12*((tg1) < (0.25)) + 18*((tg1) > (0.25))*((tg1) < (0.5))+;\n12*((tg1) > (0.5))*((tg1) < (0.75));;\ntg3 = if(((thresh) == (2)),tg2,tg3);;\nsix = sin(x);;\ndx = dx + dx_r*sin(abs(tg3*y))*sin(time);;\ndy = dy + dy_r*sin(abs(tg3*x))*cos(time);;\ndx = dx + dx_r*pow(rad,y*2)*sin(time);;\ndy = dy + dy_r*pow(rad,x*2)*sin(time);;\nzoom = zoom - 0.0825*pow(rad,x*6)*cos(ang*6);;\nrot = rot - 0.0525*(0.75*sin(1.25*time)*pow(rad,x)*sin(1.45*time))*sin(time);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

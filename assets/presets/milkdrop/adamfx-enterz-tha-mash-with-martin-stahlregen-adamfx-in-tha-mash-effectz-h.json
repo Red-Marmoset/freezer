@@ -1,0 +1,23 @@
+{
+  "name": "AdamFX Enterz Tha Mash With Martin + stahlregen - AdamFX - In Tha Mash Effectz H",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 0.9999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.9999;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndec_med = pow (0.7, 30/fps);;\ndec_slow = pow (0.9, 30/fps);;\nbeat = max (max (bass, mid), treb);;\navg = avg*dec_slow + beat*(1-dec_slow);;\nis_beat = ((beat) > (avg+peak)) * ((time) > (t0+.1));;\nt0 = is_beat*time + (1-is_beat)*t0;;\npeak = is_beat * beat + (1-is_beat)*peak*dec_med;;\nindex = (index + is_beat) %16;;\nindex2 = (index2 + is_beat*bnot(index))%4;;\nq20 = avg;;\nq21 = beat;;\nq22 = peak;;\nq23 = index;;\nq24 = is_beat;;\nq26 = bass + mid + treb;;\nq29 = 2 * (index2%2-.5);;\nq25 = min(1,q22/2);;\nk1 =  is_beat*((index%4) == (0));;\np1 =  k1*(p1+1) + (1-k1)*p1;;\np2 = dec_med * p2+ (1-dec_med)*p1;;\nrott = p2 * 3.1416/4;;\nq1 = cos(rott);;\nq2 = sin(rott);;\nq3 = -q2;;\nq4 = q1;;\nq27 = index;;\nq28 = index2;;\nmov = mov*dec_med + (1-dec_med)*((index%8) > (2));;\nmovez = movez + 1/fps*mov;;\nq30 = movez;;\n//**************************;\nq8 = movex; q9 = movey;;\ntrel1 = trel1 + (q1*q22*3)/fps;;\ntrel2 = trel2 + (q2*q22*2)/fps;;\ntrel3 = trel3 + 4*(1-mov)/fps;;\ntrel4 = trel4 + 1 * mov/fps;;\nq11 = .3*sin(trel1);;\nq12 = .1*cos(trel2);;\nq13 = 8 + 6*sin(trel3);;\nq14 = .3*sin(trel2);;\nq15 = .2*cos(trel3) ;;\nq16 = 6 + 3*sin(trel1);;\nq17 = .3*sin(trel4);;\nq18 = .3*cos(trel2);;\nq19 = 3 + sin(trel3);;\ntrot = trel1/2;;\ntrot = index2*6.28/4;;\nq5 = cos(trot);;\nq6 = sin(trot);;\nq7 = -q6;;\nq8 = q5;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1,
+      "alpha": 0.5,
+      "orient": 3
+    }
+  ]
+}

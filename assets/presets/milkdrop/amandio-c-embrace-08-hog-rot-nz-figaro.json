@@ -1,0 +1,32 @@
+{
+  "name": "amandio c - embrace 08 hog rot nz+ figaro",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99815;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 0.99817;\nsy = 0.9999;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=.1;;\nwave_a=0;;\nzoom=1;;\nwarp=0;;\nq5=aspectx;;\nq6=aspecty;;\nbt=bt+bass_att/fps;;\nq1=bt;;\nwave_a = 0;;\nzoom = 1;;\ndecay = 1;;\nwarp = 0;;\n//decay = 0.1;;\ntic = min(time-tin,.1);;\ntin = time;;\nti = ti + tic*24;;\nq1 = ((ti) > (1));;\nti = ti*((ti) < (1));;\nt2 = t2 + tic*bass*bass;;\nt2 = t2*((t2) < (.01));;\nq5 = ((t2) == (0));;\nq5 = 1-tic*(.5 + .1*bass*bass);;\n//t2 = 1-t2;;\n//q5 = t2;;\nvt = vt + bass*mid*treb*tic*.2;;\nbt = bt + bass*tic*.4;;\nmt = mt + mid*tic*.4;;\ntt = tt + treb*tic*.4;;\nq2=bt;;\nq3=mt;;\nq4=tt;;\nq10 = vt;;\nq11 = .5 + .25*sin(bt*1.12);;\nq12 = .5 + .25*sin(bt*0.98);;\nmonitor = ((bass*mid*treb) > (int(rand(1001)))*.001*2);;\nq20=aspecty;;\nmonitor=q20;;\nchng=sin(time*.5);;\ncthr=.9999;;\nmq21=if(((chng) > (cthr)),rand(3),mq21);;\nmq22=if(((chng) > (cthr)),rand(3),mq22);;\nmq23=if(((chng) > (cthr)),rand(3),mq23);;\nmq24=if(((chng) > (cthr)),rand(2),mq24);;\nmq25=if(((chng) > (cthr)),rand(2),mq25);;\nmq26=if(((chng) > (cthr)),rand(2),mq26);;\nmq27=if(((chng) > (cthr)),rand(1),mq27);;\nmq28=if(((chng) > (cthr)),rand(1),mq28);;\nmq29=if(((chng) > (cthr)),rand(1)*.3,mq29);;\nmq31=if(((chng) > (cthr)),rand(1)*.3,mq31);;\nmonitor=chng;;\nq21=mq21;q22=mq22;q23=mq23;q24=mq24;q25=mq25;q26=mq26;;\nq27=mq27;q28=mq28;q29=mq29;q31=mq31;;\nmonitor=mq1;;\nvol=bass+treb+mid;;\natime=atime+vol;;\nq1=.4+sin(atime*.006        )*.4;;\nq2=.4+cos(atime*.00613828348)*.4;;\nq3=.4+sin(atime*.00598593455)*.4;;\nmonitor=q3;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#4040ff"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "r=0.3+v*0.15; a=i*$PI*2; x=cos(a)*r; y=sin(a)*r"
+      }
+    }
+  ]
+}

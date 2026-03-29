@@ -1,0 +1,16 @@
+{
+  "name": "va ultramix2 - 447_1",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.94",
+        "perFrame": "zoom = 13.290894;\nrot = 0;\ndx = -0.28;\ndy = -0.32;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\n//vol= (bass+mid+treb)*0.55;;\nvol=vol;;\nmv_r = 0.5 + 0.4*sin(time*1.324);;\nmv_g = 0.5 + 0.4*cos(time*1.371);;\nzoom=1;;\nmusictime=musictime+vol;;\nq4=sin(musictime*0.02)*0.3;;\nq5=sin(musictime*0.01)*0.3;;\ndx=sin(musictime*0.1)*0.01;;\ndy=cos(musictime*0.069)*0.01;;\nmonitor=rot;",
+        "perVertex": "cc=y*y*y*y*y*y*y*y*y*y*y*y*sin(x*48+time/5)/5 +1;;\nzoom=cc-0.037;;\ndy=-1.0012;;\nrk=sin(x*3+y*22+Time/2.9)*0.7+.87;;\nrot=xs/2+rk/5;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

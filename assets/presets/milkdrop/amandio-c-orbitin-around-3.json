@@ -1,0 +1,16 @@
+{
+  "name": "amandio c - Orbitin' around 3",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.7",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp=0;;\nwave_a=0;;\nzoom=1;;\ndecay=.65;;\n//// flexi's beat counter;\nbt1 = bt1*0.95 + sqr(bass)*30/fps;;\nmt1 = mt1*0.95 + sqr(mid)*30/fps;;\ntt1 = tt1*0.95 + sqr(treb)*30/fps;;\nbt2 = bt2 + bt1*0.001;;\nmt2 = mt2 + mt1*0.001;;\ntt2 = tt2 + tt1*0.001;;\nq1 =.2*bt2;;\nq2 =.2*mt2;;\nq3 =.2*tt2;;\nq4=aspectx;;\nq5=aspecty;",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}

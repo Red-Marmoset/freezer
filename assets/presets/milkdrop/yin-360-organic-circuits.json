@@ -1,0 +1,16 @@
+{
+  "name": "yin - 360 - Organic circuits",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.898999",
+        "perFrame": "zoom = 0.999999;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n// -------------------------------- beat detection code ----------------------------------;\nsure=if(((sure) == (0)),.75,sure);;\ninterval=if(((interval) == (0)),.7*FPS,interval);;\navginterval=if(((avginterval) == (0)),.7*FPS,avginterval);;\nlockinterval=if(((lockinterval) == (0)),.7*FPS,lockinterval );;\nlastbeat=if(((lastbeat) == (0)),frame-FPS,lastbeat);;\ndbass=(bass-pbass)*FPS;;\nbeat=((dbass) < (0))*((pdbass) > (0))*((bass) > (.95*avgbass))*((frame-lastbeat) > (FPS/3));;\nsure=if(beat*((abs(frame-(interval+lastbeat))) < (FPS/5)),;\nmin(.095+sure,1),beat*(sure-.095)+(1-beat)*sure*.9996);;\nsure=max(.5,sure);;\navgbass=.995*avgbass+.005*bass;;\nmaxdbass=max(maxdbass*.999,dbass);;\nmaxdbass=min(200,maxdbass);;\nmaxdbass=max(.02,maxdbass);;\ninterval=if(beat*((frame-lastbeat) < (1.8*interval)), ((frame-lastbeat)*.25+.75*interval),interval);;\nlastbeat=if((1-force)*beat+((lastbeat+interval) == (frame)),frame,lastbeat);;\navginterval=if(beat,.9*avginterval+.1*interval, avginterval);;\nlockinterval=if(beat,.9*lockinterval+.1*avginterval,lockinterval);;\npbass=bass;;\npdbass=dbass;;\nbpm=60*FPS*.3333*( ((2*(1-sure))/interval)+((2*sure)/avginterval)+(1/lockinterval) );;\nphase=min( (frame-lastbeat)/(.333*(2*sure*avginterval+2*(1-sure)*interval+lockinterval)), 1 );;\nbeat=if(((phase) == (0)),1,beat);;\ninterval=min(interval,.7*FPS);;\navginterval=min(avginterval,.7*FPS);;\nlockinterval=min(lockinterval,.7*FPS);;\n// ----------------------------------------------------------------------------------------------;\nwarp=0;;\nzoom=1.01;;\ndecay=1;;\nmytime=mytime + (1/FPS)*.25 + ((bass-mypbass) > (0))*(bass-mypbass)*.01;;\nq1=.3+.49*abs(sin(.1*time+.543));;\nq2=1+cos(2*mytime+.43+sin(10*mytime+1.043));;\nob_size=1;;\ncoef=3*(q1-.1)/.75;;\nob_a=.01+(75/FPS)*coef*.0125;;\nhue=2-q2;;\nh=6*(hue-int(hue));;\nsw1=((h) < (1)); sw2=(1-sw1)*((h) < (2)); sw3=(1-sw1)*(1-sw2)*((h) < (3)); sw4=(1-sw1)*(1-sw2)*(1-sw3)*((h) < (4));;\nsw6=((h) > (5)); sw5=(1-sw1)*(1-sw2)*(1-sw3)*(1-sw4)*(1-sw6);;\nob_r=sw1+sw2*(2-h)+sw5*(h-4)+sw6;;\nob_g=sw1*h+sw2+sw3+sw4*(4-h);;\nob_b=sw3*(h-2)+sw4+sw5+sw6*(6-h);;\nsolarize=((frame%(2*FPS)) < (FPS));;\nmonitor=mytime;",
+        "perVertex": "warp=10*sqr(abs(x-.5))"
+      },
+      "gridSize": 48
+    }
+  ]
+}

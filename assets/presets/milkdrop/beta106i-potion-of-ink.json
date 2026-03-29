@@ -1,0 +1,16 @@
+{
+  "name": "beta106i - Potion of Ink",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0.00001;\ndy = 0.00001;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwave_r = wave_r + 0.35*sin(1.14*time) + 0.16*sin(1.5*time);;\nwave_g = wave_g + 0.36*sin(1.27*time) + 0.15*sin(1.11*time);;\nwave_b = wave_b + 0.37*sin(1.284*time) + 0.15*sin(1.3*time);;\nwarp = 0;;\nob_r = wave_g;;\nob_b = wave_r;;\nob_g = wave_b;;\nib_r = wave_r;;\nib_b = wave_g;;\nib_g = wave_r;;\nib_size = ib_size + 0.01*bass_att;",
+        "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.15*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.165*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nzoom = zoom - 0.06;;\ndx = dx + 0.025*sin(abs(24*y))*sin(time);;\ndy = dy + 0.025*sin(abs(24*x))*cos(time);;\nsx = sx - 0.025*sin(cos(24*rad))*cos(time);;\nsy = sy - 0.025*sin(cos(24*rad))*sin(time);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

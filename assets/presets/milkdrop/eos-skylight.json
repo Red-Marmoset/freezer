@@ -1,0 +1,32 @@
+{
+  "name": "EoS - skylight",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.96",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=0.99;;\nzoom=1.000;;\nspeed=0.80;;\nspeedinv=1-speed;;\nq1=(qa*speed + bass*speedinv);;\nq2=(qb*speed + mid *speedinv);;\nq3=(qc*speed + treb*speedinv);;\nqa=q1;;\nqb=q2;;\nqc=q3;;\nflux=sin(time/2)*0.5+0.5;;\nq4=flux",
+        "perVertex": "flux=q4;;\nzma=pow(1.1,rad)*0.01;;\nzmb=1-zma;;\nzmc=(zma*flux) + (zmb*(1-flux));;\nzoom=1+zmc;;\nrta=0.0;;\nrtb=cos(ang*4 + time)*0.1;;\nrtc=(rtb*flux) + (rtab*(1-flux));;\nrot=rtc;;\nsx=1.01;;\nsy=1.01;;\ncxa=x/y;;\ncxb=y/x;;\ncya=x/y;;\ncyb=y/x;;\ncx=(cxa*flux) + (cxb*(1-flux));;\ncy=(cya*flux) + (cyb*(1-flux));;\nrot=0;;\nzoom=0;;\nsx=0;;\nsx=0"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#80664d"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=-0.5+v*0.8"
+      }
+    }
+  ]
+}

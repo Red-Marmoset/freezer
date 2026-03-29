@@ -1,0 +1,16 @@
+{
+  "name": "ORB - Solar Sail",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.5",
+        "perFrame": "zoom = 1;\nrot = -0.18;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\n//5 frame texture buffer;\nbasstime = basstime  + bass*0.13;;\nq5 = basstime;;\nstate = state + 2.5;;\nstate = if(((state) > (20)),0,state);;\nq1 = (((state) == (5)));;\nq2 = (((state) == (10)));;\nq3 = (((state) == (15)));;\nq4 = (((state) == (20)));;\nmonitor = q1;",
+        "perVertex": "rot = cos(time)*0.1*sin(rad+time*0.9);;\n//decay = 1;;\ndecay_g = x*sin(q5*1.1)*5;;\ndecay_r = y*sin(q5*145)*6;;\ndecay_b = rad*sin(q5)*7;;\nzoom = 1.0;;\nrot = 0.00;;\nwarp = rad;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

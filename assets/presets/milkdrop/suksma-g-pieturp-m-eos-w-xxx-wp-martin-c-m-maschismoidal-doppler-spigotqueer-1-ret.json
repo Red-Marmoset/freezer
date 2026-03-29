@@ -1,0 +1,39 @@
+{
+  "name": "suksma - g-pieturp m-eos w-xxx wp-martin c-m - maschismoidal doppler spigotqueer - 1-ret",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.936",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\ndecay=1;;\nzoom=1.000;;\nwarp=0;;\nmonitor=q1;;\ncy=0.5;",
+        "perVertex": "divisions = (x*4) - int(x*4);;\ndy= sin(divisions * 3.14) * -0.003 - 0.01;"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=v*0.5; y=(i*2-1)*0.8"
+      }
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 1.018,
+      "alpha": 0.5,
+      "orient": 1
+    }
+  ]
+}

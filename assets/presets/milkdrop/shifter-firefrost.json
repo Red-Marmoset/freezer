@@ -1,0 +1,16 @@
+{
+  "name": "shifter - firefrost",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 1.006486;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nwarp = 0;;\nwave_a = 0;;\ntic = min(time-tin,.1);;\ntin = time;;\nvol = (bass_att + treb_att + mid_att)*.333333;;\nra = 1/tic*.25;;\ntreb_avg = tic*(treb_avg*(1/tic - ra) + ra*treb);;\nmid_avg = tic*(mid_avg*(1/tic - ra) + ra*mid);;\nbass_avg = tic*(bass_avg*(1/tic - ra) + ra*bass);;\nvav = tic*(vav*(1/tic - ra) + ra*(bass+treb+mid)*.33333);;\ntt = tt + tic*treb;;\nmt = mt + tic*mid;;\nbt = bt + tic*bass;;\nvt = vt + tic*vav;;\nq1 = vt;;\nq2 = tt;;\nq3 = mt;;\nq4 = bt;;\nq5 = vav;;\nmonitor = q5;",
+        "perVertex": "zoom = 1 + q5*.05*abs(sin(ang*6.2832 + rad*6.2832*4))*2;"
+      },
+      "gridSize": 48
+    }
+  ]
+}

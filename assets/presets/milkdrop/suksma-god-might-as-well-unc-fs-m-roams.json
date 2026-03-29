@@ -1,0 +1,23 @@
+{
+  "name": "suksma - god might as well - unc fs m roams",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 0.9703;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.44;\ncy = 0.5;\nwarp=0;;\nold_bass_flop=bass_flop;;\nold_treb_flop=treb_flop;;\nold_mid_flop=mid_flop;;\nchaos=.9+.1*sin(pulse);;\nentropy=if(bnot(entropy),2,if(((pulse) == (-20)),1+int(rand(3)),entropy));;\nbass_thresh = ((bass_att) > (bass_thresh))*2 + (1-((bass_att) > (bass_thresh)))*((bass_thresh-1.3)*chaos+1.3);;\nbass_flop=abs(bass_flop-((bass_thresh) == (2)));;\ntreb_thresh=((treb_att) > (treb_thresh))*2 + (1-((treb_att) > (treb_thresh)))*((treb_thresh-1.3)*chaos+1.3);;\ntreb_flop=abs(treb_flop-((treb_thresh) == (2)));;\nmid_thresh=((mid_att) > (mid_thresh))*2 + (1-((mid_att) > (mid_thresh)))*((mid_thresh-1.3)*chaos+1.3);;\nmid_flop=abs(mid_flop-((mid_thresh) == (2)));;\nbass_changed=bnot(((old_bass_flop) == (bass_flop)));;\nmid_changed=bnot(((old_mid_flop) == (mid_flop)));;\ntreb_changed=bnot(((old_treb_flop) == (treb_flop)));;\nbass_residual = bass_changed*sin(time*(3-bass_thresh)) + bnot(bass_changed)*bass_residual;;\ntreb_residual = treb_changed*sin(time*(3-treb_thresh)) + bnot(treb_changed)*treb_residual;;\nmid_residual = mid_changed*sin(time*(3-mid_thresh)) + bnot(mid_changed)*mid_residual;;\npulse=if(((abs(pulse)) > (20)),-20,pulse+.04*entropy*bor(bor(bass_changed*bnot(treb_changed),treb_changed*bnot(bass_changed))*bnot(mid_changed),mid_changed)+(mid+bass+treb)*.025);;\nq1=mid_residual;;\nq2=bass_residual;;\nq3=treb_residual;;\nq4=sin(pulse);;\nq5=cos(pulse);;\nwave_r=wave_r+.5*bass_residual;;\nwave_r=wave_g+.5*mid_residual;;\nwave_r=wave_b+.5*treb_residual;;\nwave_mystery=wave_mystery+.23*mid_residual;;\nob_r=if(bass_flop,treb_flop,wave_r);;\nob_b=if(treb_flop,mid_flop,wave_b);;\nob_g=if(mid_flop,bass_flop,wave_g);;\nob_a=.03+.02*wave_r;;\nob_size=.05+.04*wave_b;;\nib_r=if(bass_flop,ob_b,ob_g);;\nib_b=if(treb_flop,ob_g,ob_r);;\nib_g=if(mid_flop,ob_r,ob_b);;\nib_a=.03+.02*wave_g;;\nib_size=.05+.04*ob_g;;\nzoom=zoom+.08*mid_residual;",
+        "perVertex": "rot=if(((q1) > (0)),.4*sin(rad+q3+q4),.4*sin(rad+q2+q5));;\nzoom=zoom-rot/10;;\ncx=cx+.3*sin(x*7*q4);;\ncy=cy+.3*cos(y*5*q5);"
+      },
+      "gridSize": 48
+    },
+    {
+      "type": "Echo",
+      "enabled": true,
+      "zoom": 2,
+      "alpha": 0.29,
+      "orient": 0
+    }
+  ]
+}

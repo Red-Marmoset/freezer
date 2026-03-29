@@ -1,0 +1,16 @@
+{
+  "name": "suksma - for all your banking needs",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 0.9",
+        "perFrame": "zoom = 1;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.001;\ncx = 0.5;\ncy = 0.5;\nvol = vol*.9+(treb+mid+bass)*.033;;\n//dx = (int(rand(10))-5)*.02*vol;;\nrr = rr +(int(rand(10))-5)*.01*vol*sign(rr);;\nrot = rr;;\nwave_g = (dx)*3;;\nwave_r = (dy)*3;;\ncx = .5+sin(time*.211)*.3;;\ncy = .5-sin(time*.205)*.3;;\nwave_x  = cx;;\nwave_y = 1-cy;;\ndecay = -((rr) > (.1))*.1+decay;;\nmonitor = decay;",
+        "perVertex": "ca = atan((y-cy)/(x-cx))+3.14159*((x) < (cx));;\ncr = pow((y-cy)*(y-cy)+(x-cx)*(x-cx), .5);;\nbb = bass*bass*treb*cr*.01;;\ndx =bb*cos(ca);;\ndy = bb*sin(ca);"
+      },
+      "gridSize": 48
+    }
+  ]
+}

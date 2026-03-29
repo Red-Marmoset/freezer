@@ -1,0 +1,16 @@
+{
+  "name": "goody - woven beads",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay = 1",
+        "perFrame": "zoom = 0.99951;\nrot = 0;\ndx = 0;\ndy = 0;\nsx = 1;\nsy = 1;\nwarp = 0.01;\ncx = 0.5;\ncy = 0.5;\nq1=.1*sin(time*.52)+cos(time*.13);;\nq2=.1*sin(time*.61)+cos(time*.23);;\nq3=.06*cos(time*.14)+sin(time*.05);;\nq4=.055*cos(time*.13)+sin(time*.16);",
+        "perVertex": ""
+      },
+      "gridSize": 48
+    }
+  ]
+}
