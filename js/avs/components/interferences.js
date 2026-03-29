@@ -156,6 +156,7 @@ export class Interferences extends AvsComponent {
     ctx.renderer.setRenderTarget(fb.getBackTarget());
     ctx.renderer.render(this._scene, this._camera);
     fb.swap();
+    this._material.uniforms.tSource.value = null;
   }
 
   destroy() {

@@ -94,18 +94,21 @@ class AvsPreset {
       comp.init(avsCtx);
     }
 
-    // Create output quad — displays the framebuffer in the main scene
+    // Create a dedicated blit scene to copy framebuffer to screen.
+    // We DON'T add this to the main scene — we render it separately
+    // after the AVS update to avoid feedback loops between the
+    // framebuffer texture and any render target bindings.
+    this._blitScene = new THREE.Scene();
+    this._blitCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     this._outputMaterial = new THREE.MeshBasicMaterial({
-      map: this.framebuffer.getActiveTexture(),
+      map: null, // set each frame
       depthTest: false,
     });
-    this._outputQuad = new THREE.Mesh(
-      new THREE.PlaneGeometry(width, height),
+    this._blitScene.add(new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2),
       this._outputMaterial
-    );
-    this._outputQuad.position.z = 0;
-    scene.add(this._outputQuad);
-    scene.background = null;
+    ));
+    scene.background = new THREE.Color(0x000000);
   }
 
   update(ctx) {
@@ -125,28 +128,43 @@ class AvsPreset {
       this.framebuffer.clear(0x000000);
     }
 
+    // Get raw WebGL context for texture unbinding
+    const gl = renderer.getContext();
+
     // Render all components onto the active framebuffer
     for (const comp of this.components) {
       if (comp.enabled) {
         comp.render(avsCtx, this.framebuffer);
+        // Unbind ALL texture units and render target to prevent feedback loops.
+        // Three.js caches texture bindings — nulling uniforms isn't enough.
+        renderer.setRenderTarget(null);
+        for (let i = 0; i < 8; i++) {
+          gl.activeTexture(gl.TEXTURE0 + i);
+          gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+        // Tell Three.js its cache is stale
+        renderer.resetState();
       }
     }
 
     // Restore autoClear
     renderer.autoClear = prevAutoClear;
 
-    // Update output quad to show the active framebuffer texture
-    this._outputMaterial.map = this.framebuffer.getActiveTexture();
-    this._outputMaterial.needsUpdate = true;
-
-    // Reset render target to screen
+    // Blit framebuffer to screen using dedicated scene (avoids feedback loop)
+    // Reset ALL GL state first so no framebuffer textures remain bound
     renderer.setRenderTarget(null);
+    for (let i = 0; i < 8; i++) {
+      gl.activeTexture(gl.TEXTURE0 + i);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    renderer.resetState();
+
+    // Now safely bind the framebuffer texture and render to screen
+    this._outputMaterial.map = this.framebuffer.getActiveTexture();
+    renderer.render(this._blitScene, this._blitCamera);
   }
 
   destroy(ctx) {
-    if (this._outputQuad && ctx.scene) {
-      ctx.scene.remove(this._outputQuad);
-    }
     if (this._outputMaterial) this._outputMaterial.dispose();
     for (const comp of this.components) {
       comp.destroy();

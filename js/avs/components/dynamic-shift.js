@@ -105,6 +105,7 @@ export class DynamicShift extends AvsComponent {
       ctx.renderer.setRenderTarget(fb.getBackTarget());
       ctx.renderer.render(this._scene, this._camera);
       fb.swap();
+    this._material.uniforms.tSource.value = null;
     } else {
       // Render shifted result to back, then blend onto active
       ctx.renderer.setRenderTarget(fb.getBackTarget());

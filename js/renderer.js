@@ -70,9 +70,14 @@ export function createRenderer(canvas) {
 
     if (activePreset) {
       activePreset.update(ctx);
+      // AVS presets handle their own screen output via blit
+      // Only render main scene for non-AVS presets (default oscilloscope)
+      if (!activePreset._blitScene) {
+        renderer.render(scene, camera);
+      }
+    } else {
+      renderer.render(scene, camera);
     }
-
-    renderer.render(scene, camera);
   }
 
   function start(engine) {

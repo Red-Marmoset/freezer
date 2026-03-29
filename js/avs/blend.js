@@ -133,6 +133,14 @@ export function blendTexture(renderer, srcTexture, dstTarget, mode, alpha = 0.5)
   const h = dstTarget.height;
   ensureTempTarget(w, h);
 
+  // Unbind ALL textures before setting new ones to avoid feedback loops
+  const gl = renderer.getContext();
+  for (let i = 0; i < 8; i++) {
+    gl.activeTexture(gl.TEXTURE0 + i);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+  }
+  renderer.resetState();
+
   // Set uniforms
   _blendMaterial.uniforms.tSrc.value = srcTexture;
   _blendMaterial.uniforms.tDst.value = dstTarget.texture;
@@ -147,4 +155,10 @@ export function blendTexture(renderer, srcTexture, dstTarget, mode, alpha = 0.5)
   _copyMaterial.map = _tempTarget.texture;
   renderer.setRenderTarget(dstTarget);
   renderer.render(_copyScene, _copyCamera);
+
+  // Null out texture refs to prevent feedback loops in subsequent renders
+  _blendMaterial.uniforms.tSrc.value = null;
+  _blendMaterial.uniforms.tDst.value = null;
+  _copyMaterial.map = null;
+  renderer.setRenderTarget(null);
 }

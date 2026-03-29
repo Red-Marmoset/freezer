@@ -1,7 +1,19 @@
 // AVS FadeOut component — fades framebuffer toward a color (usually black)
 // Creates the classic trailing/feedback effect.
+// Uses ping-pong: reads active, writes to back, swaps.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
+
+const FRAG = `
+  uniform sampler2D tSource;
+  uniform vec3 uFadeColor;
+  uniform float uSpeed;
+  varying vec2 vUv;
+  void main() {
+    vec4 src = texture2D(tSource, vUv);
+    gl_FragColor = vec4(mix(src.rgb, uFadeColor, uSpeed), 1.0);
+  }
+`;
 
 export class FadeOut extends AvsComponent {
   constructor(opts) {
@@ -13,7 +25,6 @@ export class FadeOut extends AvsComponent {
     this._scene = null;
     this._camera = null;
     this._material = null;
-    this._mesh = null;
   }
 
   init(ctx) {
@@ -21,26 +32,28 @@ export class FadeOut extends AvsComponent {
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
     const c = parseColor(this.color);
-    this._material = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(c[0], c[1], c[2]),
-      transparent: true,
-      opacity: this.speed,
+    this._material = new THREE.ShaderMaterial({
+      uniforms: {
+        tSource: { value: null },
+        uFadeColor: { value: new THREE.Vector3(c[0], c[1], c[2]) },
+        uSpeed: { value: this.speed },
+      },
+      vertexShader: `varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+      fragmentShader: FRAG,
       depthTest: false,
     });
-    this._mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(2, 2),
-      this._material
-    );
-    this._scene.add(this._mesh);
+    this._scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this._material));
   }
 
   render(ctx, fb) {
     if (!this.enabled || this.speed <= 0) return;
 
-    // Draw a semi-transparent quad over the active framebuffer
-    // This blends the fade color with the existing content
-    ctx.renderer.setRenderTarget(fb.getActiveTarget());
+    // Read from active, write to back, swap (no feedback loop)
+    this._material.uniforms.tSource.value = fb.getActiveTexture();
+    ctx.renderer.setRenderTarget(fb.getBackTarget());
     ctx.renderer.render(this._scene, this._camera);
+    fb.swap();
+    this._material.uniforms.tSource.value = null;
   }
 
   destroy() {

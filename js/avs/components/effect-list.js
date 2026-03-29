@@ -88,9 +88,16 @@ export class EffectList extends AvsComponent {
     }
 
     // Render children onto target framebuffer
+    const gl = ctx.renderer.getContext();
     for (const child of this.children) {
       if (child.enabled) {
         child.render(ctx, targetFb);
+        ctx.renderer.setRenderTarget(null);
+        for (let i = 0; i < 8; i++) {
+          gl.activeTexture(gl.TEXTURE0 + i);
+          gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+        ctx.renderer.resetState();
       }
     }
 

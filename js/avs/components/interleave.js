@@ -128,6 +128,7 @@ export class Interleave extends AvsComponent {
     ctx.renderer.render(this._scene, this._camera);
     ctx.renderer.autoClear = prev;
     fb.swap();
+    this._material.uniforms.tSource.value = null;
   }
 
   destroy() { if (this._material) this._material.dispose(); }
