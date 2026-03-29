@@ -38,6 +38,11 @@ export class SuperScope extends AvsComponent {
     this._geometry = null;
     this._material = null;
     this._mesh = null;
+
+    // Thick line objects (separate from thin line/dots)
+    this._thickGeo = null;
+    this._thickMat = null;
+    this._thickMesh = null;
   }
 
   init(ctx) {
@@ -46,7 +51,7 @@ export class SuperScope extends AvsComponent {
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     this._camera.position.z = 1;
 
-    // Allocate geometry with max points
+    // Allocate geometry with max points (for dots and thin lines)
     this._geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(MAX_POINTS * 3);
     const colors = new Float32Array(MAX_POINTS * 3);
@@ -54,16 +59,36 @@ export class SuperScope extends AvsComponent {
     this._geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     this._geometry.setDrawRange(0, 0);
 
+    // Thick line geometry: triangle strip approach
+    // Each line of N points produces (N-1) segments, each a quad = 4 verts, 6 indices
+    // With shared edges at joins, we need 2*N verts and 6*(N-1) indices max
+    const maxThickVerts = MAX_POINTS * 2;
+    const maxThickIndices = (MAX_POINTS - 1) * 6;
+    this._thickGeo = new THREE.BufferGeometry();
+    const thickPos = new Float32Array(maxThickVerts * 3);
+    const thickCol = new Float32Array(maxThickVerts * 3);
+    const thickIdx = new Uint32Array(maxThickIndices);
+    this._thickGeo.setAttribute('position', new THREE.BufferAttribute(thickPos, 3));
+    this._thickGeo.setAttribute('color', new THREE.BufferAttribute(thickCol, 3));
+    this._thickGeo.setIndex(new THREE.BufferAttribute(thickIdx, 1));
+    this._thickGeo.setDrawRange(0, 0);
+
+    this._thickMat = new THREE.MeshBasicMaterial({
+      vertexColors: true,
+      side: THREE.DoubleSide,
+      depthTest: false,
+    });
+    this._thickMesh = new THREE.Mesh(this._thickGeo, this._thickMat);
+    // Don't add to scene yet — _updateDrawMode will decide
+
     this._updateDrawMode();
     this.firstFrame = true;
   }
 
   _updateDrawMode() {
-    // Clean up old mesh
-    if (this._mesh) {
-      this._scene.remove(this._mesh);
-      if (this._material) this._material.dispose();
-    }
+    // Clean up old mesh from scene
+    if (this._mesh) this._scene.remove(this._mesh);
+    if (this._thickMesh) this._scene.remove(this._thickMesh);
 
     if (this.drawMode === 'DOTS') {
       this._material = new THREE.PointsMaterial({
@@ -72,17 +97,23 @@ export class SuperScope extends AvsComponent {
         sizeAttenuation: false,
       });
       this._mesh = new THREE.Points(this._geometry, this._material);
+      this._material.depthTest = false;
+      this._scene.add(this._mesh);
+      this._useThickLines = false;
+    } else if (this.thickness > 1) {
+      // Thick lines: use triangle mesh
+      this._scene.add(this._thickMesh);
+      this._useThickLines = true;
     } else {
-      // Note: WebGL ignores linewidth on most platforms (always 1px).
-      // For thick lines, AVS presets typically use DOTS mode or Texer.
+      // Thin lines (1px): use standard THREE.Line
       this._material = new THREE.LineBasicMaterial({
         vertexColors: true,
       });
       this._mesh = new THREE.Line(this._geometry, this._material);
+      this._material.depthTest = false;
+      this._scene.add(this._mesh);
+      this._useThickLines = false;
     }
-
-    this._material.depthTest = false;
-    this._scene.add(this._mesh);
   }
 
   render(ctx, fb) {
@@ -108,18 +139,41 @@ export class SuperScope extends AvsComponent {
     s.h = ctx.height;
     s.b = ctx.beat ? 1 : 0;
 
+    // Initialize linesize from global render mode (SetRenderMode component)
+    // This is set ONCE per frame before any code runs (matching original AVS)
+    if (ctx.renderMode && ctx.renderMode.enabled && ctx.renderMode.lineSize) {
+      s.linesize = ctx.renderMode.lineSize;
+    } else {
+      s.linesize = this.thickness;
+    }
+
     // Run init on first frame
     if (this.firstFrame) {
       try { this.initFn(s, lib); } catch {}
       this.firstFrame = false;
     }
 
-    // Run perFrame
+    // Run perFrame (can modify linesize, drawmode, n, etc.)
     try { this.perFrameFn(s, lib); } catch {}
 
     // Run onBeat
     if (ctx.beat) {
       try { this.onBeatFn(s, lib); } catch {}
+    }
+
+    // Read back linesize/drawmode AFTER frame code runs but BEFORE point loop
+    // (these are frame-level settings, not per-point)
+    const frameLinesize = Math.max(1, Math.round(s.linesize || 1));
+    if (frameLinesize !== this.thickness) {
+      this.thickness = frameLinesize;
+      this._updateDrawMode();
+    }
+
+    // drawmode: < 0.00001 = dots, >= 0.00001 = lines (matching original AVS)
+    const newDrawMode = (s.drawmode || 0) < 0.00001 ? 'DOTS' : 'LINES';
+    if (s._dirty.has('drawmode') && newDrawMode !== this.drawMode) {
+      this.drawMode = newDrawMode;
+      this._updateDrawMode();
     }
 
     // Get point count — n=0 is valid (camera-only SuperScope, sets registers only)
@@ -134,11 +188,12 @@ export class SuperScope extends AvsComponent {
     // Choose audio source
     const source = this.audioSource === 'SPECTRUM' ? spectrum : waveform;
 
-    // Get geometry buffers
-    const positions = this._geometry.attributes.position.array;
-    const colorsBuf = this._geometry.attributes.color.array;
-
-    let drawCount = 0;
+    // Collect all points first into temp arrays
+    const pointsX = [];
+    const pointsY = [];
+    const pointsR = [];
+    const pointsG = [];
+    const pointsB = [];
 
     for (let i = 0; i < n; i++) {
       // Set per-point variables
@@ -157,7 +212,6 @@ export class SuperScope extends AvsComponent {
       s.green = color[1];
       s.blue = color[2];
       s.skip = 0;
-      s.linesize = this.thickness;
 
       // Run perPoint code
       try { this.perPointFn(s, lib); } catch {}
@@ -166,40 +220,153 @@ export class SuperScope extends AvsComponent {
       if (s.skip >= 0.00001) continue;
 
       // Collect vertex — don't clamp, let points go off-screen like real AVS
-      const x = s.x || 0;
-      const y = -(s.y || 0); // Y inverted (AVS convention)
-
-      positions[drawCount * 3] = x;
-      positions[drawCount * 3 + 1] = y;
-      positions[drawCount * 3 + 2] = 0;
-
-      colorsBuf[drawCount * 3] = Math.max(0, Math.min(1, s.red || 0));
-      colorsBuf[drawCount * 3 + 1] = Math.max(0, Math.min(1, s.green || 0));
-      colorsBuf[drawCount * 3 + 2] = Math.max(0, Math.min(1, s.blue || 0));
-
-      drawCount++;
+      pointsX.push(s.x || 0);
+      pointsY.push(-(s.y || 0)); // Y inverted (AVS convention)
+      pointsR.push(Math.max(0, Math.min(1, s.red || 0)));
+      pointsG.push(Math.max(0, Math.min(1, s.green || 0)));
+      pointsB.push(Math.max(0, Math.min(1, s.blue || 0)));
     }
 
-    // Only override drawMode if EEL code explicitly set drawmode
-    if (s._dirty.has('drawmode')) {
-      const newMode = s.drawmode > 0.5 ? 'LINES' : 'DOTS';
-      if (newMode !== this.drawMode) {
-        this.drawMode = newMode;
-        this._updateDrawMode();
+    const drawCount = pointsX.length;
+
+    // Render based on mode
+    if (this._useThickLines && drawCount >= 2) {
+      this._renderThickLines(ctx, fb, pointsX, pointsY, pointsR, pointsG, pointsB, drawCount);
+    } else {
+      // Standard geometry update for dots or thin lines
+      const positions = this._geometry.attributes.position.array;
+      const colorsBuf = this._geometry.attributes.color.array;
+      for (let i = 0; i < drawCount; i++) {
+        positions[i * 3] = pointsX[i];
+        positions[i * 3 + 1] = pointsY[i];
+        positions[i * 3 + 2] = 0;
+        colorsBuf[i * 3] = pointsR[i];
+        colorsBuf[i * 3 + 1] = pointsG[i];
+        colorsBuf[i * 3 + 2] = pointsB[i];
+      }
+      this._geometry.attributes.position.needsUpdate = true;
+      this._geometry.attributes.color.needsUpdate = true;
+      this._geometry.setDrawRange(0, drawCount);
+
+      // Render onto the active framebuffer (autoClear disabled by engine)
+      ctx.renderer.setRenderTarget(fb.getActiveTarget());
+      ctx.renderer.render(this._scene, this._camera);
+    }
+  }
+
+  /**
+   * Build thick line geometry as a triangle strip with miter joins.
+   * For N points, generates 2*N vertices (left/right offsets) and
+   * 6*(N-1) indices (two triangles per segment).
+   * At each interior vertex, the offset direction is the average of the
+   * two adjacent segment normals (miter join), giving clean corners.
+   */
+  _renderThickLines(ctx, fb, px, py, pr, pg, pb, n) {
+    const positions = this._thickGeo.attributes.position.array;
+    const colors = this._thickGeo.attributes.color.array;
+    const indices = this._thickGeo.index.array;
+
+    // Half thickness in NDC
+    const halfW = this.thickness / Math.min(ctx.width, ctx.height);
+
+    let vi = 0; // vertex index
+    let ii = 0; // index index
+
+    for (let i = 0; i < n; i++) {
+      // Compute the perpendicular offset direction at this point
+      let nx = 0, ny = 0;
+
+      if (n === 1) {
+        // Single point — can't form a line
+        nx = 0; ny = 1;
+      } else if (i === 0) {
+        // First point: use direction of first segment
+        const dx = px[1] - px[0];
+        const dy = py[1] - py[0];
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        nx = -dy / len;
+        ny = dx / len;
+      } else if (i === n - 1) {
+        // Last point: use direction of last segment
+        const dx = px[i] - px[i - 1];
+        const dy = py[i] - py[i - 1];
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        nx = -dy / len;
+        ny = dx / len;
+      } else {
+        // Interior point: miter join — average the normals of adjacent segments
+        const dx1 = px[i] - px[i - 1];
+        const dy1 = py[i] - py[i - 1];
+        const len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1) || 1;
+        const nx1 = -dy1 / len1;
+        const ny1 = dx1 / len1;
+
+        const dx2 = px[i + 1] - px[i];
+        const dy2 = py[i + 1] - py[i];
+        const len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1;
+        const nx2 = -dy2 / len2;
+        const ny2 = dx2 / len2;
+
+        // Average normal for miter
+        nx = (nx1 + nx2) * 0.5;
+        ny = (ny1 + ny2) * 0.5;
+        const miterLen = Math.sqrt(nx * nx + ny * ny) || 1;
+        nx /= miterLen;
+        ny /= miterLen;
+
+        // Scale to maintain consistent width at the join (miter length correction)
+        // dot = cos(angle between normals), miter scale = 1/dot
+        const dot = nx1 * nx + ny1 * ny;
+        if (dot > 0.1) {
+          const miterScale = Math.min(1 / dot, 3); // cap to avoid spiky miters
+          nx *= miterScale;
+          ny *= miterScale;
+        }
+      }
+
+      // Left vertex (vi*2) and right vertex (vi*2+1)
+      const baseV = i * 2;
+      const lx = px[i] + nx * halfW;
+      const ly = py[i] + ny * halfW;
+      const rx = px[i] - nx * halfW;
+      const ry = py[i] - ny * halfW;
+
+      positions[baseV * 3] = lx;
+      positions[baseV * 3 + 1] = ly;
+      positions[baseV * 3 + 2] = 0;
+
+      positions[(baseV + 1) * 3] = rx;
+      positions[(baseV + 1) * 3 + 1] = ry;
+      positions[(baseV + 1) * 3 + 2] = 0;
+
+      // Colors
+      colors[baseV * 3] = pr[i];
+      colors[baseV * 3 + 1] = pg[i];
+      colors[baseV * 3 + 2] = pb[i];
+      colors[(baseV + 1) * 3] = pr[i];
+      colors[(baseV + 1) * 3 + 1] = pg[i];
+      colors[(baseV + 1) * 3 + 2] = pb[i];
+
+      // Add two triangles for the segment connecting point i-1 to point i
+      if (i > 0) {
+        const prev = (i - 1) * 2;
+        const curr = i * 2;
+        // Triangle 1: prev-left, prev-right, curr-left
+        indices[ii++] = prev;
+        indices[ii++] = prev + 1;
+        indices[ii++] = curr;
+        // Triangle 2: prev-right, curr-right, curr-left
+        indices[ii++] = prev + 1;
+        indices[ii++] = curr + 1;
+        indices[ii++] = curr;
       }
     }
 
-    // Only override line size if EEL code explicitly set linesize
-    if (s._dirty.has('linesize') && this.drawMode === 'DOTS' && this._material.size !== undefined) {
-      this._material.size = Math.max(2, s.linesize * 2);
-    }
+    this._thickGeo.attributes.position.needsUpdate = true;
+    this._thickGeo.attributes.color.needsUpdate = true;
+    this._thickGeo.index.needsUpdate = true;
+    this._thickGeo.setDrawRange(0, ii);
 
-    // Standard geometry update
-    this._geometry.attributes.position.needsUpdate = true;
-    this._geometry.attributes.color.needsUpdate = true;
-    this._geometry.setDrawRange(0, drawCount);
-
-    // Render onto the active framebuffer (autoClear disabled by engine)
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
     ctx.renderer.render(this._scene, this._camera);
   }
@@ -225,6 +392,8 @@ export class SuperScope extends AvsComponent {
   destroy() {
     if (this._geometry) this._geometry.dispose();
     if (this._material) this._material.dispose();
+    if (this._thickGeo) this._thickGeo.dispose();
+    if (this._thickMat) this._thickMat.dispose();
     this._scene = null;
     this._camera = null;
   }
