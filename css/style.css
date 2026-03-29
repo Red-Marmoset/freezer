@@ -185,6 +185,15 @@ button.active {
   display: none;
 }
 
+.preset-link {
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+.preset-link:hover {
+  text-decoration: underline;
+}
+
 /* ============================================
    SPLASH SCREEN
    ============================================ */
