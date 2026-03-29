@@ -639,7 +639,9 @@ body.dragover::after {
 .tree-icon.trans { color: #ab47bc; }
 .tree-icon.misc { color: #78909c; }
 .tree-icon.container { color: var(--accent); }
-.tree-icon.unsupported { color: #555; }
+.tree-icon.unsupported { color: #ff3333; }
+.tree-row .tree-label.unsupported-label { color: #ff3333; font-weight: 700; }
+.tree-badge.unsupported-badge { background: rgba(255, 50, 50, 0.3); color: #ff5555; }
 
 .tree-label {
   color: var(--text);

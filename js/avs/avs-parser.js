@@ -1183,6 +1183,11 @@ function parseDllComponent(dllId, r, endPos) {
     return parseColorMapAPE(r, endPos);
   }
 
+  // Picture II APE
+  if (cleanId === 'Picture II') {
+    return parsePicture2APE(r, endPos);
+  }
+
   return {
     type: cleanId || 'UnknownAPE',
     enabled: true,
@@ -1331,6 +1336,38 @@ function parseTexer2APE(r, endPos) {
   }
 
   return result;
+}
+
+// ---- Picture II APE ----
+// Binary: image(260 fixed), blendMode(u32), onBeatBlendMode(u32),
+//   bilinear(u32), onBeatBilinear(u32), adjustBlend(u32), onBeatAdjustBlend(u32)
+
+function parsePicture2APE(r, endPos) {
+  const BLEND_MAP = ['REPLACE', 'ADDITIVE', 'MAXIMUM', 'FIFTY_FIFTY',
+    'SUB_DEST_SRC', 'SUB_SRC_DEST', 'MULTIPLY', 'ADJUSTABLE', 'XOR', 'MINIMUM'];
+
+  let imageSrc = '';
+  if (r.pos + 260 <= endPos) {
+    imageSrc = r.fixedString(260);
+  }
+
+  const rawBlend = r.hasBytes(4) ? r.uint32() : 0;
+  const rawOnBeat = r.hasBytes(4) ? r.uint32() : 0;
+  const bilinear = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const onBeatBilinear = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const adjustBlend = r.hasBytes(4) ? r.uint32() : 128;
+  const onBeatAdjustBlend = r.hasBytes(4) ? r.uint32() : 128;
+
+  return {
+    type: 'Picture',
+    enabled: true,
+    imageSrc,
+    blendMode: BLEND_MAP[rawBlend] || 'REPLACE',
+    onBeatBlendMode: BLEND_MAP[rawOnBeat] || 'REPLACE',
+    bilinear,
+    adjustBlend,
+    onBeatAdjustBlend,
+  };
 }
 
 // ---- Color Map APE ----

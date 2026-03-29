@@ -186,6 +186,7 @@ const DISPLAY_NAMES = {
   'Holden03: Convolution Filter': 'Convolution Filter',
   'Acko.net: Texer II': 'Texer II',
   'Render: Triangle': 'Triangle',
+  'Picture II': 'Picture II',
 };
 
 // Known select-type fields and their options
@@ -534,10 +535,10 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
 
     row.innerHTML = `
       <span class="tree-toggle ${hasChildren ? 'open' : 'leaf'}">\u25B6</span>
-      <span class="tree-icon ${unsupported ? 'unsupported' : cat}">${icon}</span>
-      <span class="tree-label${disabled ? ' disabled' : ''}">${escHtml(DISPLAY_NAMES[comp.type] || comp.type)}</span>
-      ${(cat !== 'container' && cat !== 'misc') ? `<span class="tree-badge ${cat}">${cat}</span>` : ''}
-      ${unsupported ? '<span class="tree-badge misc">N/A</span>' : ''}
+      <span class="tree-icon ${unsupported ? 'unsupported' : cat}">${unsupported ? '\u26A0' : icon}</span>
+      <span class="tree-label${disabled ? ' disabled' : ''}${unsupported ? ' unsupported-label' : ''}">${escHtml(DISPLAY_NAMES[comp.type] || comp.type)}</span>
+      ${(cat !== 'container' && cat !== 'misc' && !unsupported) ? `<span class="tree-badge ${cat}">${cat}</span>` : ''}
+      ${unsupported ? '<span class="tree-badge unsupported-badge">UNSUPPORTED</span>' : ''}
       ${comp.drawMode ? `<span class="tree-badge misc">${escHtml(comp.drawMode)}</span>` : ''}
       ${comp.type === 'EffectList' ? `<span class="tree-badge misc">${(comp.input||'IGN').slice(0,3)}/${(comp.output||'IGN').slice(0,3)}</span>` : ''}
     `;
