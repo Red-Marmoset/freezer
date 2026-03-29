@@ -306,14 +306,17 @@ export function compileEEL(code) {
  * @returns {object} — state object for compiled functions
  */
 export function createState(globalRegisters, globalMegabuf) {
+  const dirty = new Set();
   const state = {
     _reg: globalRegisters || new Float64Array(100),
     _megabuf: {},
     _gmegabuf: globalMegabuf || {},
-    // Common variables initialized to 0 by default via Proxy
+    _dirty: dirty, // tracks which variables were explicitly written by EEL code
   };
   // Use Proxy to auto-initialize undefined variables to 0
   // Do NOT mutate on read — just return 0 for undefined vars
+  // Track writes in _dirty so consumers can distinguish "explicitly set to 0"
+  // from "never set (default 0)"
   return new Proxy(state, {
     get(target, prop) {
       if (prop in target) return target[prop];
@@ -324,6 +327,9 @@ export function createState(globalRegisters, globalMegabuf) {
     },
     set(target, prop, value) {
       target[prop] = value;
+      if (typeof prop === 'string' && prop[0] !== '_') {
+        dirty.add(prop);
+      }
       return true;
     }
   });

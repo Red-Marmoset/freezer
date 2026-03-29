@@ -22,9 +22,6 @@ export class SuperScope extends AvsComponent {
     this.drawMode = (opts.drawMode || 'LINES').toUpperCase();
     this.thickness = opts.thickness || 1;
 
-    // Check if any EEL code explicitly references 'drawmode'
-    const allCode = [code.init, code.perFrame, code.onBeat, code.perPoint].join(' ').toLowerCase();
-    this._codeUsesDrawmode = allCode.includes('drawmode');
 
     // Color cycling
     this.colors = (opts.colors || ['#ffffff']).map(parseHexColor);
@@ -183,9 +180,8 @@ export class SuperScope extends AvsComponent {
       drawCount++;
     }
 
-    // Check if drawmode was explicitly changed by EEL code
-    // Only override if the code actually writes to 'drawmode'
-    if (this._codeUsesDrawmode) {
+    // Only override drawMode if EEL code explicitly set drawmode
+    if (s._dirty.has('drawmode')) {
       const newMode = s.drawmode > 0.5 ? 'LINES' : 'DOTS';
       if (newMode !== this.drawMode) {
         this.drawMode = newMode;
@@ -193,10 +189,9 @@ export class SuperScope extends AvsComponent {
       }
     }
 
-    // Update dot size from EEL linesize variable
-    if (this.drawMode === 'DOTS' && this._material.size !== undefined) {
-      const ls = s.linesize || this.thickness;
-      this._material.size = Math.max(2, ls * 2);
+    // Only override line size if EEL code explicitly set linesize
+    if (s._dirty.has('linesize') && this.drawMode === 'DOTS' && this._material.size !== undefined) {
+      this._material.size = Math.max(2, s.linesize * 2);
     }
 
     // Standard geometry update
