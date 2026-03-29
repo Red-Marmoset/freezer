@@ -1,13 +1,10 @@
 // AVS DynamicMovement component — programmable per-vertex UV displacement
-// Uses EEL code to compute UV displacement across a grid mesh.
-// Supports buffer source selection, blend mode, per-vertex alpha, polar/cartesian.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
 
-// Vertex shader passes UV and per-vertex alpha to fragment
-const VERT_SHADER = `
+const VERT_BLEND = `
   attribute float aAlpha;
   varying vec2 vUv;
   varying float vAlpha;
@@ -18,27 +15,6 @@ const VERT_SHADER = `
   }
 `;
 
-// Fragment shader samples source texture and applies per-vertex alpha blending
-// When blend is enabled, mixes displaced source with the current framebuffer
-const FRAG_SHADER = `
-  precision mediump float;
-  uniform sampler2D tSource;
-  uniform sampler2D tDest;
-  uniform int uBlend;
-  varying vec2 vUv;
-  varying float vAlpha;
-  void main() {
-    vec4 src = texture2D(tSource, vUv);
-    if (uBlend == 1) {
-      vec4 dst = texture2D(tDest, gl_FragCoord.xy / vec2(textureSize(tDest, 0)));
-      gl_FragColor = vec4(mix(dst.rgb, src.rgb, vAlpha), 1.0);
-    } else {
-      gl_FragColor = src;
-    }
-  }
-`;
-
-// Simpler shader without textureSize (WebGL1 compat)
 const FRAG_BLEND = `
   precision mediump float;
   uniform sampler2D tSource;
@@ -54,7 +30,15 @@ const FRAG_BLEND = `
   }
 `;
 
-const FRAG_NOBLEND = `
+const VERT_SIMPLE = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const FRAG_SIMPLE = `
   precision mediump float;
   uniform sampler2D tSource;
   varying vec2 vUv;
@@ -95,29 +79,31 @@ export class DynamicMovement extends AvsComponent {
     this._scene = new THREE.Scene();
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-    // Create grid mesh with per-vertex alpha attribute
     this._geometry = new THREE.PlaneGeometry(2, 2, this.gridW, this.gridH);
-    const vertCount = this._geometry.attributes.position.count;
-    const alphas = new Float32Array(vertCount).fill(1);
-    this._alphaAttr = new THREE.BufferAttribute(alphas, 1);
-    this._geometry.setAttribute('aAlpha', this._alphaAttr);
 
     if (this.blend || this.alphaOnly) {
+      // Blend mode: per-vertex alpha, reads both source and dest
+      const vertCount = this._geometry.attributes.position.count;
+      const alphas = new Float32Array(vertCount).fill(1);
+      this._alphaAttr = new THREE.BufferAttribute(alphas, 1);
+      this._geometry.setAttribute('aAlpha', this._alphaAttr);
+
       this._material = new THREE.ShaderMaterial({
         uniforms: {
           tSource: { value: null },
           tDest: { value: null },
           uResolution: { value: new THREE.Vector2(ctx.width, ctx.height) },
         },
-        vertexShader: VERT_SHADER,
+        vertexShader: VERT_BLEND,
         fragmentShader: FRAG_BLEND,
         depthTest: false,
       });
     } else {
+      // No blend: simple displaced UV sampling
       this._material = new THREE.ShaderMaterial({
         uniforms: { tSource: { value: null } },
-        vertexShader: VERT_SHADER,
-        fragmentShader: FRAG_NOBLEND,
+        vertexShader: VERT_SIMPLE,
+        fragmentShader: FRAG_SIMPLE,
         depthTest: false,
       });
     }
@@ -161,10 +147,7 @@ export class DynamicMovement extends AvsComponent {
     // Run perPoint code for each grid vertex
     const uvAttr = this._geometry.attributes.uv;
     const posAttr = this._geometry.attributes.position;
-    const alphaArr = this._alphaAttr.array;
     const vertCount = posAttr.count;
-
-    // Polar normalization matching original AVS
     const maxD = Math.sqrt(0.5 * 0.5 + 0.5 * 0.5);
 
     for (let i = 0; i < vertCount; i++) {
@@ -184,7 +167,9 @@ export class DynamicMovement extends AvsComponent {
 
       try { this.perPointFn(s, lib); } catch {}
 
-      alphaArr[i] = Math.max(0, Math.min(1, s.alpha));
+      if (this._alphaAttr) {
+        this._alphaAttr.array[i] = Math.max(0, Math.min(1, s.alpha));
+      }
 
       let newU, newV;
       if (this.usePolar) {
@@ -208,31 +193,20 @@ export class DynamicMovement extends AvsComponent {
       uvAttr.setXY(i, newU, newV);
     }
     uvAttr.needsUpdate = true;
-    this._alphaAttr.needsUpdate = true;
+    if (this._alphaAttr) this._alphaAttr.needsUpdate = true;
 
-    // Render
     this._material.uniforms.tSource.value = srcTexture;
 
     if (this.blend || this.alphaOnly) {
-      // For blend/alpha-only: read active FB as dest, sample source via displaced UVs,
-      // mix per-vertex using alpha. Write to back, swap.
-      // Need to copy active to a temp first so we can read dest while writing.
       this._material.uniforms.tDest.value = fb.getActiveTexture();
       this._material.uniforms.uResolution.value.set(ctx.width, ctx.height);
-
-      ctx.renderer.setRenderTarget(fb.getBackTarget());
-      ctx.renderer.render(this._scene, this._camera);
-
-      this._material.uniforms.tSource.value = null;
-      this._material.uniforms.tDest.value = null;
-      fb.swap();
-    } else {
-      // No blend: displaced source overwrites FB
-      ctx.renderer.setRenderTarget(fb.getBackTarget());
-      ctx.renderer.render(this._scene, this._camera);
-      this._material.uniforms.tSource.value = null;
-      fb.swap();
     }
+
+    ctx.renderer.setRenderTarget(fb.getBackTarget());
+    ctx.renderer.render(this._scene, this._camera);
+    this._material.uniforms.tSource.value = null;
+    if (this._material.uniforms.tDest) this._material.uniforms.tDest.value = null;
+    fb.swap();
   }
 
   destroy() {
