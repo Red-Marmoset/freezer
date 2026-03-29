@@ -157,13 +157,15 @@ export class DynamicMovement extends AvsComponent {
     const hw = w * 0.5, hh = h * 0.5;
 
     for (let i = 0; i < vertCount; i++) {
-      // Grid point UV (0..1) → pixel position → centered coords
+      // Grid point position → UV (0..1)
       const origX = (posAttr.getX(i) + 1) / 2; // 0..1
       const origY = (posAttr.getY(i) + 1) / 2;
 
       // Pixel offset from center (matching original xd, yd)
+      // Original AVS: Y=0 at top, Y=h at bottom. Three.js: Y=+1 at top.
+      // Negate yd to match original's Y-down convention.
       const xd = (origX - 0.5) * w;
-      const yd = (origY - 0.5) * h;
+      const yd = (0.5 - origY) * h;
 
       s.alpha = 1;
 
@@ -184,14 +186,16 @@ export class DynamicMovement extends AvsComponent {
       let newU, newV;
       if (this.usePolar) {
         // Convert back from polar to pixel coords, then to UV
+        // sin(r) gives screen-Y (positive = down in original), negate for UV (positive = up)
         const r = s.r - Math.PI * 0.5;
         const nd = s.d * maxD;
         newU = (Math.cos(r) * nd + hw) / w;
-        newV = (Math.sin(r) * nd + hh) / h;
+        newV = 1 - (Math.sin(r) * nd + hh) / h;
       } else {
         // Cartesian: x,y in -1..1 → UV 0..1
+        // y is negated: original y positive = down, our UV y positive = up
         newU = (s.x + 1) * 0.5;
-        newV = (s.y + 1) * 0.5;
+        newV = 1 - (s.y + 1) * 0.5;
       }
 
       if (this.wrap) {
