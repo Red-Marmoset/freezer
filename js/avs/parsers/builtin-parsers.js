@@ -161,11 +161,11 @@ export function parseFastBrightness(r) {
 
 export function parseBufferSave(r) {
   const action = r.hasBytes(4) ? r.uint32() : 0;
-  const rawBuffer = r.hasBytes(4) ? r.uint32() : 1;
-  const buffer = Math.max(0, rawBuffer - 1);
+  // Buffer index is stored 0-based (0 to NBUF-1) in the original r_stack.cpp
+  const buffer = r.hasBytes(4) ? r.uint32() : 0;
   const blendMode = r.hasBytes(4) ? r.uint32() : 0;
   const adjustBlend = r.hasBytes(4) ? r.uint32() : 128;
-  return { type: 'BufferSave', action, buffer, blendMode, adjustBlend };
+  return { type: 'BufferSave', action, buffer: Math.max(0, Math.min(7, buffer)), blendMode, adjustBlend };
 }
 
 export function parseMosaic(r) {
@@ -295,13 +295,19 @@ export function parseDotGrid(r) {
   return { type: 'DotGrid', numColors, colors: colors.length > 0 ? colors : ['#ffffff'], spacing, xSpeed, ySpeed, blendMode };
 }
 
-export function parseDotPlane(r) {
-  return { type: 'DotPlane', rotSpeed: r.hasBytes(4) ? r.uint32() : 16, color: r.hasBytes(4) ? r.color() : '#ffffff', angle: r.hasBytes(4) ? r.uint32() : 0, style: r.hasBytes(4) ? r.uint32() : 0 };
+// DotPlane and DotFountain share the same binary layout:
+// rotSpeed(i32), colors[5](u32 each as 0xBBGGRR), angle(i32), rotation(i32 as rot*32)
+function parseDotCommon(r, type) {
+  const rotSpeed = r.hasBytes(4) ? r.int32() : 16;
+  const colors = [];
+  for (let i = 0; i < 5; i++) colors.push(r.hasBytes(4) ? r.color() : '#ffffff');
+  const angle = r.hasBytes(4) ? r.int32() : -20;
+  const rotation = r.hasBytes(4) ? r.int32() / 32 : 0;
+  return { type, rotSpeed, colors, angle, rotation };
 }
 
-export function parseDotFountain(r) {
-  return { type: 'DotFountain', rotSpeed: r.hasBytes(4) ? r.uint32() : 16, color: r.hasBytes(4) ? r.color() : '#ff8800', angle: r.hasBytes(4) ? r.uint32() : 0, style: r.hasBytes(4) ? r.uint32() : 0 };
-}
+export function parseDotPlane(r) { return parseDotCommon(r, 'DotPlane'); }
+export function parseDotFountain(r) { return parseDotCommon(r, 'DotFountain'); }
 
 export function parseBassSpin(r) {
   const enabledLeft = r.hasBytes(4) ? r.uint32() : 1;

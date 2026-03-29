@@ -1,40 +1,51 @@
 /**
  * preset-browser.js
  *
- * Preset library browser UI: search, browse by author/pack, load on click.
- * Imported and initialised from ui.js.
+ * Preset library browser UI: search, browse by author/pack/group, load on click.
+ * Virtualised preset list for smooth scrolling with 3700+ presets.
  */
 
 import { authors, packs, groups, presets } from './catalog.js';
 
-// ── State ───────────────────────────────────────────────────────────
+// ── Lookups (fast, one pass each) ──────────────────────────────────
 
-let currentView = 'authors';      // 'authors' | 'packs'
-let filterAuthorId = null;        // null = all
-let filterPackId = null;          // null = all
-let searchQuery = '';
-let activePresetId = null;        // currently-loaded preset id
-let loadPresetCallback = null;    // set by initPresetBrowser
-
-// Pre-built search index: one lowercase string per preset
-const searchIndex = presets.map(p => {
-  const authorName = authors.find(a => a.id === p.authorId)?.name || '';
-  const packNames = p.packIds.map(pid => packs.find(pk => pk.id === pid)?.name || '').join(' ');
-  return `${p.title} ${authorName} ${packNames}`.toLowerCase();
-});
-
-// Build author lookup
 const authorById = Object.fromEntries(authors.map(a => [a.id, a]));
+const packById = Object.fromEntries(packs.map(p => [p.id, p]));
 
-// Count presets per author and per pack
 const authorPresetCount = {};
 const packPresetCount = {};
 for (const p of presets) {
-  const key = p.authorId || '_unknown';
-  authorPresetCount[key] = (authorPresetCount[key] || 0) + 1;
-  for (const pid of p.packIds) {
-    packPresetCount[pid] = (packPresetCount[pid] || 0) + 1;
-  }
+  authorPresetCount[p.authorId || '_unknown'] = (authorPresetCount[p.authorId || '_unknown'] || 0) + 1;
+  for (const pid of p.packIds) packPresetCount[pid] = (packPresetCount[pid] || 0) + 1;
+}
+
+// ── State ───────────────────────────────────────────────────────────
+
+let currentView = 'authors';
+let filterAuthorId = null;
+let filterPackId = null;
+let filterGroupId = null;
+let searchQuery = '';
+let activePresetId = null;
+let loadPresetCallback = null;
+
+// Lazy search index — built on first search
+let searchIndex = null;
+function ensureSearchIndex() {
+  if (searchIndex) return;
+  searchIndex = presets.map(p => {
+    const a = authorById[p.authorId]?.name || '';
+    const pk = p.packIds.map(pid => packById[pid]?.name || '').join(' ');
+    return `${p.title} ${a} ${pk}`.toLowerCase();
+  });
+}
+
+// Cached filtered results
+let _cachedFilter = null;
+let _cacheKey = '';
+
+function getCacheKey() {
+  return `${searchQuery}|${filterAuthorId}|${filterPackId}|${filterGroupId}`;
 }
 
 // ── DOM refs ────────────────────────────────────────────────────────
@@ -49,34 +60,41 @@ const breadcrumb = document.getElementById('lib-breadcrumb');
 const presetList = document.getElementById('lib-preset-list');
 const tabBtns = modal.querySelectorAll('.lib-tab');
 
+// ── Virtual scroll constants ────────────────────────────────────────
+
+const ROW_HEIGHT = 42; // px per preset row
+const OVERSCAN = 8;    // extra rows above/below viewport
+
 // ── Public API ──────────────────────────────────────────────────────
 
 export function initPresetBrowser(loadCb) {
   loadPresetCallback = loadCb;
-
-  // Button/tab handlers
   backdrop.addEventListener('click', close);
   closeBtn.addEventListener('click', close);
   tabBtns.forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
   searchInput.addEventListener('input', onSearchInput);
   modal.addEventListener('keydown', onKeydown);
-
-  // Initial render
+  presetList.addEventListener('scroll', onPresetScroll);
   renderSidebar();
   renderPresetList();
 }
 
-export function open() {
-  modal.classList.remove('hidden');
-  searchInput.focus();
+export function open() { modal.classList.remove('hidden'); searchInput.focus(); }
+export function close() { modal.classList.add('hidden'); }
+export function isOpen() { return !modal.classList.contains('hidden'); }
+
+export async function loadPresetById(id) {
+  const preset = presets.find(p => p.id === id);
+  if (!preset) return false;
+  await loadPreset(preset);
+  return true;
 }
 
-export function close() {
-  modal.classList.add('hidden');
-}
-
-export function isOpen() {
-  return !modal.classList.contains('hidden');
+export function findPresetId(name) {
+  if (!name) return null;
+  const lower = name.toLowerCase().replace(/\.avs$/i, '');
+  const match = presets.find(p => p.title.toLowerCase() === lower);
+  return match ? match.id : null;
 }
 
 // ── View switching ──────────────────────────────────────────────────
@@ -85,8 +103,10 @@ function switchView(view) {
   currentView = view;
   filterAuthorId = null;
   filterPackId = null;
+  filterGroupId = null;
   tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
   renderSidebar();
+  invalidateCache();
   renderPresetList();
   updateBreadcrumb();
 }
@@ -94,11 +114,11 @@ function switchView(view) {
 // ── Search ──────────────────────────────────────────────────────────
 
 let searchTimeout = null;
-
 function onSearchInput() {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
     searchQuery = searchInput.value.trim().toLowerCase();
+    invalidateCache();
     renderPresetList();
   }, 150);
 }
@@ -106,13 +126,7 @@ function onSearchInput() {
 // ── Keyboard ────────────────────────────────────────────────────────
 
 function onKeydown(e) {
-  if (e.key === 'Escape') {
-    e.stopPropagation();
-    close();
-    return;
-  }
-
-  // Arrow navigation in preset list
+  if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
     e.preventDefault();
     const rows = [...presetList.querySelectorAll('.lib-preset-row')];
@@ -124,7 +138,6 @@ function onKeydown(e) {
     rows[idx].classList.add('selected');
     rows[idx].scrollIntoView({ block: 'nearest' });
   }
-
   if (e.key === 'Enter') {
     const sel = presetList.querySelector('.lib-preset-row.selected');
     if (sel) sel.click();
@@ -136,48 +149,45 @@ function onKeydown(e) {
 function renderSidebar() {
   navTree.innerHTML = '';
 
-  // "All" item — always present
+  // "All" item
   const allItem = makeNavItem('All Presets', presets.length, () => {
-    filterAuthorId = null;
-    filterPackId = null;
-    renderSidebar();
-    renderPresetList();
-    updateBreadcrumb();
+    filterAuthorId = null; filterPackId = null; filterGroupId = null;
+    renderSidebar(); invalidateCache(); renderPresetList(); updateBreadcrumb();
   });
   allItem.classList.add('lib-nav-all');
-  if (!filterAuthorId && !filterPackId) allItem.classList.add('active');
+  if (!filterAuthorId && !filterPackId && !filterGroupId) allItem.classList.add('active');
   navTree.appendChild(allItem);
 
   if (currentView === 'authors') {
-    // Sort authors by preset count descending
-    const sortedAuthors = [...authors].sort((a, b) =>
-      (authorPresetCount[b.id] || 0) - (authorPresetCount[a.id] || 0)
-    );
+    renderAuthorsSidebar();
+  } else if (currentView === 'groups') {
+    renderGroupsSidebar();
+  } else {
+    renderPacksSidebar();
+  }
+}
 
-    for (const author of sortedAuthors) {
-      const count = authorPresetCount[author.id] || 0;
-      if (count === 0) continue;
-      const authorItem = makeNavItem(author.name, count, () => {
-        filterAuthorId = author.id;
-        filterPackId = null;
-        renderSidebar();
-        renderPresetList();
-        updateBreadcrumb();
-      });
-      if (filterAuthorId === author.id && !filterPackId) authorItem.classList.add('active');
-      navTree.appendChild(authorItem);
+function renderAuthorsSidebar() {
+  const sorted = [...authors].sort((a, b) => (authorPresetCount[b.id] || 0) - (authorPresetCount[a.id] || 0));
+  for (const author of sorted) {
+    const count = authorPresetCount[author.id] || 0;
+    if (count === 0) continue;
+    const item = makeNavItem(author.name, count, () => {
+      filterAuthorId = author.id; filterPackId = null; filterGroupId = null;
+      renderSidebar(); invalidateCache(); renderPresetList(); updateBreadcrumb();
+    });
+    if (filterAuthorId === author.id && !filterPackId) item.classList.add('active');
+    navTree.appendChild(item);
 
-      // Sub-packs for this author (show when author is selected)
+    // Sub-packs when author selected
+    if (filterAuthorId === author.id) {
       const authorPacks = packs.filter(p => p.authorId === author.id);
-      if (filterAuthorId === author.id && authorPacks.length > 1) {
+      if (authorPacks.length > 1) {
         for (const pack of authorPacks) {
           const pCount = packPresetCount[pack.id] || 0;
           const packItem = makeNavItem(pack.name, pCount, () => {
-            filterAuthorId = author.id;
             filterPackId = pack.id;
-            renderSidebar();
-            renderPresetList();
-            updateBreadcrumb();
+            renderSidebar(); invalidateCache(); renderPresetList(); updateBreadcrumb();
           });
           packItem.classList.add('lib-nav-sub');
           if (filterPackId === pack.id) packItem.classList.add('active');
@@ -185,79 +195,47 @@ function renderSidebar() {
         }
       }
     }
+  }
+}
 
-    // Compilation packs (no single author)
-    const compilationPacks = packs.filter(p => p.authorId === null);
-    if (compilationPacks.length > 0) {
-      // Group separator
-      const sep = document.createElement('div');
-      sep.className = 'lib-nav-item';
-      sep.innerHTML = '<span class="lib-nav-name" style="opacity:0.4;font-size:10px">COMPILATIONS</span>';
-      navTree.appendChild(sep);
+function renderGroupsSidebar() {
+  for (const group of groups) {
+    const gCount = group.packIds.reduce((sum, pid) => sum + (packPresetCount[pid] || 0), 0);
+    const item = makeNavItem(group.name, gCount, () => {
+      filterGroupId = group.id; filterPackId = null; filterAuthorId = null;
+      renderSidebar(); invalidateCache(); renderPresetList(); updateBreadcrumb();
+    });
+    if (filterGroupId === group.id && !filterPackId) item.classList.add('active');
+    navTree.appendChild(item);
 
-      for (const group of groups) {
-        const gCount = group.packIds.reduce((sum, pid) => sum + (packPresetCount[pid] || 0), 0);
-        const groupItem = makeNavItem(group.name, gCount, () => {
-          filterAuthorId = `_group:${group.id}`;
-          filterPackId = null;
-          renderSidebar();
-          renderPresetList();
-          updateBreadcrumb();
+    // Sub-packs when group selected
+    if (filterGroupId === group.id) {
+      for (const pid of group.packIds) {
+        const pack = packById[pid];
+        if (!pack) continue;
+        const pCount = packPresetCount[pid] || 0;
+        const packItem = makeNavItem(pack.name, pCount, () => {
+          filterPackId = pid;
+          renderSidebar(); invalidateCache(); renderPresetList(); updateBreadcrumb();
         });
-        if (filterAuthorId === `_group:${group.id}` && !filterPackId) groupItem.classList.add('active');
-        navTree.appendChild(groupItem);
-
-        // Show sub-packs when group is selected
-        if (filterAuthorId === `_group:${group.id}`) {
-          for (const pid of group.packIds) {
-            const pack = packs.find(p => p.id === pid);
-            if (!pack) continue;
-            const pCount = packPresetCount[pid] || 0;
-            const packItem = makeNavItem(pack.name, pCount, () => {
-              filterAuthorId = `_group:${group.id}`;
-              filterPackId = pid;
-              renderSidebar();
-              renderPresetList();
-              updateBreadcrumb();
-            });
-            packItem.classList.add('lib-nav-sub');
-            if (filterPackId === pid) packItem.classList.add('active');
-            navTree.appendChild(packItem);
-          }
-        }
-      }
-
-      // Standalone compilation packs not in any group
-      const groupedPackIds = new Set(groups.flatMap(g => g.packIds));
-      const standalone = compilationPacks.filter(p => !groupedPackIds.has(p.id));
-      for (const pack of standalone) {
-        const pCount = packPresetCount[pack.id] || 0;
-        const item = makeNavItem(pack.name, pCount, () => {
-          filterPackId = pack.id;
-          filterAuthorId = null;
-          renderSidebar();
-          renderPresetList();
-          updateBreadcrumb();
-        });
-        if (filterPackId === pack.id) item.classList.add('active');
-        navTree.appendChild(item);
+        packItem.classList.add('lib-nav-sub');
+        if (filterPackId === pid) packItem.classList.add('active');
+        navTree.appendChild(packItem);
       }
     }
-  } else {
-    // Packs view — flat list sorted alphabetically
-    const sorted = [...packs].sort((a, b) => a.name.localeCompare(b.name));
-    for (const pack of sorted) {
-      const count = packPresetCount[pack.id] || 0;
-      const item = makeNavItem(pack.name, count, () => {
-        filterPackId = pack.id;
-        filterAuthorId = null;
-        renderSidebar();
-        renderPresetList();
-        updateBreadcrumb();
-      });
-      if (filterPackId === pack.id) item.classList.add('active');
-      navTree.appendChild(item);
-    }
+  }
+}
+
+function renderPacksSidebar() {
+  const sorted = [...packs].sort((a, b) => a.name.localeCompare(b.name));
+  for (const pack of sorted) {
+    const count = packPresetCount[pack.id] || 0;
+    const item = makeNavItem(pack.name, count, () => {
+      filterPackId = pack.id; filterAuthorId = null; filterGroupId = null;
+      renderSidebar(); invalidateCache(); renderPresetList(); updateBreadcrumb();
+    });
+    if (filterPackId === pack.id) item.classList.add('active');
+    navTree.appendChild(item);
   }
 }
 
@@ -269,54 +247,93 @@ function makeNavItem(label, count, onClick) {
   return el;
 }
 
-// ── Preset list rendering ───────────────────────────────────────────
+// ── Virtualised preset list ─────────────────────────────────────────
+
+let _vScrollHeight = null;
+let _vFiltered = [];
 
 function renderPresetList() {
-  const filtered = getFilteredPresets();
-  resultCount.textContent = `${filtered.length} preset${filtered.length !== 1 ? 's' : ''}`;
+  _vFiltered = getFilteredPresets();
+  resultCount.textContent = `${_vFiltered.length} preset${_vFiltered.length !== 1 ? 's' : ''}`;
 
-  presetList.innerHTML = '';
-  for (const p of filtered) {
+  // Set total scrollable height
+  const totalHeight = _vFiltered.length * ROW_HEIGHT;
+  if (!_vScrollHeight) {
+    _vScrollHeight = document.createElement('div');
+    _vScrollHeight.className = 'lib-vscroll-spacer';
+    presetList.appendChild(_vScrollHeight);
+  }
+  _vScrollHeight.style.height = totalHeight + 'px';
+
+  renderVisibleRows();
+}
+
+function onPresetScroll() {
+  renderVisibleRows();
+}
+
+function renderVisibleRows() {
+  // Remove old rows (keep spacer)
+  presetList.querySelectorAll('.lib-preset-row').forEach(el => el.remove());
+
+  const scrollTop = presetList.scrollTop;
+  const viewHeight = presetList.clientHeight;
+  const startIdx = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
+  const endIdx = Math.min(_vFiltered.length, Math.ceil((scrollTop + viewHeight) / ROW_HEIGHT) + OVERSCAN);
+
+  for (let i = startIdx; i < endIdx; i++) {
+    const p = _vFiltered[i];
     const row = document.createElement('div');
     row.className = 'lib-preset-row';
     if (p.id === activePresetId) row.classList.add('active');
     row.dataset.id = p.id;
+    row.style.position = 'absolute';
+    row.style.top = (i * ROW_HEIGHT) + 'px';
+    row.style.left = '0';
+    row.style.right = '0';
+    row.style.height = ROW_HEIGHT + 'px';
 
     const authorName = authorById[p.authorId]?.name || '';
-    const packName = p.packIds.map(pid => packs.find(pk => pk.id === pid)?.name || '').join(', ');
-
-    row.innerHTML = `<span class="lib-preset-title">${esc(p.title)}</span><span class="lib-preset-meta">${esc(authorName)} &middot; ${esc(packName)}</span>`;
+    const packName = p.packIds.map(pid => packById[pid]?.name || '').join(', ');
+    const wip = (p.packIds.includes('milkdrop') || p.packIds.includes('geiss')) ? ' \u{1F6A7}' : '';
+    row.innerHTML = `<span class="lib-preset-title">${esc(p.title)}${wip}</span><span class="lib-preset-meta">${esc(authorName)} &middot; ${esc(packName)}</span>`;
     row.addEventListener('click', () => loadPreset(p));
     presetList.appendChild(row);
   }
 }
 
+// ── Filtering (cached) ─────────────────────────────────────────────
+
+function invalidateCache() { _cacheKey = ''; _cachedFilter = null; }
+
 function getFilteredPresets() {
-  // When searching, ignore sidebar filters — search across everything
+  const key = getCacheKey();
+  if (key === _cacheKey && _cachedFilter) return _cachedFilter;
+
+  let result;
   if (searchQuery) {
-    return presets.filter((p, i) => searchIndex[i].includes(searchQuery));
-  }
+    ensureSearchIndex();
+    result = presets.filter((p, i) => searchIndex[i].includes(searchQuery));
+  } else {
+    result = presets;
 
-  let result = presets;
-
-  if (filterAuthorId) {
-    if (filterAuthorId.startsWith('_group:')) {
-      // Filter by group: show presets in any of the group's packs
-      const groupId = filterAuthorId.slice(7);
-      const group = groups.find(g => g.id === groupId);
+    if (filterGroupId) {
+      const group = groups.find(g => g.id === filterGroupId);
       if (group) {
         const packSet = new Set(group.packIds);
         result = result.filter(p => p.packIds.some(pid => packSet.has(pid)));
       }
-    } else {
+    } else if (filterAuthorId) {
       result = result.filter(p => p.authorId === filterAuthorId);
+    }
+
+    if (filterPackId) {
+      result = result.filter(p => p.packIds.includes(filterPackId));
     }
   }
 
-  if (filterPackId) {
-    result = result.filter(p => p.packIds.includes(filterPackId));
-  }
-
+  _cachedFilter = result;
+  _cacheKey = key;
   return result;
 }
 
@@ -324,18 +341,15 @@ function getFilteredPresets() {
 
 function updateBreadcrumb() {
   const parts = ['All Presets'];
-  if (filterAuthorId) {
-    if (filterAuthorId.startsWith('_group:')) {
-      const groupId = filterAuthorId.slice(7);
-      const group = groups.find(g => g.id === groupId);
-      if (group) parts.push(group.name);
-    } else {
-      const author = authorById[filterAuthorId];
-      if (author) parts.push(author.name);
-    }
+  if (filterGroupId) {
+    const group = groups.find(g => g.id === filterGroupId);
+    if (group) parts.push(group.name);
+  } else if (filterAuthorId) {
+    const author = authorById[filterAuthorId];
+    if (author) parts.push(author.name);
   }
   if (filterPackId) {
-    const pack = packs.find(p => p.id === filterPackId);
+    const pack = packById[filterPackId];
     if (pack) parts.push(pack.name);
   }
   breadcrumb.textContent = parts.join(' / ');
@@ -343,29 +357,7 @@ function updateBreadcrumb() {
 
 // ── Preset loading ──────────────────────────────────────────────────
 
-/**
- * Load a preset by its catalog ID. Returns true if found and loaded.
- */
-export async function loadPresetById(id) {
-  const preset = presets.find(p => p.id === id);
-  if (!preset) return false;
-  await loadPreset(preset);
-  return true;
-}
-
-/**
- * Get a preset's catalog ID by matching name against the catalog.
- * Returns the ID or null if not found.
- */
-export function findPresetId(name) {
-  if (!name) return null;
-  const lower = name.toLowerCase().replace(/\.avs$/i, '');
-  const match = presets.find(p => p.title.toLowerCase() === lower);
-  return match ? match.id : null;
-}
-
 async function loadPreset(preset) {
-  // Highlight in list
   presetList.querySelectorAll('.lib-preset-row').forEach(r => r.classList.remove('active'));
   const row = presetList.querySelector(`[data-id="${preset.id}"]`);
   if (row) row.classList.add('active');
@@ -379,15 +371,11 @@ async function loadPreset(preset) {
     if (preset.format === 'json' || preset.file.endsWith('.json')) {
       // JSON presets (MilkDrop conversions, Geiss, etc.) — load directly
       const json = await resp.json();
-      if (loadPresetCallback) {
-        loadPresetCallback(json, null, preset.id);
-      }
+      if (loadPresetCallback) loadPresetCallback(json, null, preset.id);
     } else {
       // Binary .avs presets — pass as ArrayBuffer for parsing
       const buffer = await resp.arrayBuffer();
-      if (loadPresetCallback) {
-        loadPresetCallback(buffer, preset.title + '.avs', preset.id);
-      }
+      if (loadPresetCallback) loadPresetCallback(buffer, preset.title + '.avs', preset.id);
     }
   } catch (err) {
     console.error(`Failed to load preset ${preset.title}:`, err);

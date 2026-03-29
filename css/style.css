@@ -1456,6 +1456,11 @@ body.dragover::after {
   padding: 4px 8px 8px;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 229, 255, 0.1) transparent;
+  position: relative;
+}
+.lib-vscroll-spacer {
+  width: 1px;
+  pointer-events: none;
 }
 
 .lib-preset-row {
