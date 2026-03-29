@@ -95,6 +95,9 @@ class AvsPreset {
     // Parse and instantiate components
     this.components = AvsComponent.createComponents(this.json.components || []);
 
+    // Check if any top-level component is a FadeOut (suppresses clearFrame)
+    this._hasFadeOut = this._checkForFadeOut(this.json.components || []);
+
     // Init all components
     const avsCtx = this._buildAvsCtx(ctx, renderer);
     for (const comp of this.components) {
@@ -135,8 +138,10 @@ class AvsPreset {
     const prevAutoClear = renderer.autoClear;
     renderer.autoClear = false;
 
-    // Clear frame if configured
-    if (this.clearFrame) {
+    // Clear frame if configured — but skip if there's a FadeOut component
+    // (FadeOut replaces clearFrame as the "clearing" mechanism, fading
+    // instead of instantly clearing to black each frame)
+    if (this.clearFrame && !this._hasFadeOut) {
       this.framebuffer.clear(0x000000);
     }
 
@@ -191,6 +196,13 @@ class AvsPreset {
     }
     this.components = [];
     this.framebuffer = null;
+  }
+
+  _checkForFadeOut(comps) {
+    for (const c of comps) {
+      if (c.type === 'FadeOut' && c.enabled !== false) return true;
+    }
+    return false;
   }
 
   _buildAvsCtx(ctx, renderer) {
