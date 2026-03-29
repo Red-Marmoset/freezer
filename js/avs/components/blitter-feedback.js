@@ -2,6 +2,7 @@
 // Renders the source texture onto a scaled quad to create a zoom-in or zoom-out effect.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
+import { blendTexture, parseBlendMode, BLEND } from '../blend.js';
 
 const FRAG = `
   uniform sampler2D tSource;
@@ -24,11 +25,13 @@ const FRAG = `
 export class BlitterFeedback extends AvsComponent {
   constructor(opts) {
     super(opts);
-    // Scale is stored as a ratio; 256 = 1.0 (no zoom)
-    // Values > 256 zoom in, < 256 zoom out
-    this.scale = opts.scale !== undefined ? opts.scale / 256 : 1.0;
-    this.onBeatScale = opts.onBeatScale !== undefined ? opts.onBeatScale / 256 : this.scale;
-    this.blendMode = opts.blendMode || 0;
+    // Zoom value from AVS: 0-63, where 32 = 1.0x (no zoom)
+    // < 32 = zoom in (frame gets bigger), > 32 = zoom out (frame shrinks)
+    const rawZoom = opts.scale !== undefined ? opts.scale : 32;
+    const rawOnBeat = opts.onBeatScale !== undefined ? opts.onBeatScale : rawZoom;
+    this.scale = rawZoom / 32;
+    this.onBeatScale = rawOnBeat / 32;
+    this.blendMode = parseBlendMode(opts.blendMode || 0);
 
     this._beatActive = false;
     this._scene = null;
@@ -54,23 +57,33 @@ export class BlitterFeedback extends AvsComponent {
   render(ctx, fb) {
     if (!this.enabled) return;
 
-    if (ctx.beat) {
-      this._beatActive = true;
-    }
+    if (ctx.beat) this._beatActive = true;
 
     const zoom = this._beatActive ? this.onBeatScale : this.scale;
-    // After one frame of beat scale, revert
     if (this._beatActive) this._beatActive = false;
 
+    // Render zoomed frame to back target
     this._material.uniforms.tSource.value = fb.getActiveTexture();
     this._material.uniforms.uZoom.value = zoom;
 
-    ctx.renderer.setRenderTarget(fb.getBackTarget());
-    const prev = ctx.renderer.autoClear;
-    ctx.renderer.autoClear = true;
-    ctx.renderer.render(this._scene, this._camera);
-    ctx.renderer.autoClear = prev;
-    fb.swap();
+    if (this.blendMode === BLEND.REPLACE || this.blendMode === 0) {
+      // Simple replace — write directly to back, swap
+      ctx.renderer.setRenderTarget(fb.getBackTarget());
+      const prev = ctx.renderer.autoClear;
+      ctx.renderer.autoClear = true;
+      ctx.renderer.render(this._scene, this._camera);
+      ctx.renderer.autoClear = prev;
+      fb.swap();
+    } else {
+      // Blend mode — render to back, then blend back onto active
+      ctx.renderer.setRenderTarget(fb.getBackTarget());
+      const prev = ctx.renderer.autoClear;
+      ctx.renderer.autoClear = true;
+      ctx.renderer.render(this._scene, this._camera);
+      ctx.renderer.autoClear = prev;
+      // Blend the zoomed result onto the active framebuffer
+      blendTexture(ctx.renderer, fb.getBackTarget().texture, fb.getActiveTarget(), this.blendMode);
+    }
     this._material.uniforms.tSource.value = null;
   }
 
