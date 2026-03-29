@@ -99,8 +99,8 @@ export class MilkDropMotion extends AvsComponent {
 
     // Compute bass/mid/treb from spectrum for MilkDrop compatibility
     // MilkDrop: bass=0-1/6, mid=1/6-2/6, treb=2/6-1 of spectrum
-    const specLen = ctx.audioData.spectrum.length;
     const spec = ctx.audioData.spectrum;
+    const specLen = spec ? spec.length : 0;
     let bassSum = 0, midSum = 0, trebSum = 0;
     const bassEnd = Math.floor(specLen / 6);
     const midEnd = Math.floor(specLen / 3);

@@ -110,8 +110,8 @@ varying vec2 vUv;
     });
 
     // Compute bass/mid/treb
-    const specLen = ctx.audioData.spectrum.length;
     const spec = ctx.audioData.spectrum;
+    const specLen = spec ? spec.length : 0;
     let bassSum = 0, midSum = 0, trebSum = 0;
     const bassEnd = Math.floor(specLen / 6);
     const midEnd = Math.floor(specLen / 3);
