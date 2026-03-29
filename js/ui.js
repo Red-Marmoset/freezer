@@ -206,7 +206,7 @@ const DEFAULTS = {
   ColorFade: { type: 'ColorFade', enabled: true, fader1: 8, fader2: 0, fader3: 0, beatFader1: 0, beatFader2: 0, beatFader3: 0, onBeat: false },
   UniqueTone: { type: 'UniqueTone', enabled: true, color: '#ff8000', blendMode: 'REPLACE', invert: false },
   Scatter: { type: 'Scatter', enabled: true, amount: 0 },
-  BlitterFeedback: { type: 'BlitterFeedback', enabled: true, zoom: 256, onBeatZoom: 256, blendMode: 'REPLACE', onBeatBilinear: false, bilinear: true },
+  BlitterFeedback: { type: 'BlitterFeedback', enabled: true, scale: 28, onBeatScale: 28, blendMode: 0 },
   RotoBlitter: { type: 'RotoBlitter', enabled: true, zoom: 256, rotate: 0, blendMode: 'REPLACE', onBeatReverse: false, onBeatZoom: 0, bilinear: true },
   Water: { type: 'Water', enabled: true },
   WaterBump: { type: 'WaterBump', enabled: true, density: 6, depth: 40, random: true, dropPositionX: 0, dropPositionY: 0, dropRadius: 40, method: 0 },

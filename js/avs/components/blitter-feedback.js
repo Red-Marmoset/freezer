@@ -28,8 +28,8 @@ export class BlitterFeedback extends AvsComponent {
     //   f_val=32 → scale=1.0 (no change)
     //   f_val=16 → scale=0.5 (zoom in: sample inner 50%)
     //   f_val=48 → scale=1.5 (zoom out: sample 150%, edges clamp to black)
-    const raw = opts.scale !== undefined ? opts.scale : 32;
-    const rawOB = opts.onBeatScale !== undefined ? opts.onBeatScale : raw;
+    const raw = opts.scale !== undefined ? opts.scale : (opts.zoom !== undefined ? opts.zoom : 32);
+    const rawOB = opts.onBeatScale !== undefined ? opts.onBeatScale : (opts.onBeatZoom !== undefined ? opts.onBeatZoom : raw);
     this.zoom = raw;
     this.onBeatZoom = rawOB;
     this.blendMode = parseBlendMode(opts.blendMode || 0);
