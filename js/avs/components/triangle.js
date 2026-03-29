@@ -90,19 +90,18 @@ export class Triangle extends AvsComponent {
     // Collect triangles first, then sort by z1 if zbuf is enabled
     const tris = [];
 
+    // Set i step matching original: i = 0, step = 1/(n-1), incremented after perPoint
+    let iVal = 0;
+    const iStep = n > 1 ? 1 / (n - 1) : 0;
+
     for (let t = 0; t < n; t++) {
-      s.i = n > 1 ? t / (n - 1) : 0;
-      s.x1 = 0; s.y1 = 0;
-      s.x2 = 0; s.y2 = 0;
-      s.x3 = 0; s.y3 = 0;
-      s.red1 = 1; s.green1 = 1; s.blue1 = 1;
-      s.red2 = 1; s.green2 = 1; s.blue2 = 1;
-      s.red3 = 1; s.green3 = 1; s.blue3 = 1;
+      // Only reset skip per triangle — all other variables persist (matching original)
       s.skip = 0;
-      s.z1 = 0;
       s._dirty.clear();
 
+      s.i = iVal;
       try { this.perPointFn(s, lib); } catch {}
+      iVal += iStep;
 
       if (s.skip !== 0) continue;
 
