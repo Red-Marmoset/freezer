@@ -1,0 +1,34 @@
+{
+  "name": "Geiss - Color Cycle Scope",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "FadeOut",
+      "enabled": true,
+      "speed": 3,
+      "color": "#000000"
+    },
+    {
+      "type": "RotoBlitter",
+      "enabled": true,
+      "rotation": 2,
+      "onBeatRotation": 5,
+      "scale": 31,
+      "blendMode": "REPLACE"
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": ["#ff0000", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"],
+      "code": {
+        "init": "n=300; t=0",
+        "perFrame": "t=t+0.025; sc=0.6+getspec(0,0.1,0)*0.25",
+        "onBeat": "sc=0.85",
+        "perPoint": "x=(i*2-1)*sc; y=v*0.35+sin(i*$PI*4+t*3)*0.08; hue=i+t*0.15; red=sin(hue*$PI*2)*0.5+0.5; green=sin((hue+0.33)*$PI*2)*0.5+0.5; blue=sin((hue+0.66)*$PI*2)*0.5+0.5"
+      }
+    }
+  ]
+}

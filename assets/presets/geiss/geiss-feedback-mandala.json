@@ -1,0 +1,40 @@
+{
+  "name": "Geiss - Feedback Mandala",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "FadeOut",
+      "enabled": true,
+      "speed": 5,
+      "color": "#020104"
+    },
+    {
+      "type": "MilkDropMotion",
+      "enabled": true,
+      "code": {
+        "init": "decay=0.985",
+        "perFrame": "zoom=0.98+getspec(0,0.08,0)*0.02; rot=0.01+getspec(0.3,0.1,0)*0.03; warp=2.0+sin(time*0.3)*1.5",
+        "perVertex": ""
+      },
+      "gridSize": 32
+    },
+    {
+      "type": "DarkenCenter",
+      "enabled": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": ["#ff8844", "#44ff88", "#8844ff"],
+      "code": {
+        "init": "n=256; t=0",
+        "perFrame": "t=t+0.02; bass=getspec(0,0.05,0); sc=0.35+bass*0.15",
+        "onBeat": "sc=0.55",
+        "perPoint": "a=i*$PI*6+t; r=sc*(0.5+i*0.5)+v*0.08; x=cos(a)*r; y=sin(a)*r; red=sin(i*$PI*2+t)*0.5+0.5; green=sin(i*$PI*2+t+2.1)*0.5+0.5; blue=sin(i*$PI*2+t+4.2)*0.5+0.5"
+      }
+    }
+  ]
+}
