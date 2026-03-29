@@ -5,7 +5,7 @@
  * Imported and initialised from ui.js.
  */
 
-import { authors, packs, presets } from './catalog.js';
+import { authors, packs, groups, presets } from './catalog.js';
 
 // ── State ───────────────────────────────────────────────────────────
 
@@ -23,11 +23,15 @@ const searchIndex = presets.map(p => {
   return `${p.title} ${authorName} ${packNames}`.toLowerCase();
 });
 
+// Build author lookup
+const authorById = Object.fromEntries(authors.map(a => [a.id, a]));
+
 // Count presets per author and per pack
 const authorPresetCount = {};
 const packPresetCount = {};
 for (const p of presets) {
-  authorPresetCount[p.authorId] = (authorPresetCount[p.authorId] || 0) + 1;
+  const key = p.authorId || '_unknown';
+  authorPresetCount[key] = (authorPresetCount[key] || 0) + 1;
   for (const pid of p.packIds) {
     packPresetCount[pid] = (packPresetCount[pid] || 0) + 1;
   }
@@ -132,21 +136,27 @@ function onKeydown(e) {
 function renderSidebar() {
   navTree.innerHTML = '';
 
-  if (currentView === 'authors') {
-    // "All" item
-    const allItem = makeNavItem('All Presets', presets.length, () => {
-      filterAuthorId = null;
-      filterPackId = null;
-      renderSidebar();
-      renderPresetList();
-      updateBreadcrumb();
-    });
-    allItem.classList.add('lib-nav-all');
-    if (!filterAuthorId && !filterPackId) allItem.classList.add('active');
-    navTree.appendChild(allItem);
+  // "All" item — always present
+  const allItem = makeNavItem('All Presets', presets.length, () => {
+    filterAuthorId = null;
+    filterPackId = null;
+    renderSidebar();
+    renderPresetList();
+    updateBreadcrumb();
+  });
+  allItem.classList.add('lib-nav-all');
+  if (!filterAuthorId && !filterPackId) allItem.classList.add('active');
+  navTree.appendChild(allItem);
 
-    for (const author of authors) {
+  if (currentView === 'authors') {
+    // Sort authors by preset count descending
+    const sortedAuthors = [...authors].sort((a, b) =>
+      (authorPresetCount[b.id] || 0) - (authorPresetCount[a.id] || 0)
+    );
+
+    for (const author of sortedAuthors) {
       const count = authorPresetCount[author.id] || 0;
+      if (count === 0) continue;
       const authorItem = makeNavItem(author.name, count, () => {
         filterAuthorId = author.id;
         filterPackId = null;
@@ -157,7 +167,7 @@ function renderSidebar() {
       if (filterAuthorId === author.id && !filterPackId) authorItem.classList.add('active');
       navTree.appendChild(authorItem);
 
-      // Sub-packs for this author
+      // Sub-packs for this author (show when author is selected)
       const authorPacks = packs.filter(p => p.authorId === author.id);
       if (filterAuthorId === author.id && authorPacks.length > 1) {
         for (const pack of authorPacks) {
@@ -175,19 +185,66 @@ function renderSidebar() {
         }
       }
     }
+
+    // Compilation packs (no single author)
+    const compilationPacks = packs.filter(p => p.authorId === null);
+    if (compilationPacks.length > 0) {
+      // Group separator
+      const sep = document.createElement('div');
+      sep.className = 'lib-nav-item';
+      sep.innerHTML = '<span class="lib-nav-name" style="opacity:0.4;font-size:10px">COMPILATIONS</span>';
+      navTree.appendChild(sep);
+
+      for (const group of groups) {
+        const gCount = group.packIds.reduce((sum, pid) => sum + (packPresetCount[pid] || 0), 0);
+        const groupItem = makeNavItem(group.name, gCount, () => {
+          filterAuthorId = `_group:${group.id}`;
+          filterPackId = null;
+          renderSidebar();
+          renderPresetList();
+          updateBreadcrumb();
+        });
+        if (filterAuthorId === `_group:${group.id}` && !filterPackId) groupItem.classList.add('active');
+        navTree.appendChild(groupItem);
+
+        // Show sub-packs when group is selected
+        if (filterAuthorId === `_group:${group.id}`) {
+          for (const pid of group.packIds) {
+            const pack = packs.find(p => p.id === pid);
+            if (!pack) continue;
+            const pCount = packPresetCount[pid] || 0;
+            const packItem = makeNavItem(pack.name, pCount, () => {
+              filterAuthorId = `_group:${group.id}`;
+              filterPackId = pid;
+              renderSidebar();
+              renderPresetList();
+              updateBreadcrumb();
+            });
+            packItem.classList.add('lib-nav-sub');
+            if (filterPackId === pid) packItem.classList.add('active');
+            navTree.appendChild(packItem);
+          }
+        }
+      }
+
+      // Standalone compilation packs not in any group
+      const groupedPackIds = new Set(groups.flatMap(g => g.packIds));
+      const standalone = compilationPacks.filter(p => !groupedPackIds.has(p.id));
+      for (const pack of standalone) {
+        const pCount = packPresetCount[pack.id] || 0;
+        const item = makeNavItem(pack.name, pCount, () => {
+          filterPackId = pack.id;
+          filterAuthorId = null;
+          renderSidebar();
+          renderPresetList();
+          updateBreadcrumb();
+        });
+        if (filterPackId === pack.id) item.classList.add('active');
+        navTree.appendChild(item);
+      }
+    }
   } else {
     // Packs view — flat list sorted alphabetically
-    const allItem = makeNavItem('All Presets', presets.length, () => {
-      filterAuthorId = null;
-      filterPackId = null;
-      renderSidebar();
-      renderPresetList();
-      updateBreadcrumb();
-    });
-    allItem.classList.add('lib-nav-all');
-    if (!filterPackId) allItem.classList.add('active');
-    navTree.appendChild(allItem);
-
     const sorted = [...packs].sort((a, b) => a.name.localeCompare(b.name));
     for (const pack of sorted) {
       const count = packPresetCount[pack.id] || 0;
@@ -225,7 +282,7 @@ function renderPresetList() {
     if (p.id === activePresetId) row.classList.add('active');
     row.dataset.id = p.id;
 
-    const authorName = authors.find(a => a.id === p.authorId)?.name || '';
+    const authorName = authorById[p.authorId]?.name || '';
     const packName = p.packIds.map(pid => packs.find(pk => pk.id === pid)?.name || '').join(', ');
 
     row.innerHTML = `<span class="lib-preset-title">${esc(p.title)}</span><span class="lib-preset-meta">${esc(authorName)} &middot; ${esc(packName)}</span>`;
@@ -243,7 +300,17 @@ function getFilteredPresets() {
   let result = presets;
 
   if (filterAuthorId) {
-    result = result.filter(p => p.authorId === filterAuthorId);
+    if (filterAuthorId.startsWith('_group:')) {
+      // Filter by group: show presets in any of the group's packs
+      const groupId = filterAuthorId.slice(7);
+      const group = groups.find(g => g.id === groupId);
+      if (group) {
+        const packSet = new Set(group.packIds);
+        result = result.filter(p => p.packIds.some(pid => packSet.has(pid)));
+      }
+    } else {
+      result = result.filter(p => p.authorId === filterAuthorId);
+    }
   }
 
   if (filterPackId) {
@@ -258,8 +325,14 @@ function getFilteredPresets() {
 function updateBreadcrumb() {
   const parts = ['All Presets'];
   if (filterAuthorId) {
-    const author = authors.find(a => a.id === filterAuthorId);
-    if (author) parts.push(author.name);
+    if (filterAuthorId.startsWith('_group:')) {
+      const groupId = filterAuthorId.slice(7);
+      const group = groups.find(g => g.id === groupId);
+      if (group) parts.push(group.name);
+    } else {
+      const author = authorById[filterAuthorId];
+      if (author) parts.push(author.name);
+    }
   }
   if (filterPackId) {
     const pack = packs.find(p => p.id === filterPackId);

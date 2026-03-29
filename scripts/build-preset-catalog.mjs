@@ -4,7 +4,8 @@
  * One-time Node.js script that:
  *  1. Copies .avs files from C:\code\avs into assets/presets/{author}/{pack}/
  *  2. Sanitises every filename for web-safe URLs
- *  3. Generates js/preset-library/catalog.js (lightweight metadata only)
+ *  3. Extracts per-preset authors from filenames in compilation packs
+ *  4. Generates js/preset-library/catalog.js (lightweight metadata only)
  *
  * Usage:  node scripts/build-preset-catalog.mjs
  */
@@ -20,6 +21,7 @@ const OUT_CATALOG = 'js/preset-library/catalog.js';
 
 const UNICODE_MAP = {
   '\u00b2': '2', '\u00b3': '3', '\u00b9': '1', '\u00ba': '0',
+  '\u00b0': '0',
   '\u00e0': 'a', '\u00e1': 'a', '\u00e2': 'a', '\u00e3': 'a', '\u00e4': 'a', '\u00e5': 'a',
   '\u00e6': 'ae',
   '\u00e7': 'c',
@@ -45,32 +47,197 @@ function sanitise(name) {
   return s;
 }
 
-function cleanTitle(filename) {
+// ── Author extraction from filenames ────────────────────────────────
+
+// Known author name variants → canonical author id
+const AUTHOR_ALIASES = {
+  'jheriko': 'jheriko', 'jheriko': 'jheriko',
+  'tuggummi': 'tuggummi',
+  'unconed': 'unconed',
+  's_kupers': 'skupers', 'skupers': 'skupers', 's kupers': 'skupers',
+  'el-vis': 'el-vis', 'elvis': 'el-vis',
+  'pak-9': 'pak-9', 'pak9': 'pak-9',
+  'raz': 'raz',
+  'grandchild': 'grandchild',
+  'danjoe': 'danjoe',
+  'zevensoft': 'zevensoft',
+  'degnic': 'degnic',
+  'mig': 'mig',
+  'duo': 'duo',
+  'yathosho': 'yathosho',
+  'mr_nudge': 'mr-nudge', 'mr nudge': 'mr-nudge',
+  'hboy': 'hboy',
+  'nic01': 'nic01', 'nic': 'nic01',
+  'l1quid': 'l1quid',
+  'd&l': 'dl',
+  'p-k': 'pk',
+  'justin': 'justin',
+  'avsking': 'avsking', 'avs king': 'avsking',
+  'pj': 'pj',
+  'fck': 'fck',
+  'amphirion': 'amphirion',
+  'nixa': 'nixa',
+  'horse-fly': 'horse-fly',
+  'j.melo': 'jmelo',
+  'javs': 'javs',
+  'ishan': 'ishan',
+  'mysterious_w': 'mysterious-w',
+  'doggy dog': 'doggy-dog',
+  'wotl': 'wotl',
+  'akx': 'akx',
+  '^..^': 'caret',
+  'visbot': 'visbot',
+  'splendora': 'splendora',
+  'zxe': 'zxe',
+};
+
+// Display names for canonical author ids
+const AUTHOR_DISPLAY = {
+  'jheriko': 'Jheriko',
+  'tuggummi': 'Tuggummi',
+  'unconed': 'UnConeD',
+  'skupers': 'S_KuPeRS',
+  'el-vis': 'EL-VIS',
+  'pak-9': 'PAK-9',
+  'raz': 'Raz',
+  'grandchild': 'Grandchild',
+  'danjoe': 'danjoe',
+  'zevensoft': 'Zevensoft',
+  'degnic': 'Degnic',
+  'mig': 'mig',
+  'duo': 'Duo',
+  'yathosho': 'Yathosho',
+  'mr-nudge': 'Mr_Nudge',
+  'hboy': 'Hboy',
+  'nic01': 'Nic01',
+  'l1quid': 'L1quid',
+  'dl': 'D&L',
+  'pk': 'p-k',
+  'justin': 'Justin',
+  'avsking': 'avsking',
+  'pj': 'PJ',
+  'fck': 'fck',
+  'amphirion': 'amphirion',
+  'nixa': 'nixa',
+  'horse-fly': 'horse-fly',
+  'jmelo': 'J.Melo',
+  'javs': 'JaVS',
+  'ishan': 'Ishan',
+  'mysterious-w': 'Mysterious_w',
+  'doggy-dog': 'Doggy Dog',
+  'wotl': 'WotL',
+  'akx': 'AKX',
+  'caret': '^..^',
+  'visbot': 'VISBOT',
+  'splendora': 'splendora',
+  'zxe': 'zxe',
+};
+
+/**
+ * Try to extract an author from a preset filename.
+ * Common patterns:
+ *   "Author - Title.avs"
+ *   "Author-Title.avs"
+ *   "WFC1 - 08 - Jheriko - Fractal Tunnel.avs"
+ *   "08 - Author - Title.avs"
+ */
+function extractAuthorFromFilename(filename) {
+  let name = filename.replace(/\.avs$/i, '');
+
+  // Strip WFC/FF prefixes: "WFC1 - 08 - Author - Title" → "Author - Title"
+  name = name.replace(/^(?:WFC\d+|FF\s*\d+)\s*-\s*\d+\s*-\s*/i, '');
+  // Strip "Original - " prefix from WFC5
+  name = name.replace(/^Original\s*-\s*/i, '');
+  // Strip leading track numbers: "08 - Author - Title" → "Author - Title"
+  name = name.replace(/^\d+\s*-\s*/, '');
+
+  // Try "Author - Title" pattern
+  const dashMatch = name.match(/^([^-]+?)\s*-\s*/);
+  if (dashMatch) {
+    const candidate = dashMatch[1].trim().toLowerCase();
+    // Check against known aliases
+    for (const [alias, id] of Object.entries(AUTHOR_ALIASES)) {
+      if (candidate === alias || candidate.replace(/[_\s]/g, '') === alias.replace(/[_\s]/g, '')) {
+        return id;
+      }
+    }
+    // If it looks like a plausible author name (short, no spaces or just one)
+    if (candidate.length <= 20 && candidate.split(/\s+/).length <= 3) {
+      return null; // Unknown author, don't force-assign
+    }
+  }
+  return null;
+}
+
+// Author prefix abbreviations used in filenames
+const AUTHOR_FILENAME_PREFIXES = {
+  'jheriko': ['Jheriko', 'JHERiKO'],
+  'tuggummi': ['Tuggummi'],
+  'unconed': ['UnConeD'],
+  'skupers': ['S_KuPeRS', 's_kupers', 'skupers'],
+  'raz': ['Raz'],
+  'pak-9': ['PAK-9', 'Pak-9'],
+  'grandchild': ['GC', 'Grandchild'],
+  'danjoe': ['danjoe'],
+  'zevensoft': ['Zevensoft'],
+  'visbot': ['VISBOT', 'Visbot'],
+  'duo': ['Duo'],
+  'degnic': ['Degnic'],
+  'el-vis': ['EL-VIS', 'El-Vis'],
+};
+
+function cleanTitle(filename, packAuthorId) {
   let t = filename.replace(/\.avs$/i, '');
-  t = t.replace(/^(?:Jheriko|JHERiKO|Tuggummi)\s*-\s*(?:\d+\s*-\s*)?/i, '');
-  t = t.replace(/^\d+\s*-\s*/, '');
+
+  // Strip WFC/FF prefixes
+  t = t.replace(/^(?:WFC\d+|FF\s*\d+)\s*-\s*\d+\s*-\s*/i, '');
+  // Strip "Original - " prefix from WFC5
+  t = t.replace(/^Original\s*-\s*/i, '');
+  // Strip leading track numbers like "3-01 - " or "02 - "
+  t = t.replace(/^\d+-?\d*\s*-\s*/, '');
+
+  // If pack has a known single author, strip their name prefix
+  if (packAuthorId) {
+    const prefixes = AUTHOR_FILENAME_PREFIXES[packAuthorId] || [];
+    const displayName = AUTHOR_DISPLAY[packAuthorId];
+    if (displayName) prefixes.push(displayName);
+    for (const p of new Set(prefixes)) {
+      const re = new RegExp(`^${escapeRegex(p)}\\s*-\\s*`, 'i');
+      t = t.replace(re, '');
+    }
+  }
+
   return t.trim() || filename.replace(/\.avs$/i, '');
+}
+
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // ── Source mapping ──────────────────────────────────────────────────
 
-const SOURCE_MAP = [
-  // Jheriko packs
-  { dir: 'Jheriko',                                  authorId: 'jheriko', packId: 'jheriko-j10',              packName: 'J10',                        sub: 'J\u00b9\u00ba' },
-  { dir: 'Jheriko - HiRes',                          authorId: 'jheriko', packId: 'jheriko-hires',            packName: 'HiRes' },
-  { dir: 'Jheriko - J7',                             authorId: 'jheriko', packId: 'jheriko-j7',               packName: 'J7' },
-  { dir: 'Jheriko - Pack 9',                         authorId: 'jheriko', packId: 'jheriko-pack-9',           packName: 'Pack 9' },
-  { dir: 'JHERiKO - Pack II - The Geometry of Light', authorId: 'jheriko', packId: 'jheriko-pack-ii',         packName: 'Pack II - The Geometry of Light' },
-  { dir: 'JHERiKO - Pack III - Redemption',          authorId: 'jheriko', packId: 'jheriko-pack-iii',         packName: 'Pack III - Redemption' },
-  { dir: 'JHERiKO - Pack IV - Clarity of Vision',    authorId: 'jheriko', packId: 'jheriko-pack-iv',          packName: 'Pack IV - Clarity of Vision' },
-  { dir: 'JHERiKO - Purely Platonic Minipack',       authorId: 'jheriko', packId: 'jheriko-purely-platonic',  packName: 'Purely Platonic Minipack' },
-  { dir: 'JHERiKO - RePack 1 - The Atonement',      authorId: 'jheriko', packId: 'jheriko-repack-1',         packName: 'RePack 1 - The Atonement' },
+const SOURCE_MAP = [];
 
-  // Winamp 5 Picks
-  { dir: 'Winamp 5 Picks', authorId: 'various', packId: 'winamp-5-picks', packName: 'Winamp 5 Picks' },
-];
+function addPack(dir, authorId, packId, packName, sub) {
+  SOURCE_MAP.push({ dir, authorId, packId, packName, sub, isCompilation: false });
+}
 
-// Tuggummi — each subdirectory becomes its own pack
+function addCompilation(dir, packId, packName, sub) {
+  SOURCE_MAP.push({ dir, authorId: null, packId, packName, sub, isCompilation: true });
+}
+
+// ── Jheriko packs ───────────────────────────────────────────────────
+addPack('Jheriko', 'jheriko', 'jheriko-j10', 'J10', 'J\u00b9\u00ba');
+addPack('Jheriko - HiRes', 'jheriko', 'jheriko-hires', 'HiRes');
+addPack('Jheriko - J7', 'jheriko', 'jheriko-j7', 'J7');
+addPack('Jheriko - Pack 9', 'jheriko', 'jheriko-pack-9', 'Pack 9');
+addPack('JHERiKO - Pack II - The Geometry of Light', 'jheriko', 'jheriko-pack-ii', 'Pack II - The Geometry of Light');
+addPack('JHERiKO - Pack III - Redemption', 'jheriko', 'jheriko-pack-iii', 'Pack III - Redemption');
+addPack('JHERiKO - Pack IV - Clarity of Vision', 'jheriko', 'jheriko-pack-iv', 'Pack IV - Clarity of Vision');
+addPack('JHERiKO - Purely Platonic Minipack', 'jheriko', 'jheriko-purely-platonic', 'Purely Platonic Minipack');
+addPack('JHERiKO - RePack 1 - The Atonement', 'jheriko', 'jheriko-repack-1', 'RePack 1 - The Atonement');
+
+// ── Tuggummi packs ──────────────────────────────────────────────────
 const TUGGUMMI_SUBS = [
   '## - Singles 2004 EP',
   '01 - 1st Shot', '02 - Basic Blocks', '03 - RIP OFF', '04 - Progression',
@@ -81,39 +248,97 @@ const TUGGUMMI_SUBS = [
   '19 - Extra Dimension', '20 - Functions',
   'AA - Misc', 'AB - Original Singles', 'AC - Remix Singles',
 ];
-
 for (const sub of TUGGUMMI_SUBS) {
-  const packSlug = sanitise(sub);
-  SOURCE_MAP.push({
-    dir: 'Tuggummi',
-    sub,
-    authorId: 'tuggummi',
-    packId: `tuggummi-${packSlug}`,
-    packName: sub,
-  });
+  addPack('Tuggummi', 'tuggummi', `tuggummi-${sanitise(sub)}`, sub, sub);
 }
 
-// ── Authors ─────────────────────────────────────────────────────────
+// ── UnConeD packs ───────────────────────────────────────────────────
+addPack('UnConeD', 'unconed', 'unconed-final-whack', 'Final Whack', 'Final Whack - UnConeD');
+addPack('UnConeD', 'unconed', 'unconed-whacko-i', 'Whacko AVS', 'Whacko AVS pack');
+addPack('UnConeD', 'unconed', 'unconed-whacko-ii', 'Whacko AVS II', 'Whacko AVS II');
+addPack('UnConeD', 'unconed', 'unconed-whacko-iii', 'Whacko AVS III', 'Whacko AVS III');
+addPack('UnConeD', 'unconed', 'unconed-whacko-iv', 'Whacko AVS IV', 'Whacko AVS IV');
+addPack('UnConeD', 'unconed', 'unconed-whacko-v', 'Whacko AVS V', 'Whacko AVS V');
+addPack('UnConeD', 'unconed', 'unconed-whacko-vi', 'Whacko AVS VI', 'Whacko AVS VI');
+addPack('UnConeD', 'unconed', 'unconed-whacko-revisited', 'Whacko Revisited', 'Whacko Revisited');
 
-const AUTHORS = [
-  { id: 'jheriko',  name: 'Jheriko' },
-  { id: 'tuggummi', name: 'Tuggummi' },
-  { id: 'various',  name: 'Various Artists' },
+// ── S_KuPeRS packs ─────────────────────────────────────────────────
+addPack('S_KuPeRS - LP7 - Viima', 'skupers', 'skupers-lp7-viima', 'LP7 - Viima');
+addPack('s_kupers - lp8 - ætherius', 'skupers', 'skupers-lp8-aetherius', 'LP8 - Aetherius');
+
+// ── Raz packs ───────────────────────────────────────────────────────
+addPack('Raz - One', 'raz', 'raz-one', 'One');
+addPack('Raz - Two', 'raz', 'raz-two', 'Two');
+addPack('Raz - Three', 'raz', 'raz-three', 'Three');
+addPack('Raz - Four', 'raz', 'raz-four', 'Four');
+
+// ── PAK-9 packs ─────────────────────────────────────────────────────
+addPack('PAK-9 AVS 4 SE', 'pak-9', 'pak-9-avs-4-se', 'AVS 4 SE');
+addPack('PAK-9 AVS 5', 'pak-9', 'pak-9-avs-5', 'AVS 5');
+
+// ── Grandchild ──────────────────────────────────────────────────────
+addPack('Grandchild', 'grandchild', 'grandchild-vis-comica', 'Vis Comica', '3 - Vis Comica');
+addPack('Grandchild', 'grandchild', 'grandchild-cambodia', 'Cambodia', 'MP02 - Cambodia');
+addPack('Grandchild', 'grandchild', 'grandchild-pee-by-the-tree', 'Pee by the Tree', 'MP03 - pee by the tree');
+
+// ── danjoe ──────────────────────────────────────────────────────────
+addPack('danjoe - ONE', 'danjoe', 'danjoe-one', 'ONE');
+
+// ── Zevensoft packs ─────────────────────────────────────────────────
+addPack('Zevensoft 1', 'zevensoft', 'zevensoft-1', 'Pack 1');
+addPack('Zevensoft_AVSPack2', 'zevensoft', 'zevensoft-2', 'Pack 2');
+addPack('Zevensoft_AVSPack3', 'zevensoft', 'zevensoft-3', 'Pack 3');
+addPack('Zevensoft_AVSPack4', 'zevensoft', 'zevensoft-4', 'Pack 4');
+
+// ── VISBOT packs ────────────────────────────────────────────────────
+addPack('VISBOT', 'visbot', 'visbot-x', 'VISBOT X', 'VC010 VISBOT X');
+addPack('VISBOT', 'visbot', 'visbot-nps-vol4', 'New People Selection Vol 4', 'VISBOT New People Selection Vol 4');
+addPack('VISBOT', 'visbot', 'visbot-refocused', 'Refocused', 'VISBOT Refocused');
+
+// ── Dynamic Duo ─────────────────────────────────────────────────────
+addPack('Dynamic Duo', 'duo', 'dynamic-duo', 'Dynamic Duo');
+
+// ── Finnish Flash (compilations — per-preset author extraction) ─────
+addCompilation('Finnish Flash 6', 'finnish-flash-6', 'Finnish Flash 6');
+addCompilation('Finnish Flash 7', 'finnish-flash-7', 'Finnish Flash 7');
+addCompilation('Finnish Flash 8', 'finnish-flash-8', 'Finnish Flash 8');
+
+// ── Winamp Picks (compilation) ──────────────────────────────────────
+addCompilation('Winamp 5 Picks', 'winamp-5-picks', 'Winamp 5 Picks');
+
+// ── Winamp Forums Compilations ──────────────────────────────────────
+addCompilation('Winamp Forums Compilation 1', 'wfc-1', 'Winamp Forums Compilation 1');
+addCompilation('Winamp Forums Compilation 2', 'wfc-2', 'Winamp Forums Compilation 2');
+addCompilation('Winamp Forums Compilation 3', 'wfc-3', 'Winamp Forums Compilation 3');
+addCompilation('Winamp Forums Compilation 4', 'wfc-4', 'Winamp Forums Compilation 4');
+addCompilation('Winamp Forums', 'wfc-5', 'Winamp Forums Compilation 5', 'Winamp Forums Compilation 5');
+addCompilation('Winamp Forums Compilation 6', 'wfc-6', 'Winamp Forums Compilation 6');
+
+// ── Group IDs for compilations/series ───────────────────────────────
+const GROUPS = [
+  { id: 'winamp-forums', name: 'Winamp Forums', packIds: ['wfc-1', 'wfc-2', 'wfc-3', 'wfc-4', 'wfc-5', 'wfc-6'] },
+  { id: 'finnish-flash', name: 'Finnish Flash', packIds: ['finnish-flash-6', 'finnish-flash-7', 'finnish-flash-8'] },
 ];
 
 // ── Main ────────────────────────────────────────────────────────────
 
-const packs = [];
+const authorsMap = new Map(); // id → { id, name }
+const packsArr = [];
 const presets = [];
 const seenPackIds = new Set();
 let presetCounter = 0;
+
+function ensureAuthor(id) {
+  if (!authorsMap.has(id)) {
+    authorsMap.set(id, { id, name: AUTHOR_DISPLAY[id] || id });
+  }
+}
 
 for (const entry of SOURCE_MAP) {
   const srcDir = entry.sub
     ? join(AVS_ROOT, entry.dir, entry.sub)
     : join(AVS_ROOT, entry.dir);
 
-  // Check directory exists
   try {
     await stat(srcDir);
   } catch {
@@ -121,15 +346,25 @@ for (const entry of SOURCE_MAP) {
     continue;
   }
 
-  // Register pack (deduplicate)
+  // Register pack
   if (!seenPackIds.has(entry.packId)) {
     seenPackIds.add(entry.packId);
-    packs.push({ id: entry.packId, name: entry.packName, authorId: entry.authorId });
+    packsArr.push({
+      id: entry.packId,
+      name: entry.packName,
+      authorId: entry.authorId,   // null for compilations
+    });
+  }
+
+  // Register pack author
+  if (entry.authorId) {
+    ensureAuthor(entry.authorId);
   }
 
   // Determine output directory
-  const packSlug = entry.packId.replace(`${entry.authorId}-`, '');
-  const outDir = join(OUT_PRESETS, entry.authorId, packSlug);
+  const outBase = entry.authorId || 'compilations';
+  const packSlug = entry.packId;
+  const outDir = join(OUT_PRESETS, outBase, packSlug);
   await mkdir(outDir, { recursive: true });
 
   // List .avs files
@@ -144,7 +379,7 @@ for (const entry of SOURCE_MAP) {
   for (const file of files.sort()) {
     const sanitisedName = sanitise(basename(file, extname(file))) + '.avs';
     const outPath = join(outDir, sanitisedName);
-    const relPath = join(entry.authorId, packSlug, sanitisedName).replace(/\\/g, '/');
+    const relPath = join(outBase, packSlug, sanitisedName).replace(/\\/g, '/');
 
     // Copy file
     try {
@@ -154,7 +389,7 @@ for (const entry of SOURCE_MAP) {
       continue;
     }
 
-    // Check if this preset already exists (for multi-pack membership)
+    // Check for duplicate file path
     const existing = presets.find(p => p.file === relPath);
     if (existing) {
       if (!existing.packIds.includes(entry.packId)) {
@@ -163,32 +398,25 @@ for (const entry of SOURCE_MAP) {
       continue;
     }
 
-    // Also check if same sanitised name exists under a different pack for same author
-    // (for Winamp Picks containing presets from known authors)
-    const title = cleanTitle(file);
+    // Determine per-preset author
+    let presetAuthorId = entry.authorId;
+    if (entry.isCompilation) {
+      presetAuthorId = extractAuthorFromFilename(file);
+      if (presetAuthorId) {
+        ensureAuthor(presetAuthorId);
+      }
+    }
+
+    const title = cleanTitle(file, entry.authorId);
     presetCounter++;
 
     presets.push({
       id: `${entry.packId}-${String(presetCounter).padStart(4, '0')}`,
       title,
-      authorId: entry.authorId,
+      authorId: presetAuthorId || null,
       packIds: [entry.packId],
       file: relPath,
     });
-  }
-}
-
-// ── Detect Winamp Picks presets that belong to known authors ─────────
-
-for (const preset of presets) {
-  if (preset.packIds.includes('winamp-5-picks')) {
-    const lowerTitle = preset.title.toLowerCase();
-    const lowerFile = preset.file.toLowerCase();
-    // Check if title suggests a known author
-    if (lowerFile.includes('tuggummi') || lowerTitle.startsWith('tuggummi')) {
-      // Don't change authorId — leave in "various" for Winamp Picks
-      // The pack membership already handles discoverability
-    }
   }
 }
 
@@ -196,15 +424,21 @@ for (const preset of presets) {
 
 presets.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
 
+// ── Build final authors array ───────────────────────────────────────
+
+const authorsArr = [...authorsMap.values()].sort((a, b) => a.name.localeCompare(b.name));
+
 // ── Generate catalog.js ─────────────────────────────────────────────
 
 const catalogSource = `// Auto-generated by scripts/build-preset-catalog.mjs — do not edit manually
 // Generated: ${new Date().toISOString()}
-// Total: ${presets.length} presets, ${packs.length} packs, ${AUTHORS.length} authors
+// Total: ${presets.length} presets, ${packsArr.length} packs, ${authorsArr.length} authors
 
-export const authors = ${JSON.stringify(AUTHORS, null, 2)};
+export const authors = ${JSON.stringify(authorsArr, null, 2)};
 
-export const packs = ${JSON.stringify(packs, null, 2)};
+export const packs = ${JSON.stringify(packsArr, null, 2)};
+
+export const groups = ${JSON.stringify(GROUPS, null, 2)};
 
 export const presets = ${JSON.stringify(presets, null, 2)};
 `;
@@ -216,13 +450,14 @@ await writeFile(OUT_CATALOG, catalogSource, 'utf-8');
 
 const byAuthor = {};
 for (const p of presets) {
-  byAuthor[p.authorId] = (byAuthor[p.authorId] || 0) + 1;
+  const key = p.authorId || '(unknown)';
+  byAuthor[key] = (byAuthor[key] || 0) + 1;
 }
 
 console.log(`\n✓ Preset catalog built successfully`);
-console.log(`  ${presets.length} presets across ${packs.length} packs`);
-for (const [author, count] of Object.entries(byAuthor)) {
-  console.log(`  ${author}: ${count}`);
+console.log(`  ${presets.length} presets across ${packsArr.length} packs by ${authorsArr.length} authors`);
+for (const [author, count] of Object.entries(byAuthor).sort((a, b) => b[1] - a[1])) {
+  console.log(`    ${author}: ${count}`);
 }
 console.log(`  Output: ${OUT_CATALOG}`);
 console.log(`  Assets: ${OUT_PRESETS}/`);
