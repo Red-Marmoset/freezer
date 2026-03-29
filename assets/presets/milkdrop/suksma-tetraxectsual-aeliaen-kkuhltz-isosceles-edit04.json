@@ -11,6 +11,22 @@
         "perVertex": "//flip= (-2 * ((sin(time)) > (-0.9)) )+1;;\n//var=(bass+mid+treb)/3;;\n//rot=((ang&rad/rad)/(var*20))/10;;\n//sx=.99-(var*0.01);;\n//cx=var*0.1*(ang/12);;\n//sy=sx;;\n//zoom=-1;;\nsx=-1+(bass*0.2);;\nsy=-1-(treb*0.2);;\ncx=0.5+q4;;\ncy=0.5-q5;;\nrd=sqrt( sqr( (x-0.5-q4)*2) + sqr( (y-0.5+q5)*1.5 ) );;\n//zm=(1.1-(rd/4));;\nzm=1;;\nag=atan( (y-0.5+q5)/(x-0.5-q4) );;\nstar=sin(ag*6+time)*((2-rd)-ag)/5;;\nzm=zm+star/20;;\nsx=zm*rd;;\nsy=zm*rd;;\n//rot=((rd) > (0.7))*(rd-0.7)*sin(time*0.3)"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
     }
   ]
 }

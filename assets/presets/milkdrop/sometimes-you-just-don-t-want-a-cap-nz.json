@@ -11,6 +11,22 @@
         "perVertex": "radc=sqr(q1-x)+sqr(q2-y);;\nnear=((radc) < (.015));;\nnotnear = 1- near;;\n//sy=max(0.3,pow(bass_att,.2))*near + notnear;;\n//sx=1/sy*near + notnear;;\n//rot = .01*sin(x*5+time)*notnear-.015;;\nrot = .015*notnear;;\n//zoom = 1+ notnear*.01*(.5+sin(ang*5+time));;\nangc=atan((y-cy)/(x-cx))+((x) < (cx))*sign(y-cy)*3.14159;;\n//dx=(x-cx)*.03*(cos(angc*3)*3+2);//*notnear;;\n//dy=(y-cy)*.03*(sin(angc*3)*3+2);//*notnear;;\n//zoom=1-angc/3.14159*.07;;\nshift = -.02*(pow(cos(angc*.5-time*1.1-pow(radc,.4)*8),6)-.6)*notnear;;\ndx=cos(angc)*shift;;\ndy=sin(angc)*shift;"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a64d"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.8; y=v*0.5"
+      }
     }
   ]
 }

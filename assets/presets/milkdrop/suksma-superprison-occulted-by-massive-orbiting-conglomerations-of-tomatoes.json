@@ -11,6 +11,22 @@
         "perVertex": "ti = time*.3;;\nmx = x - .5 + .25*(sin(ti*1.1278) + sin(ti*.7458));;\nmy = y - .5 + .25*(sin(ti*.9454) + sin(ti*1.2378));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q1)*q4;;\ndx = zm*(x-mx);;\ndy = zm*(y-my);;\nmx = x - .5 + .25*(sin(ti*1.3185) + sin(ti*.9105));;\nmy = y - .5 + .25*(sin(ti*.8113) + sin(ti*1.0287));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q1)*q4;;\ndx = dx + zm*(x-mx);;\ndy = dy + zm*(y-my);;\nmx = x - .5 + .25*(sin(ti*1.3488) + sin(ti*.8552));;\nmy = y - .5 + .25*(sin(ti*.7366) + sin(ti*1.1447));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q2)*q5;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;;\nmx = x - .5 + .25*(sin(ti*1.1385) + sin(ti*.9901));;\nmy = y - .5 + .25*(sin(ti*.7028) + sin(ti*1.3548));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q2)*q5;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;;\nmx = x - .5 + .25*(sin(ti*1.3544) + sin(ti*.8926));;\nmy = y - .5 + .25*(sin(ti*.9021) + sin(ti*1.2468));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q3)*q6;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;;\nmx = x - .5 + .25*(sin(ti*1.5416) + sin(ti*.7852));;\nmy = y - .5 + .25*(sin(ti*.7436) + sin(ti*1.3266));;\nzm = cos(pow(mx*mx*1.5 + my*my,.5)*16 - q3)*q6;;\ndx = dx + zm*mx;;\ndy = dy + zm*my;"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#a6a6a6"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.8; y=v*0.5"
+      }
     }
   ]
 }

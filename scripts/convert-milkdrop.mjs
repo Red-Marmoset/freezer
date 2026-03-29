@@ -276,9 +276,10 @@ function milkToFreezer(parsed, name) {
     if (sc) components.push(sc);
   }
 
-  // 5. Built-in waveform (if wave alpha > 0 and no custom waves replace it)
+  // 5. Built-in waveform — always include one so there's something visible
+  // in the feedback loop. MilkDrop always draws a waveform.
   const hasCustomWaves = parsed.waves.some(w => w && w.enabled);
-  if (!hasCustomWaves && (p.fWaveAlpha || 0) > 0.01) {
+  if (!hasCustomWaves) {
     components.push(buildBuiltinWave(p));
   }
 

@@ -11,6 +11,22 @@
         "perVertex": "thresh = ((bass_att) > (thresh))*2+(1-((bass_att) > (thresh)))*((thresh-1.3)*0.96+1.3);;\ndx_r = ((thresh) == (2))*0.15*sin(5*time)+(1-((thresh) == (2)))*dx_r;;\ndy_r = ((thresh) == (2))*0.165*sin(6*time)+(1-((thresh) == (2)))*dy_r;;\nzoom = zoom - 0.06;;\ndx = dx + 0.025*sin(abs(24*y))*sin(time);;\ndy = dy + 0.025*sin(abs(24*x))*cos(time);;\nsx = sx - 0.025*sin(cos(24*rad))*cos(time);;\nsy = sy - 0.025*sin(cos(24*rad))*sin(time);"
       },
       "gridSize": 48
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "SPECTRUM",
+      "audioChannel": "CENTER",
+      "colors": [
+        "#808080"
+      ],
+      "code": {
+        "init": "n=256",
+        "perFrame": "",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.4"
+      }
     }
   ]
 }
