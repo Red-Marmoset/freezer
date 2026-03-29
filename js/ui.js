@@ -530,6 +530,7 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
     row.className = 'tree-row' + (isSelected ? ' node-selected' : '');
     row.style.paddingLeft = indent + 'px';
     row.dataset.path = pathStr;
+    row.draggable = true;
 
     row.innerHTML = `
       <span class="tree-toggle ${hasChildren ? 'open' : 'leaf'}">\u25B6</span>
@@ -613,6 +614,83 @@ function buildTreeNodesDom(parentEl, components, depth, basePath) {
       updateToolbarState();
 
       showContextMenu(e.clientX, e.clientY, comp);
+    });
+
+    // Drag start: store source path
+    row.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', pathStr);
+      e.dataTransfer.effectAllowed = 'move';
+      row.classList.add('dragging');
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      editorTree.querySelectorAll('.drag-over-above, .drag-over-below, .drag-over-into').forEach(
+        el => el.classList.remove('drag-over-above', 'drag-over-below', 'drag-over-into')
+      );
+    });
+
+    // Drop target: each row can receive drops above, below, or into (if EffectList)
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      // Determine drop position: top third = above, bottom third = below, middle = into (if EffectList)
+      const rect = row.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const third = rect.height / 3;
+      row.classList.remove('drag-over-above', 'drag-over-below', 'drag-over-into');
+      if (y < third) {
+        row.classList.add('drag-over-above');
+      } else if (y > third * 2 || !hasChildren) {
+        row.classList.add('drag-over-below');
+      } else {
+        row.classList.add('drag-over-into');
+      }
+    });
+    row.addEventListener('dragleave', () => {
+      row.classList.remove('drag-over-above', 'drag-over-below', 'drag-over-into');
+    });
+    row.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      row.classList.remove('drag-over-above', 'drag-over-below', 'drag-over-into');
+
+      const srcPathStr = e.dataTransfer.getData('text/plain');
+      if (!srcPathStr || srcPathStr === pathStr) return;
+      const srcPath = srcPathStr.split(',').map(Number);
+      const dstPath = path;
+
+      // Determine drop mode
+      const rect = row.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const third = rect.height / 3;
+      let dropMode = y < third ? 'above' : (y > third * 2 || !hasChildren ? 'below' : 'into');
+
+      // Get source component and remove from original position
+      const srcArr = getParentArray(srcPath);
+      const srcIdx = srcPath[srcPath.length - 1];
+      if (!srcArr || srcIdx < 0 || srcIdx >= srcArr.length) return;
+      const [moved] = srcArr.splice(srcIdx, 1);
+
+      // Determine destination
+      if (dropMode === 'into' && hasChildren) {
+        // Drop into EffectList
+        const dstComp = getComponentAtPath(dstPath);
+        if (dstComp && dstComp.components) {
+          dstComp.components.push(moved);
+        }
+      } else {
+        // Drop above or below a sibling
+        const dstArr = getParentArray(dstPath);
+        let dstIdx = dstPath[dstPath.length - 1];
+        if (!dstArr) return;
+        // Adjust index if source was before destination in the same array
+        if (srcArr === dstArr && srcIdx < dstIdx) dstIdx--;
+        if (dropMode === 'below') dstIdx++;
+        dstArr.splice(dstIdx, 0, moved);
+      }
+
+      selectedPath = null;
+      rebuildPreset();
     });
 
     parentEl.appendChild(node);

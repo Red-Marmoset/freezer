@@ -740,6 +740,21 @@ body.dragover::after {
   color: var(--accent);
 }
 
+/* Drag and drop indicators */
+.tree-row.dragging {
+  opacity: 0.4;
+}
+.tree-row.drag-over-above {
+  border-top: 2px solid var(--accent);
+}
+.tree-row.drag-over-below {
+  border-bottom: 2px solid var(--accent);
+}
+.tree-row.drag-over-into {
+  background: rgba(0, 229, 255, 0.2);
+  outline: 1px dashed var(--accent);
+}
+
 /* ============================================
    EDITOR TOOLBAR
    ============================================ */
