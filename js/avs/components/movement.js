@@ -200,7 +200,7 @@ function eelExprToGLSL(expr) {
   // Check for unsupported constructs (function calls we don't know, etc.)
   // Allow: digits, operators, parens, d, r, x, y, PI, sin, cos, tan, sqrt, abs, atan2, pow, log
   const allowed = /^[\s\d\.\+\-\*\/\(\)\,]+$|^[drxy]$/;
-  const tokens = s.match(/[a-zA-Z_]\w*|\d+\.?\d*|[+\-*/().,]|\s+/g);
+  const tokens = s.match(/[a-zA-Z_]\w*|\d+\.?\d*|\.\d+|[+\-*/().,]|\s+/g);
   if (!tokens) return null;
 
   const knownVars = new Set(['d', 'r', 'x', 'y', 'PI']);
@@ -211,9 +211,14 @@ function eelExprToGLSL(expr) {
     const t = tokens[i].trim();
     if (!t) continue;
 
-    if (/^\d/.test(t)) {
-      // Number — ensure it has a decimal point for GLSL float
-      result.push(t.includes('.') ? t : t + '.0');
+    if (/^\d/.test(t) || /^\.\d/.test(t)) {
+      // Number — GLSL requires float literals to have a decimal point
+      // .01 → .01 (already has dot), 5 → 5.0, 3.14 → 3.14
+      if (t.includes('.')) {
+        result.push(t);
+      } else {
+        result.push(t + '.0');
+      }
     } else if (/^[+\-*/().,]$/.test(t)) {
       result.push(t);
     } else if (knownVars.has(t)) {
