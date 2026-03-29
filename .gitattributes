@@ -1,5 +1,6 @@
-assets/avs-images/*.jpeg filter=lfs diff=lfs merge=lfs -text
-assets/avs-images/*.bmp filter=lfs diff=lfs merge=lfs -text
-assets/avs-images/*.jpg filter=lfs diff=lfs merge=lfs -text
-assets/avs-images/*.png filter=lfs diff=lfs merge=lfs -text
-assets/avs-images/*.gif filter=lfs diff=lfs merge=lfs -text
+assets/avs-data/*.jpeg filter=lfs diff=lfs merge=lfs -text
+assets/avs-data/*.bmp filter=lfs diff=lfs merge=lfs -text
+assets/avs-data/*.jpg filter=lfs diff=lfs merge=lfs -text
+assets/avs-data/*.png filter=lfs diff=lfs merge=lfs -text
+assets/avs-data/*.gif filter=lfs diff=lfs merge=lfs -text
+assets/avs-data/*.gvm filter=lfs diff=lfs merge=lfs -text

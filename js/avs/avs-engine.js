@@ -59,6 +59,7 @@ import './components/convolution-filter.js';
 import './components/comment.js';
 import './components/multiplier.js';
 import './components/eeltrans.js';
+import './components/global-variables.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object
