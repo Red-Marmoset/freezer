@@ -17,6 +17,7 @@
     <div class="panel panel-preset">
       <div class="panel-label">PRESET</div>
       <div class="panel-buttons">
+        <button id="btn-presets" class="preset-btn" title="Browse preset library">Presets</button>
         <button id="btn-load-preset" class="preset-btn" title="Load AVS preset (.avs or .json)">Load</button>
         <button id="btn-editor" class="preset-btn" title="Open preset editor">Edit</button>
       </div>
@@ -158,6 +159,35 @@
             <button class="comp-pick-btn" data-type="SetRenderMode">SetRenderMode</button>
             <button class="comp-pick-btn" data-type="Comment">Comment</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preset Library Browser -->
+  <div id="preset-library" class="preset-lib hidden">
+    <div class="preset-lib-backdrop"></div>
+    <div class="preset-lib-dialog">
+      <div class="preset-lib-header">
+        <span class="preset-lib-title">PRESET LIBRARY</span>
+        <button id="btn-lib-close" class="editor-close">&times;</button>
+      </div>
+      <div class="preset-lib-search">
+        <input type="text" id="lib-search" placeholder="Search presets, authors, packs..." autocomplete="off" spellcheck="false" />
+        <span id="lib-result-count" class="preset-lib-count"></span>
+      </div>
+      <div class="preset-lib-body">
+        <div class="preset-lib-sidebar">
+          <div class="preset-lib-nav-label">BROWSE BY</div>
+          <div class="preset-lib-tabs">
+            <button class="lib-tab active" data-view="authors">Authors</button>
+            <button class="lib-tab" data-view="packs">Packs</button>
+          </div>
+          <div id="lib-nav-tree" class="preset-lib-nav-tree"></div>
+        </div>
+        <div class="preset-lib-content">
+          <div id="lib-breadcrumb" class="preset-lib-breadcrumb">All Presets</div>
+          <div id="lib-preset-list" class="preset-lib-list"></div>
         </div>
       </div>
     </div>
