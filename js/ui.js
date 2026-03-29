@@ -14,6 +14,7 @@ const btnLoadPreset = document.getElementById('btn-load-preset');
 const btnEditor = document.getElementById('btn-editor');
 const presetName = document.getElementById('preset-name');
 const btnFullscreen = document.getElementById('btn-fullscreen');
+const btnSource = document.getElementById('btn-source');
 
 const audio = createAudioEngine();
 const viz = createRenderer(canvas);
@@ -175,14 +176,12 @@ btnPresets.addEventListener('click', () => {
 });
 
 // --- URL preset parameter ---
-// Check for ?preset=<id> and auto-load
+// Check for ?preset=<id> and auto-load (but keep splash for screen share)
 {
   const params = new URLSearchParams(window.location.search);
   const presetParam = params.get('preset');
   if (presetParam) {
-    loadPresetById(presetParam).then(found => {
-      if (found) dismissSplash();
-    });
+    loadPresetById(presetParam);
   }
 }
 
@@ -1754,6 +1753,15 @@ function toggleFullscreen() {
 }
 
 btnFullscreen.addEventListener('click', toggleFullscreen);
+
+btnSource.addEventListener('click', async () => {
+  try {
+    await audio.switchSource('system');
+    dismissSplash();
+  } catch (e) {
+    console.warn('Audio source change cancelled:', e);
+  }
+});
 
 // --- Fullscreen auto-hide controls ---
 
