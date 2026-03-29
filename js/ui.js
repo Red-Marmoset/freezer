@@ -2,12 +2,14 @@ import { createAudioEngine } from './audio-engine.js';
 import { createRenderer } from './renderer.js';
 import { loadAvsPreset } from './avs/avs-engine.js';
 import { parseAvsFileWithName } from './avs/avs-parser.js';
+import { initPresetBrowser, open as openPresetLibrary, close as closePresetLibrary, isOpen as isPresetLibraryOpen } from './preset-library/preset-browser.js';
 
 const canvas = document.getElementById('visualizer');
 const controls = document.getElementById('controls');
 const splash = document.getElementById('splash');
 const btnStart = document.getElementById('btn-start');
 const splashStatus = document.getElementById('splash-status');
+const btnPresets = document.getElementById('btn-presets');
 const btnLoadPreset = document.getElementById('btn-load-preset');
 const btnEditor = document.getElementById('btn-editor');
 const presetName = document.getElementById('preset-name');
@@ -124,6 +126,28 @@ function loadPresetFile(file) {
     reader.readAsText(file);
   }
 }
+
+// --- Preset Library ---
+
+initPresetBrowser((buffer, filename) => {
+  try {
+    const json = parseAvsFileWithName(buffer, filename);
+    loadPresetJSON(json);
+    dismissSplash();
+  } catch (err) {
+    console.error('Failed to load library preset:', err);
+  }
+});
+
+btnPresets.addEventListener('click', () => {
+  if (isPresetLibraryOpen()) {
+    closePresetLibrary();
+  } else {
+    openPresetLibrary();
+  }
+});
+
+// --- File Loader ---
 
 btnLoadPreset.addEventListener('click', () => {
   const input = document.createElement('input');
