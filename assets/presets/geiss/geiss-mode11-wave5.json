@@ -1,0 +1,7 @@
+{
+  "name": "Geiss - Split Rotation (Circle)",
+  "clearFrame": false,
+  "components": [
+    { "type": "GeissEffect", "enabled": true, "mode": 11, "waveform": 5 }
+  ]
+}

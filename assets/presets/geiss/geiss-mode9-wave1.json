@@ -1,0 +1,7 @@
+{
+  "name": "Geiss - Flower Petals (Scope)",
+  "clearFrame": false,
+  "components": [
+    { "type": "GeissEffect", "enabled": true, "mode": 9, "waveform": 1 }
+  ]
+}

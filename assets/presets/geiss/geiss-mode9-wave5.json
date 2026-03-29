@@ -1,0 +1,7 @@
+{
+  "name": "Geiss - Flower Petals (Circle)",
+  "clearFrame": false,
+  "components": [
+    { "type": "GeissEffect", "enabled": true, "mode": 9, "waveform": 5 }
+  ]
+}
