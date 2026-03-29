@@ -1,6 +1,5 @@
 import { createAudioEngine } from './audio-engine.js';
 import { createRenderer } from './renderer.js';
-import oscilloscope from './presets/oscilloscope.js';
 import { loadAvsPreset } from './avs/avs-engine.js';
 import { parseAvsFileWithName } from './avs/avs-parser.js';
 
@@ -9,7 +8,6 @@ const controls = document.getElementById('controls');
 const splash = document.getElementById('splash');
 const btnStart = document.getElementById('btn-start');
 const splashStatus = document.getElementById('splash-status');
-const btnScope = document.getElementById('btn-scope');
 const btnLoadPreset = document.getElementById('btn-load-preset');
 const btnEditor = document.getElementById('btn-editor');
 const presetName = document.getElementById('preset-name');
@@ -18,11 +16,36 @@ const btnFullscreen = document.getElementById('btn-fullscreen');
 const audio = createAudioEngine();
 const viz = createRenderer(canvas);
 
-viz.setPreset(oscilloscope);
+// Default preset: circular scope with color cycling, fadeout, blitter feedback
+const DEFAULT_PRESET = {
+  name: 'Freezer Default',
+  clearFrame: false,
+  components: [
+    { type: 'FadeOut', enabled: true, speed: 4, color: '#000000' },
+    { type: 'BlitterFeedback', enabled: true, scale: 31, onBeatScale: 31, blendMode: 'REPLACE' },
+    {
+      type: 'SuperScope',
+      enabled: true,
+      drawMode: 'LINES',
+      audioSource: 'WAVEFORM',
+      audioChannel: 'CENTER',
+      colors: ['#ffffff'],
+      code: {
+        init: 'n=200',
+        perFrame: 't=t+0.03',
+        onBeat: '',
+        perPoint: 'r=0.4+v*0.15; a=i*$PI*2+t; x=cos(a)*r; y=sin(a)*r; hue=i+t*0.1; red=sin(hue*$PI*2)*0.5+0.5; green=sin((hue+0.333)*$PI*2)*0.5+0.5; blue=sin((hue+0.666)*$PI*2)*0.5+0.5',
+      },
+    },
+  ],
+};
+
+const defaultAvs = loadAvsPreset(DEFAULT_PRESET);
+viz.setPreset(defaultAvs);
 viz.start(audio);
 
 // Current preset JSON (for editor)
-let currentPresetJSON = null;
+let currentPresetJSON = DEFAULT_PRESET;
 
 // --- Splash screen: start system audio capture ---
 
@@ -101,12 +124,6 @@ function loadPresetFile(file) {
     reader.readAsText(file);
   }
 }
-
-btnScope.addEventListener('click', () => {
-  currentPresetJSON = null;
-  viz.setPreset(oscilloscope);
-  setActivePreset('Oscilloscope');
-});
 
 btnLoadPreset.addEventListener('click', () => {
   const input = document.createElement('input');
@@ -1492,7 +1509,7 @@ document.addEventListener('keydown', (e) => {
 
 // Expose for console
 window.loadPresetJSON = loadPresetJSON;
-window.loadDefaultPreset = () => { currentPresetJSON = null; viz.setPreset(oscilloscope); setActivePreset('Oscilloscope'); };
+window.loadDefaultPreset = () => { currentPresetJSON = DEFAULT_PRESET; viz.setPreset(loadAvsPreset(DEFAULT_PRESET)); setActivePreset('Freezer Default'); };
 window.currentPresetJSON = () => currentPresetJSON;
 
 // --- Drag and drop ---
