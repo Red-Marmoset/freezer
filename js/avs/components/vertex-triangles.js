@@ -172,4 +172,4 @@ function parseHexColor(hex) {
   return [(n >> 16 & 0xff) / 255, (n >> 8 & 0xff) / 255, (n & 0xff) / 255];
 }
 
-AvsComponent.register('VertexTriangles', Triangle);
+AvsComponent.register('VertexTriangles', VertexTriangles);
