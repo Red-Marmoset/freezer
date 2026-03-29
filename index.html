@@ -75,9 +75,99 @@
       <div class="editor-title">PRESET EDITOR</div>
       <button id="btn-editor-close" class="editor-close">&times;</button>
     </div>
+    <div class="editor-toolbar">
+      <button id="btn-ed-add" class="ed-tool-btn" title="Add component">+ Add</button>
+      <button id="btn-ed-remove" class="ed-tool-btn" title="Remove selected">- Remove</button>
+      <button id="btn-ed-up" class="ed-tool-btn" title="Move up">&uarr; Up</button>
+      <button id="btn-ed-down" class="ed-tool-btn" title="Move down">&darr; Down</button>
+      <button id="btn-ed-new" class="ed-tool-btn ed-tool-accent" title="New empty preset">New Preset</button>
+    </div>
     <div id="editor-tree" class="editor-tree">
       <div class="editor-empty">Load a preset to see its component tree</div>
     </div>
+  </div>
+
+  <!-- Component Picker Dialog -->
+  <div id="component-picker" class="comp-picker hidden">
+    <div class="comp-picker-backdrop"></div>
+    <div class="comp-picker-dialog">
+      <div class="comp-picker-header">
+        <span class="comp-picker-title">ADD COMPONENT</span>
+        <button id="btn-picker-close" class="editor-close">&times;</button>
+      </div>
+      <div class="comp-picker-body">
+        <div class="comp-picker-category">
+          <div class="comp-picker-cat-label">RENDER</div>
+          <div class="comp-picker-list">
+            <button class="comp-pick-btn" data-type="SuperScope">SuperScope</button>
+            <button class="comp-pick-btn" data-type="Simple">Simple</button>
+            <button class="comp-pick-btn" data-type="Ring">Ring</button>
+            <button class="comp-pick-btn" data-type="Starfield">Starfield</button>
+            <button class="comp-pick-btn" data-type="DotPlane">DotPlane</button>
+            <button class="comp-pick-btn" data-type="DotGrid">DotGrid</button>
+            <button class="comp-pick-btn" data-type="DotFountain">DotFountain</button>
+            <button class="comp-pick-btn" data-type="BassSpin">BassSpin</button>
+            <button class="comp-pick-btn" data-type="RotatingStars">RotatingStars</button>
+            <button class="comp-pick-btn" data-type="Timescope">Timescope</button>
+            <button class="comp-pick-btn" data-type="ClearScreen">ClearScreen</button>
+            <button class="comp-pick-btn" data-type="OnBeatClear">OnBeatClear</button>
+            <button class="comp-pick-btn" data-type="Texer">Texer</button>
+          </div>
+        </div>
+        <div class="comp-picker-category">
+          <div class="comp-picker-cat-label">TRANSFORM</div>
+          <div class="comp-picker-list">
+            <button class="comp-pick-btn" data-type="FadeOut">FadeOut</button>
+            <button class="comp-pick-btn" data-type="Movement">Movement</button>
+            <button class="comp-pick-btn" data-type="DynamicMovement">DynamicMovement</button>
+            <button class="comp-pick-btn" data-type="Blur">Blur</button>
+            <button class="comp-pick-btn" data-type="Invert">Invert</button>
+            <button class="comp-pick-btn" data-type="Mirror">Mirror</button>
+            <button class="comp-pick-btn" data-type="Mosaic">Mosaic</button>
+            <button class="comp-pick-btn" data-type="Brightness">Brightness</button>
+            <button class="comp-pick-btn" data-type="FastBrightness">FastBrightness</button>
+            <button class="comp-pick-btn" data-type="ColorModifier">ColorModifier</button>
+            <button class="comp-pick-btn" data-type="ChannelShift">ChannelShift</button>
+            <button class="comp-pick-btn" data-type="ColorClip">ColorClip</button>
+            <button class="comp-pick-btn" data-type="Grain">Grain</button>
+            <button class="comp-pick-btn" data-type="Interleave">Interleave</button>
+            <button class="comp-pick-btn" data-type="ColorFade">ColorFade</button>
+            <button class="comp-pick-btn" data-type="UniqueTone">UniqueTone</button>
+            <button class="comp-pick-btn" data-type="Scatter">Scatter</button>
+            <button class="comp-pick-btn" data-type="BlitterFeedback">BlitterFeedback</button>
+            <button class="comp-pick-btn" data-type="RotoBlitter">RotoBlitter</button>
+            <button class="comp-pick-btn" data-type="Water">Water</button>
+            <button class="comp-pick-btn" data-type="WaterBump">WaterBump</button>
+            <button class="comp-pick-btn" data-type="Bump">Bump</button>
+            <button class="comp-pick-btn" data-type="Interferences">Interferences</button>
+            <button class="comp-pick-btn" data-type="DynamicShift">DynamicShift</button>
+            <button class="comp-pick-btn" data-type="DynamicDistanceModifier">DynamicDistanceModifier</button>
+          </div>
+        </div>
+        <div class="comp-picker-category">
+          <div class="comp-picker-cat-label">MISC</div>
+          <div class="comp-picker-list">
+            <button class="comp-pick-btn" data-type="EffectList">EffectList</button>
+            <button class="comp-pick-btn" data-type="BufferSave">BufferSave</button>
+            <button class="comp-pick-btn" data-type="SetRenderMode">SetRenderMode</button>
+            <button class="comp-pick-btn" data-type="Comment">Comment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right-click context menu -->
+  <div id="editor-context-menu" class="ctx-menu hidden">
+    <div class="ctx-item" data-action="add">Add Component...</div>
+    <div class="ctx-item" data-action="add-into">Add Into EffectList...</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" data-action="duplicate">Duplicate</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" data-action="move-up">Move Up</div>
+    <div class="ctx-item" data-action="move-down">Move Down</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item ctx-item-danger" data-action="remove">Remove</div>
   </div>
 
   <script type="module" src="js/ui.js"></script>
