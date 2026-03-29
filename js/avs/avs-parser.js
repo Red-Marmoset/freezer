@@ -664,8 +664,11 @@ function parseFastBrightness(r, endPos) {
 // ---- BufferSave (0x12) ----
 
 function parseBufferSave(r, endPos) {
-  const action = r.hasBytes(4) ? r.uint32() : 0; // 0=save, 1=restore, 2=restoreEveryOther
-  const buffer = r.hasBytes(4) ? r.uint32() : 0;
+  // action: 0=save, 1=restore, 2=alternating save/restore, 3=alternating restore/save
+  const action = r.hasBytes(4) ? r.uint32() : 0;
+  // buffer: 1-8 user-facing in original AVS, convert to 0-7 internal
+  const rawBuffer = r.hasBytes(4) ? r.uint32() : 1;
+  const buffer = Math.max(0, rawBuffer - 1);
   const blendMode = r.hasBytes(4) ? r.uint32() : 0;
   const adjustBlend = r.hasBytes(4) ? r.uint32() : 128;
   return { type: 'BufferSave', action, buffer, blendMode, adjustBlend };

@@ -206,7 +206,7 @@ const PRETTY_NAMES = {
 
 // Context-aware pretty names for numeric dropdown values
 const NUMERIC_PRETTY = {
-  action: { 0: 'Save', 1: 'Restore', 2: 'Restore Alt. Lines' },
+  action: { 0: 'Save', 1: 'Restore', 2: 'Alt. Save/Restore', 3: 'Alt. Restore/Save' },
   clearMode: { 0: 'Clear', 1: 'No Clear' },
   mode: { 0: 'Mode 0', 1: 'Mode 1', 2: 'Mode 2', 3: 'Mode 3' },
   colorFilter: { 0: 'Off', 1: 'On (Multiply)' },
@@ -232,7 +232,7 @@ const SELECT_FIELDS = {
   sourceChannel: ['ZERO', 'RED', 'GREEN', 'BLUE'],
   coordinates: ['POLAR', 'CARTESIAN'],
   coord: ['POLAR', 'CARTESIAN'],
-  action: [0, 1, 2],
+  action: [0, 1, 2, 3],
   clearMode: [0, 1],
   key: ['RED', 'GREEN', 'BLUE', '(R+G+B)/2', 'MAX', '(R+G+B)/3'],
   mapCycleMode: ['NONE', 'BEAT_RANDOM', 'BEAT_SEQUENTIAL'],
