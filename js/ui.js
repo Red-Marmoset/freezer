@@ -193,7 +193,7 @@ const DISPLAY_NAMES = {
 // Everything NOT in this set gets a yellow "under construction" marker in the editor.
 // Add component type names here as they are verified.
 const FINISHED_COMPONENTS = new Set([
-  // None confirmed yet — add as verified
+  'Comment',
 ]);
 
 // Known select-type fields and their options
