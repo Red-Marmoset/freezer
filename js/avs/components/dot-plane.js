@@ -13,7 +13,8 @@ export class DotPlane extends AvsComponent {
     super(opts);
     this.rotSpeed = opts.rotSpeed != null ? opts.rotSpeed : 16;
     this.angle = opts.angle != null ? opts.angle : -20;
-    this.colors = opts.colors || ['#1c6b18', '#ff0a23', '#2a1d74', '#9036d9', '#6b88ff'];
+    // Default colors from AVS (stored as 0xBBGGRR, converted to #RRGGBB)
+    this.colors = opts.colors || ['#186b1c', '#230aff', '#741d2a', '#d93690', '#ff886b'];
     this._rotation = 0;
     this._colorMap = null;
     this._gridHeight = null;
@@ -29,7 +30,7 @@ export class DotPlane extends AvsComponent {
     this._colorMap = buildColorMap(this.colors);
     this._gridHeight = new Float32Array(MAX_DOTS);
     this._gridDelta = new Float32Array(MAX_DOTS);
-    this._gridColor = new Uint32Array(MAX_DOTS).fill(0xffffff);
+    this._gridColor = new Uint32Array(MAX_DOTS);
 
     this._geometry = new THREE.BufferGeometry();
     this._geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(MAX_DOTS * 3), 3));
