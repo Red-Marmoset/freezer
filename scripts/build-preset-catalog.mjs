@@ -93,44 +93,34 @@ const AUTHOR_ALIASES = {
 
 // Display names for canonical author ids
 const AUTHOR_DISPLAY = {
-  'jheriko': 'Jheriko',
-  'tuggummi': 'Tuggummi',
-  'unconed': 'UnConeD',
-  'skupers': 'S_KuPeRS',
-  'el-vis': 'EL-VIS',
-  'pak-9': 'PAK-9',
-  'raz': 'Raz',
-  'grandchild': 'Grandchild',
-  'danjoe': 'danjoe',
-  'zevensoft': 'Zevensoft',
-  'degnic': 'Degnic',
-  'mig': 'mig',
-  'duo': 'Duo',
-  'yathosho': 'Yathosho',
-  'mr-nudge': 'Mr_Nudge',
-  'hboy': 'Hboy',
-  'nic01': 'Nic01',
-  'l1quid': 'L1quid',
-  'dl': 'D&L',
-  'pk': 'p-k',
-  'justin': 'Justin',
-  'avsking': 'avsking',
-  'pj': 'PJ',
-  'fck': 'fck',
-  'amphirion': 'amphirion',
-  'nixa': 'nixa',
-  'horse-fly': 'horse-fly',
-  'jmelo': 'J.Melo',
-  'javs': 'JaVS',
-  'ishan': 'Ishan',
-  'mysterious-w': 'Mysterious_w',
-  'doggy-dog': 'Doggy Dog',
-  'wotl': 'WotL',
-  'akx': 'AKX',
-  'caret': '^..^',
-  'visbot': 'VISBOT',
-  'splendora': 'splendora',
-  'zxe': 'zxe',
+  'jheriko': 'Jheriko', 'tuggummi': 'Tuggummi', 'unconed': 'UnConeD',
+  'skupers': 'S_KuPeRS', 'el-vis': 'EL-VIS', 'pak-9': 'PAK-9',
+  'raz': 'Raz', 'grandchild': 'Grandchild', 'danjoe': 'danjoe',
+  'zevensoft': 'Zevensoft', 'degnic': 'Degnic', 'mig': 'mig',
+  'duo': 'Duo', 'yathosho': 'Yathosho', 'mr-nudge': 'Mr_Nudge',
+  'hboy': 'Hboy', 'nic01': 'Nic01', 'l1quid': 'L1quid',
+  'dl': 'D&L', 'pk': 'p-k', 'justin': 'Justin',
+  'avsking': 'avsking', 'pj': 'PJ', 'fck': 'fck',
+  'amphirion': 'amphirion', 'nixa': 'nixa', 'horse-fly': 'horse-fly',
+  'jmelo': 'J.Melo', 'javs': 'JaVS', 'ishan': 'Ishan',
+  'mysterious-w': 'Mysterious_w', 'doggy-dog': 'Doggy Dog', 'wotl': 'WotL',
+  'akx': 'AKX', 'caret': '^..^', 'visbot': 'VISBOT',
+  'splendora': 'splendora', 'zxe': 'zxe',
+  // New authors
+  'doggy': 'Doggy', 'earthquaker': 'Earthquaker', 'deamon': 'Deamon',
+  'mykal': 'mykaL', 'zamuz': 'zamuz', 'jjcl237': 'JjcL237',
+  'pottsy': 'Pottsy', 'synth-c': 'Synth-C', 'qoal': 'QOAL',
+  'viskey': 'VisKey', 'cat2': 'Cat \u00b2', 'fyehroq': 'Fyehroq',
+  'koqlbmusic': 'KoqlbMusic', 'pir': 'piR', 'qforce': 'qforce',
+  'nemoorange': 'NemoOrange', 'andy370': 'andy370', 'fsk': 'fsk',
+  'me': 'M-E', 'shreyas': 'Shreyas', 'goral': 'G\u00f3ral(VHS)',
+  'disso': 'Disso', 'ddrew': 'dDrew', 'megatrox': 'Megatrox',
+  'noobfusion': 'NoobFusion', 'katphude': 'Katphude', 'marco': 'Marco',
+  'paolo': 'Paolo', 'runar': 'Runar', 'florin': 'Florin', 'karma': 'karma',
+  'denkensiefursich': 'denkensiefursich', 'hoofprints': 'Hoofprints',
+  'backtrack': 'Back on Track', 'reset': 'Re-Set',
+  'framesof': 'frames.of.reality', 'mztpack': 'MZTPACK',
+  'track13': 'Track 13', 'uudet': 'Uudet pressut', 'microd': 'micro.D\u00b0',
 };
 
 /**
@@ -184,6 +174,23 @@ const AUTHOR_FILENAME_PREFIXES = {
   'duo': ['Duo'],
   'degnic': ['Degnic'],
   'el-vis': ['EL-VIS', 'El-Vis'],
+  'hboy': ['Hboy'],
+  'doggy': ['Doggy', 'Marko'],
+  'earthquaker': ['Earthquaker', 'Equaker'],
+  'deamon': ['Deamon'],
+  'mykal': ['mykaL', 'mykal'],
+  'zamuz': ['zamuz'],
+  'jjcl237': ['JjcL237'],
+  'pottsy': ['Pottsy'],
+  'cat2': ['Cat \u00b2', 'Cat,'],
+  'qoal': ['QOAL'],
+  'qforce': ['qforce'],
+  'pir': ['piR'],
+  'fsk': ['fsk'],
+  'me': ['M-E'],
+  'nemoorange': ['NemoOrange'],
+  'goral': ['G\u00f3ral(VHS)', 'G\u00f3ral(Vhs)', 'Goral'],
+  'yathosho': ['Yathosho'],
 };
 
 function cleanTitle(filename, packAuthorId) {
@@ -314,11 +321,186 @@ addCompilation('Winamp Forums Compilation 4', 'wfc-4', 'Winamp Forums Compilatio
 addCompilation('Winamp Forums', 'wfc-5', 'Winamp Forums Compilation 5', 'Winamp Forums Compilation 5');
 addCompilation('Winamp Forums Compilation 6', 'wfc-6', 'Winamp Forums Compilation 6');
 
+// ── Grandchild (additional packs) ───────────────────────────────────
+addPack('But how you\'ve grown', 'grandchild', 'grandchild-but-how-youve-grown', 'But How You\'ve Grown');
+addPack('I\'ve known you since you were SO little!!!', 'grandchild', 'grandchild-ive-known-you', 'I\'ve Known You Since You Were So Little');
+
+// ── Hboy packs ──────────────────────────────────────────────────────
+addPack('Hboy', 'hboy', 'hboy-reminiscence', 'Reminiscence', 'Reminiscence');
+addPack('Hboy', 'hboy', 'hboy-technology', 'Technology', 'Technology');
+addPack('Hboy', 'hboy', 'hboy-mindscapes', 'Mindscapes', 'mindscapes');
+addPack('Hboy', 'hboy', 'hboy-visualove', 'Visualove', 'visualove');
+
+// ── Doggy (Marko's Preset Packs) ────────────────────────────────────
+addPack('Doggy', 'doggy', 'doggy-3d-scope-3', '3D Scope 3 Minipack', '3d Scope 3 Minipack');
+addPack('Doggy', 'doggy', 'doggy-pack-1', 'Marko\'s Preset Pack', 'Marko\'s Preset Pack');
+addPack('Doggy', 'doggy', 'doggy-pack-2', 'Marko\'s Preset Pack 2', 'Marko\'s Preset Pack 2');
+addPack('Doggy', 'doggy', 'doggy-pack-3', 'Marko\'s Preset Pack 3', 'Marko\'s Preset Pack 3');
+addPack('Doggy', 'doggy', 'doggy-pack-4', 'Marko\'s Preset Pack 4', 'Marko\'s Preset Pack 4');
+addPack('Doggy', 'doggy', 'doggy-pack-5-rmx', 'Marko\'s Preset Pack 5 - RMX', 'Marko\'s Preset Pack 5 - RMX');
+
+// ── Mr_Nudge ────────────────────────────────────────────────────────
+addPack('Mr_Nudge Volume 8', 'mr-nudge', 'mr-nudge-vol-8', 'Volume 8');
+addPack('Mr_Nudge Volume 9', 'mr-nudge', 'mr-nudge-vol-9', 'Volume 9');
+
+// ── Earthquaker ─────────────────────────────────────────────────────
+addPack('Earthquaker', 'earthquaker', 'earthquaker-main', 'Earthquaker');
+addPack('Earthquaker', 'earthquaker', 'earthquaker-chromatic', 'Chromatic', 'Chromatic');
+addPack('Earthquaker', 'earthquaker', 'earthquaker-history', 'History of the House', 'History of the House');
+
+// ── Deamon ──────────────────────────────────────────────────────────
+addPack('Deamon - HyperNation', 'deamon', 'deamon-hypernation', 'HyperNation');
+
+// ── amphirion ───────────────────────────────────────────────────────
+addPack('incipience iii', 'amphirion', 'amphirion-incipience-iii', 'Incipience III');
+
+// ── mykaL ───────────────────────────────────────────────────────────
+addPack('mykaL  05 opus IV', 'mykal', 'mykal-opus-iv', 'Opus IV');
+
+// ── zamuz ───────────────────────────────────────────────────────────
+addPack('zamuz - remix collection', 'zamuz', 'zamuz-remix-collection', 'Remix Collection');
+
+// ── JjcL237 ─────────────────────────────────────────────────────────
+addPack('JjcL237 - Coloring2', 'jjcl237', 'jjcl237-coloring2', 'Coloring 2');
+
+// ── Pottsy ──────────────────────────────────────────────────────────
+addPack('Pottsy - Sceptre', 'pottsy', 'pottsy-sceptre', 'Sceptre');
+addPack('Pottsy - Heretics Anonymous', 'pottsy', 'pottsy-heretics-anonymous', 'Heretics Anonymous');
+
+// ── denkensiefursich ────────────────────────────────────────────────
+addPack('denkensiefursich', 'denkensiefursich', 'denkensiefursich-main', 'denkensiefursich');
+
+// ── M-E ─────────────────────────────────────────────────────────────
+addPack('BEHOLD', 'me', 'me-behold', 'BEHOLD');
+
+// ── fsk / Pickin dim ────────────────────────────────────────────────
+addPack('Pickin dim 3', 'fsk', 'fsk-pickin-dim-3', 'Pickin dim 3');
+
+// ── Cat ² ───────────────────────────────────────────────────────────
+addPack('Cat \u00b2 - Deviant', 'cat2', 'cat2-deviant', 'Deviant');
+
+// ── Synth-C ─────────────────────────────────────────────────────────
+addPack('Synth-C', 'synth-c', 'synth-c-main', 'Synth-C');
+
+// ── QOAL ────────────────────────────────────────────────────────────
+addPack('QOAL', 'qoal', 'qoal-main', 'QOAL');
+
+// ── VisKey ──────────────────────────────────────────────────────────
+addPack('VisKey_Pack 4', 'viskey', 'viskey-pack-4', 'Pack 4');
+
+// ── Hoofprints ──────────────────────────────────────────────────────
+addPack('Hoofprints', 'hoofprints', 'hoofprints-main', 'Hoofprints');
+
+// ── Fyehroq ─────────────────────────────────────────────────────────
+addPack('Fyehroq\'s Fugue', 'fyehroq', 'fyehroq-fugue', 'Fyehroq\'s Fugue');
+
+// ── Back on track ───────────────────────────────────────────────────
+addPack('Back on track', 'backtrack', 'backtrack-main', 'Back on Track');
+
+// ── Re-Set ──────────────────────────────────────────────────────────
+addPack('Re-Set', 'reset', 'reset-main', 'Re-Set');
+
+// ── KoqlbMusic ──────────────────────────────────────────────────────
+addPack('KoqlbMusic-Version2', 'koqlbmusic', 'koqlbmusic-v2', 'Version 2');
+
+// ── The Snail Remixes ───────────────────────────────────────────────
+addCompilation('The Snail Remixes', 'snail-remixes', 'The Snail Remixes');
+
+// ── frames.of.reality ───────────────────────────────────────────────
+addPack('frames.of.reality', 'framesof', 'framesof-main', 'frames.of.reality');
+addPack('framesofreality vs. duo - reVISIONed', 'framesof', 'framesof-revisioned', 'reVISIONed');
+
+// ── piR ─────────────────────────────────────────────────────────────
+addPack('pir', 'pir', 'pir-main', 'piR');
+
+// ── qforce ──────────────────────────────────────────────────────────
+addPack('qforce - quake avs', 'qforce', 'qforce-quake-avs', 'Quake AVS');
+
+// ── Yathosho / whyEye.org ───────────────────────────────────────────
+addPack('whyEye.org', 'yathosho', 'yathosho-whyeye-remixes', 'whyEye.org Remixes');
+addPack('whyEye.org einzelst\u00fccke', 'yathosho', 'yathosho-whyeye-originals', 'whyEye.org Originals');
+
+// ── MZTPACK ─────────────────────────────────────────────────────────
+addPack('MZTPACK.5', 'mztpack', 'mztpack-5', 'MZTPACK 5');
+
+// ── NemoOrange ──────────────────────────────────────────────────────
+addPack('NemoOrange', 'nemoorange', 'nemoorange-main', 'NemoOrange');
+
+// ── andy370 ─────────────────────────────────────────────────────────
+addPack('andy370', 'andy370', 'andy370-main', 'andy370');
+
+// ── drew and megatrox ───────────────────────────────────────────────
+addCompilation('drew and megatrox', 'drew-megatrox', 'drew and megatrox');
+
+// ── Track 13 ────────────────────────────────────────────────────────
+addPack('Track 13', 'track13', 'track13-main', 'Track 13');
+
+// ── Uudet pressut 2022 ─────────────────────────────────────────────
+addPack('Uudet pressut 2022', 'uudet', 'uudet-2022', 'Uudet pressut 2022');
+
+// ── micro.D° ────────────────────────────────────────────────────────
+addPack('micro.D\u00b0', 'microd', 'microd-main', 'micro.D\u00b0');
+
+// ── Extra Chunky ────────────────────────────────────────────────────
+addCompilation('Extra Chunky', 'extra-chunky', 'Extra Chunky');
+
+// ── WF Tournament (compilation) ─────────────────────────────────────
+addCompilation('WF Tournament', 'wf-tournament-1', 'WF Tournament 1', 'Tournament 1');
+addCompilation('WF Tournament', 'wf-tournament-2', 'WF Tournament 2', 'Tournament 2');
+
+// ── TV compilations ─────────────────────────────────────────────────
+addCompilation('Tv 12', 'tv-12', 'TV 12');
+addCompilation('TV 13', 'tv-13', 'TV 13');
+
+// ── Community Picks ─────────────────────────────────────────────────
+addCompilation('Community Picks', 'community-picks', 'Community Picks');
+
+// ── Ultimate Favorites ──────────────────────────────────────────────
+addCompilation('Ultimate Favorites', 'ultimate-favorites', 'Ultimate Favorites');
+
+// ── Birthday Pack 2 ─────────────────────────────────────────────────
+addCompilation('Birthday Pack 2', 'birthday-pack-2', 'Birthday Pack 2');
+
+// ── IRTOPRESSUT (large Finnish compilation with sub-packs) ──────────
+addCompilation('IRTOPRESSUT', 'irtopressut-main', 'IRTOPRESSUT');
+// Sub-packs
+const IRTO_SUBS = [
+  'ASD5A', 'DeviantART AVS Presets', 'dudepack', 'Earthquake Pack 1 initial release',
+  'emanations', 'Flash', 'Florin', 'giko', 'Illusion', 'karma',
+  'Katphude - The first you will never see', 'Metabot v.1', 'noobfusion',
+  'pak-9 convo kernels', 'Paolo', 'QOAL - Inflamed Sickness', 'Sonique Ex',
+  'Tuggummi - 21 Re-n00b', 'USGroup1', 'WotL - The Worst Of The Worst',
+];
+for (const sub of IRTO_SUBS) {
+  addCompilation('IRTOPRESSUT', `irtopressut-${sanitise(sub)}`, sub, sub);
+}
+
 // ── Group IDs for compilations/series ───────────────────────────────
 const GROUPS = [
   { id: 'winamp-forums', name: 'Winamp Forums', packIds: ['wfc-1', 'wfc-2', 'wfc-3', 'wfc-4', 'wfc-5', 'wfc-6'] },
   { id: 'finnish-flash', name: 'Finnish Flash', packIds: ['finnish-flash-6', 'finnish-flash-7', 'finnish-flash-8'] },
+  { id: 'wf-tournament', name: 'WF Tournament', packIds: ['wf-tournament-1', 'wf-tournament-2'] },
+  { id: 'tv-series', name: 'TV Series', packIds: ['tv-12', 'tv-13'] },
+  { id: 'irtopressut', name: 'IRTOPRESSUT', packIds: [
+    'irtopressut-main', ...IRTO_SUBS.map(s => `irtopressut-${sanitise(s)}`)
+  ]},
 ];
+
+// ── Helpers ─────────────────────────────────────────────────────────
+
+async function findAvsFiles(dir) {
+  const results = [];
+  const entries = await readdir(dir, { withFileTypes: true });
+  for (const e of entries) {
+    const full = join(dir, e.name);
+    if (e.isDirectory()) {
+      results.push(...await findAvsFiles(full));
+    } else if (e.name.toLowerCase().endsWith('.avs')) {
+      results.push(full);
+    }
+  }
+  return results;
+}
 
 // ── Main ────────────────────────────────────────────────────────────
 
@@ -367,23 +549,24 @@ for (const entry of SOURCE_MAP) {
   const outDir = join(OUT_PRESETS, outBase, packSlug);
   await mkdir(outDir, { recursive: true });
 
-  // List .avs files
+  // List .avs files (recursively to handle nested Round dirs, etc.)
   let files;
   try {
-    files = (await readdir(srcDir)).filter(f => f.toLowerCase().endsWith('.avs'));
+    files = await findAvsFiles(srcDir);
   } catch {
     console.warn(`SKIP: cannot read ${srcDir}`);
     continue;
   }
 
-  for (const file of files.sort()) {
+  for (const filePath of files.sort()) {
+    const file = basename(filePath);
     const sanitisedName = sanitise(basename(file, extname(file))) + '.avs';
     const outPath = join(outDir, sanitisedName);
     const relPath = join(outBase, packSlug, sanitisedName).replace(/\\/g, '/');
 
     // Copy file
     try {
-      await copyFile(join(srcDir, file), outPath);
+      await copyFile(filePath, outPath);
     } catch (e) {
       console.warn(`COPY FAIL: ${file} → ${outPath}: ${e.message}`);
       continue;
