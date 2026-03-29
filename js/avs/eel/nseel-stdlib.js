@@ -70,56 +70,58 @@ export function createStdlib(opts = {}) {
   const { waveform, spectrum, fftSize = 2048 } = opts;
   const sampleCount = fftSize / 2;
 
+  // Per-frame cache for getosc/getspec — same arguments = same result within a frame
+  const _oscCache = new Map();
+  const _specCache = new Map();
+
+  function _sampleOsc(band, width) {
+    if (!waveform) return 0;
+    const center = Math.floor(band * sampleCount) % sampleCount;
+    const halfW = Math.max(0, Math.floor(width * sampleCount / 2));
+    if (halfW === 0) {
+      const idx = ((center % sampleCount) + sampleCount) % sampleCount;
+      return (waveform[idx] - 128) / 128;
+    }
+    let sum = 0, count = 0;
+    for (let i = center - halfW; i <= center + halfW; i++) {
+      sum += (waveform[((i % sampleCount) + sampleCount) % sampleCount] - 128) / 128;
+      count++;
+    }
+    return count > 0 ? sum / count : 0;
+  }
+
+  function _sampleSpec(band, width) {
+    if (!spectrum) return 0;
+    const center = Math.floor(band * sampleCount) % sampleCount;
+    const halfW = Math.max(0, Math.floor(width * sampleCount / 2));
+    if (halfW === 0) {
+      const idx = ((center % sampleCount) + sampleCount) % sampleCount;
+      return Math.max(0, (spectrum[idx] + 100) / 100);
+    }
+    let sum = 0, count = 0;
+    for (let i = center - halfW; i <= center + halfW; i++) {
+      sum += Math.max(0, (spectrum[((i % sampleCount) + sampleCount) % sampleCount] + 100) / 100);
+      count++;
+    }
+    return count > 0 ? sum / count : 0;
+  }
+
   return {
-    /**
-     * getosc(band, width, channel)
-     * Sample the waveform at a position.
-     * band: 0.0 to 1.0 — position in the waveform
-     * width: size of the averaging window (0 = single sample)
-     * channel: 0=center, 1=left, 2=right (we only have center)
-     */
     getosc(band, width, channel) {
-      if (!waveform) return 0;
-      const center = Math.floor(band * sampleCount) % sampleCount;
-      const halfW = Math.max(0, Math.floor(width * sampleCount / 2));
-      if (halfW === 0) {
-        const idx = ((center % sampleCount) + sampleCount) % sampleCount;
-        return (waveform[idx] - 128) / 128;
-      }
-      let sum = 0;
-      let count = 0;
-      for (let i = center - halfW; i <= center + halfW; i++) {
-        const idx = ((i % sampleCount) + sampleCount) % sampleCount;
-        sum += (waveform[idx] - 128) / 128;
-        count++;
-      }
-      return count > 0 ? sum / count : 0;
+      // Cache key: quantize to avoid float precision issues
+      const key = (band * 10000 | 0) + ',' + (width * 10000 | 0);
+      if (_oscCache.has(key)) return _oscCache.get(key);
+      const val = _sampleOsc(band, width);
+      _oscCache.set(key, val);
+      return val;
     },
 
-    /**
-     * getspec(band, width, channel)
-     * Sample the spectrum at a position.
-     * band: 0.0 to 1.0 — position in the spectrum
-     * width: averaging window
-     * channel: 0=center, 1=left, 2=right
-     */
     getspec(band, width, channel) {
-      if (!spectrum) return 0;
-      const center = Math.floor(band * sampleCount) % sampleCount;
-      const halfW = Math.max(0, Math.floor(width * sampleCount / 2));
-      if (halfW === 0) {
-        const idx = ((center % sampleCount) + sampleCount) % sampleCount;
-        // Normalize dB to 0-1 range (spectrum is typically -100 to 0 dB)
-        return Math.max(0, (spectrum[idx] + 100) / 100);
-      }
-      let sum = 0;
-      let count = 0;
-      for (let i = center - halfW; i <= center + halfW; i++) {
-        const idx = ((i % sampleCount) + sampleCount) % sampleCount;
-        sum += Math.max(0, (spectrum[idx] + 100) / 100);
-        count++;
-      }
-      return count > 0 ? sum / count : 0;
+      const key = (band * 10000 | 0) + ',' + (width * 10000 | 0);
+      if (_specCache.has(key)) return _specCache.get(key);
+      const val = _sampleSpec(band, width);
+      _specCache.set(key, val);
+      return val;
     },
 
     /**
