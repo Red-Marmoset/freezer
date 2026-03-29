@@ -51,6 +51,7 @@ import './components/dynamic-distance-modifier.js';
 import './components/texer.js';
 import './components/texer2.js';
 import './components/picture.js';
+import './components/triangle.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object

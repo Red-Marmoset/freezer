@@ -153,7 +153,8 @@ btnEditorClose.addEventListener('click', () => {
 
 // Component category classification
 const RENDER_TYPES = ['SuperScope','Simple','Ring','Starfield','DotPlane','DotGrid','DotFountain',
-  'BassSpin','RotatingStars','Timescope','ClearScreen','OnBeatClear','Texer','Acko.net: Texer II'];
+  'BassSpin','RotatingStars','Timescope','ClearScreen','OnBeatClear','Texer','Acko.net: Texer II',
+  'Triangle','Picture','MovingParticle'];
 const TRANS_TYPES = ['FadeOut','Movement','DynamicMovement','Blur','Invert','Mirror','Mosaic',
   'Brightness','FastBrightness','ColorModifier','ChannelShift','ColorClip','Grain','Interleave',
   'ColorFade','UniqueTone','Scatter','BlitterFeedback','RotoBlitter','Water','WaterBump','Bump',
@@ -208,6 +209,7 @@ const DEFAULTS = {
   OnBeatClear: { type: 'OnBeatClear', enabled: true, color: '#000000', blendMode: 'REPLACE', nBeats: 1 },
   Texer: { type: 'Texer', enabled: true, imageSrc: '', input: 0, output: 0 },
   Picture: { type: 'Picture', enabled: true, imageSrc: '', blendMode: 0, onBeatBlendMode: 0 },
+  Triangle: { type: 'Triangle', enabled: true, code: { init: 'n=6', perFrame: 't=t+0.05', onBeat: '', perPoint: 'a=i*$PI*2+t; r1=0.3+v*0.2; x=cos(a)*r1; y=sin(a)*r1; red=sin(a)*0.5+0.5; green=cos(a)*0.5+0.5; blue=0.5' }, colors: ['#ffffff'], audioSource: 'WAVEFORM', audioChannel: 'CENTER' },
   MovingParticle: { type: 'MovingParticle', enabled: true },
   FadeOut: { type: 'FadeOut', enabled: true, speed: 7, color: '#000000' },
   Movement: { type: 'Movement', enabled: true, builtinEffect: 13, code: 'd=d*0.9', bilinear: true, wrap: false, coordinates: 'POLAR', sourceMapped: false },
