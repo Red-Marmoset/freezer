@@ -1,0 +1,45 @@
+{
+  "name": "Geiss - Particle Flow",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "FadeOut",
+      "enabled": true,
+      "speed": 6,
+      "color": "#000508"
+    },
+    {
+      "type": "DynamicMovement",
+      "enabled": true,
+      "code": {
+        "init": "",
+        "perFrame": "t=t+0.005",
+        "onBeat": "",
+        "perPoint": "d=d*0.97; r=r+0.02+d*0.03*sin(t*3)"
+      },
+      "gridW": 32,
+      "gridH": 32,
+      "coord": "POLAR",
+      "wrap": true
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "DOTS",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": ["#44ddff", "#ff44aa"],
+      "code": {
+        "init": "n=512; t=0",
+        "perFrame": "t=t+0.008; bass=getspec(0,0.08,0)",
+        "onBeat": "",
+        "perPoint": "a=i*$PI*8+t; r=0.02+i*0.7+v*0.1; x=cos(a)*r*0.5; y=sin(a)*r*0.5; red=0.3+sin(i*$PI+t)*0.5; green=0.6+v*0.3; blue=0.8+cos(i*$PI*2+t)*0.2; skip=if(abs(v)<0.02,1,0)"
+      }
+    },
+    {
+      "type": "Blur",
+      "enabled": true,
+      "mode": "LIGHT"
+    }
+  ]
+}
