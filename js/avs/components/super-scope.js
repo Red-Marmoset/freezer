@@ -141,7 +141,7 @@ export class SuperScope extends AvsComponent {
 
     // Initialize linesize from global render mode (SetRenderMode component)
     // This is set ONCE per frame before any code runs (matching original AVS)
-    if (ctx.renderMode && ctx.renderMode.enabled && ctx.renderMode.lineSize) {
+    if (ctx.renderMode && ctx.renderMode.enabled && ctx.renderMode.lineSize > 0) {
       s.linesize = ctx.renderMode.lineSize;
     } else {
       s.linesize = this.thickness;
