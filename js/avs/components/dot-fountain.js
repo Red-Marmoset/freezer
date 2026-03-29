@@ -52,7 +52,6 @@ export class DotFountain extends AvsComponent {
   render(ctx, fb) {
     if (!this.enabled || !this._pr) return;
 
-    const spectrum = ctx.audioData.spectrum;
     const isBeat = ctx.beat;
 
     // Save generation 0 for smoothing
@@ -75,15 +74,14 @@ export class DotFountain extends AvsComponent {
       }
     }
 
-    // Inject new ring at generation 0
+    // Inject new ring at generation 0 from spectrum byte data
+    // Original: visdata[1][0] = unsigned byte spectrum (0-255)
+    const specBytes = ctx.audioData.spectrumBytes;
     for (let p = 0; p < NUM_DIV; p++) {
-      let t = 0;
-      if (spectrum) {
-        // visdata[1][0] = spectrum, XOR 128 to get unsigned
-        const raw = Math.max(0, (spectrum[p] + 100) / 100) * 255;
-        t = Math.round(raw) ^ 128;
-      }
-      t = t * 5 / 4 - 64;
+      // Exact match to r_dotfnt.cpp: *sd ^ 128, then scale
+      let t = specBytes ? (specBytes[p] ^ 128) : 128;
+      t = (t * 5 / 4) | 0; // integer division
+      t -= 64;
       if (isBeat) t += 128;
       if (t > 255) t = 255;
 
