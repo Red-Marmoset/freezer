@@ -6,6 +6,23 @@ import { blendTexture, BLEND, parseBlendMode } from '../blend.js';
 
 const NUM_BUFFERS = 8;
 
+// BufferSave uses its own blend mode numbering (different from EffectList!)
+// Map from BufferSave's raw integer to our BLEND enum
+const BUFSAVE_BLEND_MAP = {
+  0: BLEND.REPLACE,          // Replace
+  1: BLEND.FIFTY_FIFTY,      // 50/50
+  2: BLEND.ADDITIVE,         // Additive
+  3: BLEND.EVERY_OTHER_PIXEL,// Every Other Pixel
+  4: BLEND.SUB_DEST_SRC,     // Sub 1 (dst - src)
+  5: BLEND.EVERY_OTHER_LINE, // Every Other Line
+  6: BLEND.XOR,              // XOR
+  7: BLEND.MAXIMUM,          // Maximum
+  8: BLEND.MINIMUM,          // Minimum
+  9: BLEND.SUB_SRC_DEST,     // Sub 2 (src - dst)
+  10: BLEND.MULTIPLY,        // Multiply
+  11: BLEND.ADJUSTABLE,      // Adjustable
+};
+
 const VERT_SHADER = `
   varying vec2 vUv;
   void main() {
@@ -38,7 +55,13 @@ export class BufferSave extends AvsComponent {
     super(opts);
     this.action = opts.action || 0;           // 0=save, 1=restore, 2=restore alternating
     this.bufferIndex = opts.buffer || 0;       // 0-7
-    this.blendMode = parseBlendMode(opts.blendMode || 0);
+    // Map raw integer from parser to our BLEND enum
+    const rawBlend = opts.blendMode;
+    if (typeof rawBlend === 'number' && BUFSAVE_BLEND_MAP[rawBlend] !== undefined) {
+      this.blendMode = BUFSAVE_BLEND_MAP[rawBlend];
+    } else {
+      this.blendMode = parseBlendMode(rawBlend || 'REPLACE');
+    }
     this.adjustBlend = (opts.adjustBlend || 128) / 255; // normalize 0-255 to 0-1
 
     this._altScene = null;
@@ -96,6 +119,8 @@ export class BufferSave extends AvsComponent {
         format: THREE.RGBAFormat,
         type: THREE.UnsignedByteType,
       });
+    } else if (ctx.saveBuffers[index].width !== ctx.width || ctx.saveBuffers[index].height !== ctx.height) {
+      ctx.saveBuffers[index].setSize(ctx.width, ctx.height);
     }
     return ctx.saveBuffers[index];
   }
@@ -111,10 +136,12 @@ export class BufferSave extends AvsComponent {
       this._copyMaterial.map = fb.getActiveTexture();
       ctx.renderer.setRenderTarget(buf);
       ctx.renderer.render(this._copyScene, this._copyCamera);
+      this._copyMaterial.map = null;
+      ctx.renderer.setRenderTarget(null);
     } else if (this.action === 1) {
       // RESTORE: blend buffer[index] onto active FB
       const buf = this._ensureBuffer(ctx, idx);
-      if (!buf) return;
+      if (!buf || !buf.texture) return;
       const mode = this.blendMode || BLEND.REPLACE;
       blendTexture(ctx.renderer, buf.texture, fb.getActiveTarget(), mode, this.adjustBlend);
     } else if (this.action === 2) {
@@ -129,6 +156,8 @@ export class BufferSave extends AvsComponent {
       // Write to back, then swap
       ctx.renderer.setRenderTarget(fb.getBackTarget());
       ctx.renderer.render(this._altScene, this._altCamera);
+      this._altMaterial.uniforms.tBuffer.value = null;
+      this._altMaterial.uniforms.tActive.value = null;
       fb.swap();
     }
   }

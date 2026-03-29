@@ -186,6 +186,16 @@ export class Texer extends AvsComponent {
       this.firstFrame = false;
     }
 
+    // Per-frame defaults (set once, persist between points)
+    s.x = 0;
+    s.y = 0;
+    s.sizex = 1;
+    s.sizey = 1;
+    s.skip = 0;
+    s.red = 1;
+    s.green = 1;
+    s.blue = 1;
+
     // Run perFrame
     try { this.perFrameFn(s, lib); } catch {}
 
@@ -195,7 +205,8 @@ export class Texer extends AvsComponent {
     }
 
     // Get point count
-    const n = Math.max(1, Math.min(MAX_POINTS, Math.floor(s.n || 100)));
+    const n = Math.max(0, Math.min(MAX_POINTS, Math.floor(s.n || 0)));
+    if (n === 0) return;
 
     // Default sprite size in NDC (roughly 32px / screenWidth)
     const defaultSizeX = 32 / ctx.width * 2;
@@ -209,28 +220,19 @@ export class Texer extends AvsComponent {
     let count = 0;
 
     for (let i = 0; i < n; i++) {
-      // Set per-point variables
+      // Per-point: set i, v, skip each iteration; other vars persist
       s.i = n > 1 ? i / (n - 1) : 0;
+      s.skip = 0;
 
       // Sample audio
       const sampleIdx = Math.floor(s.i * (sampleCount - 1));
       s.v = waveform ? (waveform[sampleIdx] - 128) / 128 : 0;
 
-      // Defaults
-      s.x = 0;
-      s.y = 0;
-      s.sizex = 1;
-      s.sizey = 1;
-      s.skip = 0;
-      s.red = 1;
-      s.green = 1;
-      s.blue = 1;
-
       // Run perPoint code
       try { this.perPointFn(s, lib); } catch {}
 
       // Skip if requested
-      if (s.skip >= 0.00001) continue;
+      if (s.skip !== 0) continue;
 
       const x = s.x || 0;
       const y = -(s.y || 0); // Y inverted (AVS convention)

@@ -69,6 +69,11 @@ export class EffectList extends AvsComponent {
     s.b = ctx.beat ? 1 : 0;
     this.perFrameFn(s, lib);
 
+    // Resize child FB if needed
+    if (this.childFb && (ctx.width !== this.childFb.width || ctx.height !== this.childFb.height)) {
+      this.childFb.resize(ctx.width, ctx.height);
+    }
+
     // Determine rendering target:
     // If both input and output are IGNORE, render directly onto parent FB
     // (the EffectList IS the framebuffer, not a separate layer)

@@ -20,7 +20,10 @@ export class AvsComponent {
     if (!json || !json.type) return null;
     const cls = registry[json.type.toLowerCase()];
     if (!cls) {
-      // Silently skip unrecognized components (many AVS presets use rare ones)
+      if (!json._unsupported) {
+        console.warn('No component class registered for type:', json.type,
+          '(registered:', Object.keys(registry).join(', '), ')');
+      }
       return null;
     }
     return new cls(json);

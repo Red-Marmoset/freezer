@@ -12,21 +12,14 @@ const FRAG = `
   }
 `;
 
-const FAST_FRAG = `
-  uniform sampler2D tSource;
-  uniform int uMode;
-  varying vec2 vUv;
-  void main() {
-    vec4 c = texture2D(tSource, vUv);
-    if (uMode == 0) {
-      gl_FragColor = vec4(c.rgb * 2.0, c.a);           // 2x
-    } else if (uMode == 1) {
-      gl_FragColor = vec4(c.rgb * 0.5, c.a);           // half
-    } else {
-      gl_FragColor = c;
-    }
-  }
-`;
+const FAST_FRAGS = [
+  // Mode 0: 2x brightness (saturated add)
+  `uniform sampler2D tSource; varying vec2 vUv;
+   void main() { vec4 c = texture2D(tSource, vUv); gl_FragColor = vec4(min(c.rgb * 2.0, 1.0), c.a); }`,
+  // Mode 1: 0.5x brightness
+  `uniform sampler2D tSource; varying vec2 vUv;
+   void main() { vec4 c = texture2D(tSource, vUv); gl_FragColor = vec4(c.rgb * 0.5, c.a); }`,
+];
 
 export class Brightness extends AvsComponent {
   constructor(opts) {
@@ -77,10 +70,11 @@ export class FastBrightness extends AvsComponent {
   init(ctx) {
     this._scene = new THREE.Scene();
     this._camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const modeIdx = Math.min(this.mode, FAST_FRAGS.length - 1);
     this._material = new THREE.ShaderMaterial({
-      uniforms: { tSource: { value: null }, uMode: { value: this.mode } },
+      uniforms: { tSource: { value: null } },
       vertexShader: `varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-      fragmentShader: FAST_FRAG,
+      fragmentShader: FAST_FRAGS[modeIdx] || FAST_FRAGS[0],
       depthTest: false,
     });
     this._scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this._material));

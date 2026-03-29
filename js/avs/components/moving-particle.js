@@ -18,6 +18,7 @@ export class MovingParticle extends AvsComponent {
     this.maxdist = opts.maxdist || 16;
     this.size = opts.size || 8;
     this.size2 = opts.size2 || opts.onBeatSize || 8;
+    this.onBeatSizeChange = opts.onBeatSizeChange !== undefined ? opts.onBeatSizeChange : true;
     this.blend = opts.blend || opts.blendMode || 1;
 
     // Spring physics state
@@ -55,10 +56,14 @@ export class MovingParticle extends AvsComponent {
     if (ctx.beat) {
       this._c[0] = ((Math.random() * 33 | 0) - 16) / 48;
       this._c[1] = ((Math.random() * 33 | 0) - 16) / 48;
-      if (this.size2 !== this.size) {
+      if (this.onBeatSizeChange && this.size2 !== this.size) {
         this._spos = this.size2;
       }
     }
+
+    // Update material color if changed in editor
+    const c = parseColor(this.color);
+    this._material.color.setRGB(c[0], c[1], c[2]);
 
     // Spring physics: accelerate toward target, damped
     this._v[0] -= 0.004 * (this._p[0] - this._c[0]);

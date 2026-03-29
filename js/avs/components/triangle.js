@@ -102,6 +102,7 @@ export class Triangle extends AvsComponent {
       s.red3 = 1; s.green3 = 1; s.blue3 = 1;
       s.skip = 0;
       s.z1 = 0;
+      s._dirty.clear();
 
       try { this.perPointFn(s, lib); } catch {}
 
@@ -122,17 +123,22 @@ export class Triangle extends AvsComponent {
       positions[base + 7] = -(s.y3);
       positions[base + 8] = 0;
 
-      // Colors — original APE uses flat shading from red1/green1/blue1
-      // but we support per-vertex colors if set
+      // Colors — flat shading: if EEL only sets red1/green1/blue1,
+      // copy to all three vertices. Only use per-vertex colors if
+      // the code explicitly set red2/green2/blue2/red3/green3/blue3.
       const r1 = Math.max(0, Math.min(1, s.red1));
       const g1 = Math.max(0, Math.min(1, s.green1));
       const b1 = Math.max(0, Math.min(1, s.blue1));
-      const r2 = Math.max(0, Math.min(1, s.red2));
-      const g2 = Math.max(0, Math.min(1, s.green2));
-      const b2 = Math.max(0, Math.min(1, s.blue2));
-      const r3 = Math.max(0, Math.min(1, s.red3));
-      const g3 = Math.max(0, Math.min(1, s.green3));
-      const b3 = Math.max(0, Math.min(1, s.blue3));
+
+      const hasV2Color = s._dirty.has('red2') || s._dirty.has('green2') || s._dirty.has('blue2');
+      const hasV3Color = s._dirty.has('red3') || s._dirty.has('green3') || s._dirty.has('blue3');
+
+      const r2 = hasV2Color ? Math.max(0, Math.min(1, s.red2)) : r1;
+      const g2 = hasV2Color ? Math.max(0, Math.min(1, s.green2)) : g1;
+      const b2 = hasV2Color ? Math.max(0, Math.min(1, s.blue2)) : b1;
+      const r3 = hasV3Color ? Math.max(0, Math.min(1, s.red3)) : r1;
+      const g3 = hasV3Color ? Math.max(0, Math.min(1, s.green3)) : g1;
+      const b3 = hasV3Color ? Math.max(0, Math.min(1, s.blue3)) : b1;
 
       colorsBuf[base]     = r1; colorsBuf[base + 1] = g1; colorsBuf[base + 2] = b1;
       colorsBuf[base + 3] = r2; colorsBuf[base + 4] = g2; colorsBuf[base + 5] = b2;

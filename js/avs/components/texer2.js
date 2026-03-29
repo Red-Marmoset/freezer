@@ -57,7 +57,7 @@ const VERT_SHADER = `
 const FRAG_SHADER = `
   precision mediump float;
   uniform sampler2D tSprite;
-  uniform int uColorFilter; // 0=none, 1=additive, 2=multiply, 3=replace
+  uniform int uColorize; // 0=off (draw texture as-is), 1=on (multiply by color)
 
   varying vec2 vUv;
   varying vec3 vColor;
@@ -65,15 +65,12 @@ const FRAG_SHADER = `
   void main() {
     vec4 tex = texture2D(tSprite, vUv);
     vec3 color;
-    if (uColorFilter == 2) {
-      // Multiply: modulate texture by instance color
+    if (uColorize == 1) {
+      // Colorize: multiply texture by per-instance color
       color = tex.rgb * vColor;
-    } else if (uColorFilter == 3) {
-      // Replace: use instance color, texture only provides alpha
-      color = vColor;
     } else {
-      // Default / additive tint: modulate texture by instance color
-      color = tex.rgb * vColor;
+      // No colorize: draw texture unmodified
+      color = tex.rgb;
     }
     gl_FragColor = vec4(color, tex.a);
   }
@@ -92,7 +89,11 @@ export class Texer2 extends AvsComponent {
     this.imageSrc = opts.imageSrc || '';
     this.wrap = opts.wrap !== false;
     this.resize = opts.resize !== false;
-    this.colorFilter = opts.colorFilter || 0; // 0=none, 1=additive, 2=multiply, 3=replace
+    // colorFilter: original is boolean (0=off, nonzero=on, always multiply)
+    // We accept old 4-mode values for backwards compat but treat >0 as "colorize on"
+    this.colorFilter = opts.colorFilter || 0;
+    this._imageWidth = 32;
+    this._imageHeight = 32;
 
     // State
     this.state = null;
@@ -118,6 +119,8 @@ export class Texer2 extends AvsComponent {
     if (this.imageSrc) {
       loadAvsImage(this.imageSrc).then(tex => {
         this._blobTexture = tex;
+        this._imageWidth = tex.image ? tex.image.width : 32;
+        this._imageHeight = tex.image ? tex.image.height : 32;
         if (this._material) this._material.uniforms.tSprite.value = tex;
       });
     }
@@ -156,7 +159,7 @@ export class Texer2 extends AvsComponent {
       fragmentShader: FRAG_SHADER,
       uniforms: {
         tSprite: { value: this._blobTexture },
-        uColorFilter: { value: this.colorFilter },
+        uColorize: { value: this.colorFilter ? 1 : 0 },
       },
       transparent: true,
       blending: THREE.AdditiveBlending,
@@ -192,12 +195,24 @@ export class Texer2 extends AvsComponent {
     s.w = ctx.width;
     s.h = ctx.height;
     s.b = ctx.beat ? 1 : 0;
+    s.iw = this._imageWidth;
+    s.ih = this._imageHeight;
 
     // Run init on first frame
     if (this.firstFrame) {
       try { this.initFn(s, lib); } catch {}
       this.firstFrame = false;
     }
+
+    // Per-frame defaults for per-point vars (set ONCE per frame, not per point)
+    s.x = 0;
+    s.y = 0;
+    s.sizex = 1;
+    s.sizey = 1;
+    s.red = 1;
+    s.green = 1;
+    s.blue = 1;
+    s.skip = 0;
 
     // Run perFrame
     try { this.perFrameFn(s, lib); } catch {}
@@ -207,12 +222,13 @@ export class Texer2 extends AvsComponent {
       try { this.onBeatFn(s, lib); } catch {}
     }
 
-    // Get point count
-    const n = Math.max(1, Math.min(MAX_POINTS, Math.floor(s.n || 100)));
+    // Get point count (default 0 — EEL init/perFrame must set n)
+    const n = Math.max(0, Math.min(MAX_POINTS, Math.floor(s.n || 0)));
+    if (n === 0) return;
 
-    // Default sprite size in NDC (roughly 32px / screenWidth)
-    const defaultSizeX = 32 / ctx.width * 2;
-    const defaultSizeY = 32 / ctx.height * 2;
+    // Default sprite size in NDC
+    const defaultSizeX = this._imageWidth / ctx.width * 2;
+    const defaultSizeY = this._imageHeight / ctx.height * 2;
 
     // Get instance attribute arrays
     const posArr = this._instancePosAttr.array;
@@ -222,46 +238,60 @@ export class Texer2 extends AvsComponent {
     let count = 0;
 
     for (let i = 0; i < n; i++) {
-      // Set per-point variables
+      // Per-point variables: i, v, skip are set each iteration
+      // x, y, sizex, sizey, red, green, blue PERSIST between points
       s.i = n > 1 ? i / (n - 1) : 0;
+      s.skip = 0;
 
       // Sample audio
       const sampleIdx = Math.floor(s.i * (sampleCount - 1));
       s.v = waveform ? (waveform[sampleIdx] - 128) / 128 : 0;
 
-      // Defaults for Texer II per-point variables
-      s.x = 0;
-      s.y = 0;
-      s.sizex = 1;
-      s.sizey = 1;
-      s.red = 1;
-      s.green = 1;
-      s.blue = 1;
-      s.skip = 0;
-
       // Run perPoint code
       try { this.perPointFn(s, lib); } catch {}
 
-      // Skip if requested
-      if (s.skip >= 0.00001) continue;
+      // Skip if requested (any nonzero value)
+      if (s.skip !== 0) continue;
+
+      // Skip tiny particles
+      if (Math.abs(s.sizex) <= 0.01 || Math.abs(s.sizey) <= 0.01) continue;
 
       const x = s.x || 0;
       const y = -(s.y || 0); // Y inverted (AVS convention)
-      const sx = (s.sizex || 1) * defaultSizeX;
-      const sy = (s.sizey || 1) * defaultSizeY;
+      const sx = Math.abs(s.sizex || 1) * defaultSizeX;
+      const sy = Math.abs(s.sizey || 1) * defaultSizeY;
 
-      posArr[count * 3] = x;
-      posArr[count * 3 + 1] = y;
-      posArr[count * 3 + 2] = 0;
+      const r = Math.max(0, Math.min(1, s.red || 0));
+      const g = Math.max(0, Math.min(1, s.green || 0));
+      const b = Math.max(0, Math.min(1, s.blue || 0));
 
-      sizeArr[count * 2] = sx;
-      sizeArr[count * 2 + 1] = sy;
+      // Add the particle (and wrapped copies if wrap is on)
+      const positions = this.wrap ? [[x, y]] : [[x, y]];
+      if (this.wrap) {
+        // If particle overlaps edges, add wrapped copies
+        const halfSx = sx / 2;
+        const halfSy = sy / 2;
+        if (x - halfSx < -1) positions.push([x + 2, y]);
+        if (x + halfSx > 1) positions.push([x - 2, y]);
+        if (y - halfSy < -1) positions.push([x, y + 2]);
+        if (y + halfSy > 1) positions.push([x, y - 2]);
+      }
 
-      colorArr[count * 3] = Math.max(0, Math.min(1, s.red || 0));
-      colorArr[count * 3 + 1] = Math.max(0, Math.min(1, s.green || 0));
-      colorArr[count * 3 + 2] = Math.max(0, Math.min(1, s.blue || 0));
+      for (const [px, py] of positions) {
+        if (count >= MAX_POINTS) break;
+        posArr[count * 3] = px;
+        posArr[count * 3 + 1] = py;
+        posArr[count * 3 + 2] = 0;
 
-      count++;
+        sizeArr[count * 2] = sx;
+        sizeArr[count * 2 + 1] = sy;
+
+        colorArr[count * 3] = r;
+        colorArr[count * 3 + 1] = g;
+        colorArr[count * 3 + 2] = b;
+
+        count++;
+      }
     }
 
     // Update instance attributes
