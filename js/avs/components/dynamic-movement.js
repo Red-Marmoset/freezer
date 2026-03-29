@@ -148,22 +148,32 @@ export class DynamicMovement extends AvsComponent {
     const uvAttr = this._geometry.attributes.uv;
     const posAttr = this._geometry.attributes.position;
     const vertCount = posAttr.count;
-    const maxD = Math.sqrt(0.5 * 0.5 + 0.5 * 0.5);
+
+    // Polar normalization matching r_dmove.cpp:
+    // max_screen_d = sqrt(w² + h²) * 0.5
+    // d = sqrt(xd² + yd²) / max_screen_d  where xd,yd are pixel offsets from center
+    const w = ctx.width, h = ctx.height;
+    const maxD = Math.sqrt(w * w + h * h) * 0.5;
+    const hw = w * 0.5, hh = h * 0.5;
 
     for (let i = 0; i < vertCount; i++) {
-      const origX = (posAttr.getX(i) + 1) / 2;
+      // Grid point UV (0..1) → pixel position → centered coords
+      const origX = (posAttr.getX(i) + 1) / 2; // 0..1
       const origY = (posAttr.getY(i) + 1) / 2;
+
+      // Pixel offset from center (matching original xd, yd)
+      const xd = (origX - 0.5) * w;
+      const yd = (origY - 0.5) * h;
 
       s.alpha = 1;
 
       if (this.usePolar) {
-        const cx = origX - 0.5;
-        const cy = origY - 0.5;
-        s.d = Math.sqrt(cx * cx + cy * cy) / maxD;
-        s.r = Math.atan2(cy, cx) + Math.PI / 2;
+        s.d = Math.sqrt(xd * xd + yd * yd) / maxD;
+        s.r = Math.atan2(yd, xd) + Math.PI * 0.5;
       }
-      s.x = origX * 2 - 1;
-      s.y = origY * 2 - 1;
+      // Always set x,y: original uses xd * (2/w) and yd * (2/h) = normalized -1..1
+      s.x = xd / hw; // equivalent to (origX - 0.5) * 2
+      s.y = yd / hh;
 
       try { this.perPointFn(s, lib); } catch {}
 
@@ -173,13 +183,15 @@ export class DynamicMovement extends AvsComponent {
 
       let newU, newV;
       if (this.usePolar) {
-        const r = s.r - Math.PI / 2;
+        // Convert back from polar to pixel coords, then to UV
+        const r = s.r - Math.PI * 0.5;
         const nd = s.d * maxD;
-        newU = Math.cos(r) * nd + 0.5;
-        newV = Math.sin(r) * nd + 0.5;
+        newU = (Math.cos(r) * nd + hw) / w;
+        newV = (Math.sin(r) * nd + hh) / h;
       } else {
-        newU = (s.x + 1) / 2;
-        newV = (s.y + 1) / 2;
+        // Cartesian: x,y in -1..1 → UV 0..1
+        newU = (s.x + 1) * 0.5;
+        newV = (s.y + 1) * 0.5;
       }
 
       if (this.wrap) {
