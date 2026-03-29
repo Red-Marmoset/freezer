@@ -343,6 +343,27 @@ function updateBreadcrumb() {
 
 // ── Preset loading ──────────────────────────────────────────────────
 
+/**
+ * Load a preset by its catalog ID. Returns true if found and loaded.
+ */
+export async function loadPresetById(id) {
+  const preset = presets.find(p => p.id === id);
+  if (!preset) return false;
+  await loadPreset(preset);
+  return true;
+}
+
+/**
+ * Get a preset's catalog ID by matching name against the catalog.
+ * Returns the ID or null if not found.
+ */
+export function findPresetId(name) {
+  if (!name) return null;
+  const lower = name.toLowerCase().replace(/\.avs$/i, '');
+  const match = presets.find(p => p.title.toLowerCase() === lower);
+  return match ? match.id : null;
+}
+
 async function loadPreset(preset) {
   // Highlight in list
   presetList.querySelectorAll('.lib-preset-row').forEach(r => r.classList.remove('active'));
@@ -356,7 +377,7 @@ async function loadPreset(preset) {
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const buffer = await resp.arrayBuffer();
     if (loadPresetCallback) {
-      loadPresetCallback(buffer, preset.title + '.avs');
+      loadPresetCallback(buffer, preset.title + '.avs', preset.id);
     }
   } catch (err) {
     console.error(`Failed to load preset ${preset.title}:`, err);

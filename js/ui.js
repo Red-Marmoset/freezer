@@ -2,7 +2,7 @@ import { createAudioEngine } from './audio-engine.js';
 import { createRenderer } from './renderer.js';
 import { loadAvsPreset } from './avs/avs-engine.js';
 import { parseAvsFileWithName } from './avs/avs-parser.js';
-import { initPresetBrowser, open as openPresetLibrary, close as closePresetLibrary, isOpen as isPresetLibraryOpen } from './preset-library/preset-browser.js';
+import { initPresetBrowser, open as openPresetLibrary, close as closePresetLibrary, isOpen as isPresetLibraryOpen, loadPresetById, findPresetId } from './preset-library/preset-browser.js';
 
 const canvas = document.getElementById('visualizer');
 const controls = document.getElementById('controls');
@@ -77,15 +77,42 @@ function dismissSplash() {
 
 function setActivePreset(name) {
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-  presetName.textContent = name || '';
+  const id = findPresetId(name);
+  if (id) {
+    const url = new URL(window.location);
+    url.searchParams.set('preset', id);
+    presetName.innerHTML = '';
+    const link = document.createElement('a');
+    link.href = url.toString();
+    link.textContent = name || '';
+    link.className = 'preset-link';
+    link.title = 'Click to copy link';
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        link.textContent = 'Link copied!';
+        setTimeout(() => { link.textContent = name; }, 1500);
+      });
+    });
+    presetName.appendChild(link);
+  } else {
+    presetName.textContent = name || '';
+  }
 }
 
-function loadPresetJSON(json) {
+function loadPresetJSON(json, presetId) {
   try {
     currentPresetJSON = json;
     const preset = loadAvsPreset(json);
     viz.setPreset(preset);
     setActivePreset(preset.name);
+    // Update URL with preset ID for sharing
+    const id = presetId || findPresetId(preset.name);
+    if (id) {
+      const url = new URL(window.location);
+      url.searchParams.set('preset', id);
+      history.replaceState(null, '', url);
+    }
     // Refresh editor tree if open
     if (!document.getElementById('editor').classList.contains('hidden')) {
       buildEditorTree();
@@ -129,10 +156,10 @@ function loadPresetFile(file) {
 
 // --- Preset Library ---
 
-initPresetBrowser((buffer, filename) => {
+initPresetBrowser((buffer, filename, presetId) => {
   try {
     const json = parseAvsFileWithName(buffer, filename);
-    loadPresetJSON(json);
+    loadPresetJSON(json, presetId);
     dismissSplash();
   } catch (err) {
     console.error('Failed to load library preset:', err);
@@ -146,6 +173,18 @@ btnPresets.addEventListener('click', () => {
     openPresetLibrary();
   }
 });
+
+// --- URL preset parameter ---
+// Check for ?preset=<id> and auto-load
+{
+  const params = new URLSearchParams(window.location.search);
+  const presetParam = params.get('preset');
+  if (presetParam) {
+    loadPresetById(presetParam).then(found => {
+      if (found) dismissSplash();
+    });
+  }
+}
 
 // --- File Loader ---
 
