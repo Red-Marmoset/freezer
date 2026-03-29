@@ -371,7 +371,13 @@ export function parse(code) {
   if (!preprocessed.trim()) return { type: 'program', body: [] };
   const tokens = tokenize(preprocessed);
   const parser = new Parser(tokens);
-  return parser.parseProgram();
+  const ast = parser.parseProgram();
+  // If the parser didn't consume all tokens, the code has unparseable fragments.
+  // Throw so the compiler's fallback (statement-by-statement) kicks in.
+  if (!parser.is(T.EOF)) {
+    throw new Error('Unexpected token: ' + parser.peek().value);
+  }
+  return ast;
 }
 
 export { tokenize, Parser };

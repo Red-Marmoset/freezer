@@ -290,11 +290,34 @@ function compileWhileStmt(node) {
  */
 export function compileEEL(code) {
   if (!code || !code.trim()) return function() {};
+  // Strip // comments and check if anything meaningful remains
+  const stripped = code.replace(/\/\/[^\n]*/g, '').trim();
+  if (!stripped) return function() {};
   try {
-    const ast = parse(code);
+    const ast = parse(stripped);
     const jsBody = compileStmt(ast);
     return new Function('s', 'lib', jsBody);
   } catch (e) {
+    // If full parse fails, try statement-by-statement compilation.
+    // Real AVS silently ignores unparseable fragments (e.g. "face 1;n=6"
+    // where "face 1" is a comment/label before the semicolon).
+    // Split on semicolons and newlines (both are statement separators in EEL)
+    const stmts = stripped.split(/[;\n\r]+/).map(s => s.trim()).filter(Boolean);
+    const parts = [];
+    for (const stmt of stmts) {
+      try {
+        const ast = parse(stmt);
+        const js = compileStmt(ast);
+        if (js.trim()) parts.push(js);
+      } catch {
+        // Skip unparseable statements (treated as comments in original AVS)
+      }
+    }
+    if (parts.length > 0) {
+      try {
+        return new Function('s', 'lib', parts.join('\n'));
+      } catch {}
+    }
     console.warn('EEL compile error:', e.message, 'in:', code);
     return function() {};
   }
