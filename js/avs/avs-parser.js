@@ -69,6 +69,7 @@ function parseDllComponent(dllId, r, endPos) {
   if (cleanId === 'Holden03: Convolution Filter' || (cleanId.startsWith('Holden') && cleanId.toLowerCase().includes('convolution'))) return A.parseConvolutionAPE(r, endPos);
   if (cleanId === 'Color Map') return A.parseColorMapAPE(r, endPos);
   if (cleanId === 'Picture II') return A.parsePicture2APE(r, endPos);
+  if (cleanId.startsWith('Misc: AVSTrans') || cleanId === 'AVS Trans Automation') return A.parseEelTransAPE(r, endPos);
 
   return { type: cleanId || 'UnknownAPE', enabled: true, _unsupported: true, _apeId: cleanId };
 }

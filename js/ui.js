@@ -195,6 +195,7 @@ const DISPLAY_NAMES = {
 const FINISHED_COMPONENTS = new Set([
   'Comment',
   'FadeOut',
+  'EelTrans',
 ]);
 
 // Known select-type fields and their options

@@ -361,7 +361,78 @@ class Parser {
 function preprocess(code) {
   if (!code || typeof code !== 'string') return '';
   // Normalize line endings
-  return code.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  let s = code.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+  // Process #define macros (EelTrans feature)
+  const defines = new Map();
+  const funcDefines = new Map();
+  const lines = s.split('\n');
+  const output = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // Skip EelTrans directive comments
+    if (trimmed.startsWith('//$$')) continue;
+
+    // #define NAME(args) body — function-like macro
+    const funcMatch = trimmed.match(/^#define\s+(\w+)\(([^)]*)\)\s+(.+)$/i);
+    if (funcMatch) {
+      const name = funcMatch[1].toLowerCase();
+      const params = funcMatch[2].split(',').map(p => p.trim());
+      funcDefines.set(name, { params, body: funcMatch[3] });
+      continue;
+    }
+
+    // #define NAME value — simple macro
+    const simpleMatch = trimmed.match(/^#define\s+(\w+)\s+(.+)$/i);
+    if (simpleMatch) {
+      defines.set(simpleMatch[1].toLowerCase(), simpleMatch[2]);
+      continue;
+    }
+
+    // Skip #include (not supported in browser)
+    if (trimmed.startsWith('#include')) continue;
+
+    output.push(line);
+  }
+
+  s = output.join('\n');
+
+  // Apply function-like macros (before simple defines)
+  for (const [name, def] of funcDefines) {
+    const regex = new RegExp(name + '\\s*\\(', 'gi');
+    let match;
+    while ((match = regex.exec(s)) !== null) {
+      // Find matching closing paren
+      let depth = 1, pos = match.index + match[0].length;
+      const argStart = pos;
+      const args = [];
+      let argBegin = pos;
+      while (pos < s.length && depth > 0) {
+        if (s[pos] === '(') depth++;
+        else if (s[pos] === ')') { depth--; if (depth === 0) { args.push(s.slice(argBegin, pos)); break; } }
+        else if (s[pos] === ',' && depth === 1) { args.push(s.slice(argBegin, pos)); argBegin = pos + 1; }
+        pos++;
+      }
+      // Substitute parameters in body
+      let expanded = def.body;
+      for (let i = 0; i < def.params.length; i++) {
+        const paramRegex = new RegExp('\\b' + def.params[i] + '\\b', 'g');
+        expanded = expanded.replace(paramRegex, (args[i] || '0').trim());
+      }
+      s = s.slice(0, match.index) + expanded + s.slice(pos + 1);
+      regex.lastIndex = match.index + expanded.length;
+    }
+  }
+
+  // Apply simple defines (case-insensitive word replacement)
+  for (const [name, value] of defines) {
+    const regex = new RegExp('\\b' + name + '\\b', 'gi');
+    s = s.replace(regex, value);
+  }
+
+  return s;
 }
 
 // ---- Public API ----

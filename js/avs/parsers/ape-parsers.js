@@ -120,6 +120,23 @@ export function parseColorMapAPE(r, endPos) {
   return result;
 }
 
+export function parseEelTransAPE(r, endPos) {
+  const translateEnabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const logEnabled = r.hasBytes(4) ? r.uint32() !== 0 : false;
+  const translateFirstLevel = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  const readCommentCodes = r.hasBytes(4) ? r.uint32() !== 0 : true;
+  let code = '';
+  if (r.pos < endPos) code = r.ntString();
+  return {
+    type: 'EelTrans',
+    enabled: translateEnabled,
+    code,
+    logEnabled,
+    translateFirstLevel,
+    readCommentCodes,
+  };
+}
+
 export function parseConvolutionAPE(r, endPos) {
   const result = {
     type: 'Holden03: Convolution Filter', enabled: true,
