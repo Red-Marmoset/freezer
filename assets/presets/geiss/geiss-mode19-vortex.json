@@ -1,0 +1,26 @@
+{
+  "name": "Geiss - Vortex",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "CustomShader",
+      "enabled": true,
+      "code": { "init": "", "perFrame": "" },
+      "shader": "precision mediump float;\nuniform sampler2D tSource;\nuniform float uTime;\nvarying vec2 vUv;\nvoid main() {\n  vec2 center = vec2(0.5);\n  vec2 p = vUv - center;\n  float r = length(p);\n  // Mode 19: vortex - outward zoom that increases with distance\n  float scale1 = 1.04 - 0.5*r;\n  float turn1 = 0.06 + 0.03*sin(uTime*0.17);\n  float cs = cos(turn1);\n  float sn = sin(turn1);\n  vec2 rotated = vec2(p.x*cs - p.y*sn, p.x*sn + p.y*cs);\n  vec2 uv = rotated * (1.0/scale1) + center;\n  uv = clamp(uv, 0.0, 1.0);\n  gl_FragColor = texture2D(tSource, uv) * 0.985;\n}"
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": ["#8844ff"],
+      "code": {
+        "init": "n=512; t=0",
+        "perFrame": "t=t+0.013; vol=getspec(0,0.1,0); base=(vol*4+0.4)-0.1; cr=base*(1+0.3*sin(t*0.83+10)); cg=base*(1+0.3*sin(t*0.64+5)); cb=base*(1+0.3*sin(t*1.01))",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.85; y=v*0.35; red=cr; green=cg; blue=cb"
+      }
+    }
+  ]
+}

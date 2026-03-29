@@ -1,0 +1,26 @@
+{
+  "name": "Geiss - Horizontal Tunnel",
+  "clearFrame": false,
+  "components": [
+    {
+      "type": "CustomShader",
+      "enabled": true,
+      "code": { "init": "", "perFrame": "" },
+      "shader": "precision mediump float;\nuniform sampler2D tSource;\nuniform float uTime;\nvarying vec2 vUv;\nvoid main() {\n  vec2 center = vec2(0.5);\n  vec2 p = vUv - center;\n  // Mode 17: horizontal tunnel - scale depends on vertical distance\n  float scale1 = 0.97 - p.y*p.y*1.6;\n  float turn1 = 0.005;\n  float cs = cos(turn1);\n  float sn = sin(turn1);\n  vec2 rotated = vec2(p.x*cs - p.y*sn, p.x*sn + p.y*cs);\n  vec2 uv = rotated * (1.0/scale1) + center;\n  uv.x = fract(uv.x);\n  uv.y = clamp(uv.y, 0.0, 1.0);\n  gl_FragColor = texture2D(tSource, uv) * 0.99;\n}"
+    },
+    {
+      "type": "SuperScope",
+      "enabled": true,
+      "drawMode": "LINES",
+      "audioSource": "WAVEFORM",
+      "audioChannel": "CENTER",
+      "colors": ["#ff4488"],
+      "code": {
+        "init": "n=512; t=0",
+        "perFrame": "t=t+0.014; vol=getspec(0,0.1,0); base=(vol*4+0.4)-0.1; cr=base*(1+0.3*sin(t*0.93)); cg=base*(1+0.3*sin(t*0.71+2)); cb=base*(1+0.3*sin(t*0.57+4))",
+        "onBeat": "",
+        "perPoint": "x=(i*2-1)*0.9; y=v*0.3; red=cr; green=cg; blue=cb"
+      }
+    }
+  ]
+}
