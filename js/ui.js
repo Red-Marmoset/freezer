@@ -189,6 +189,8 @@ const DEFAULTS = {
   ClearScreen: { type: 'ClearScreen', enabled: true, color: '#000000', blendMode: 'REPLACE' },
   OnBeatClear: { type: 'OnBeatClear', enabled: true, color: '#000000', blendMode: 'REPLACE', nBeats: 1 },
   Texer: { type: 'Texer', enabled: true, imageSrc: '', input: 0, output: 0 },
+  Picture: { type: 'Picture', enabled: true, imageSrc: '', blendMode: 0, onBeatBlendMode: 0 },
+  MovingParticle: { type: 'MovingParticle', enabled: true },
   FadeOut: { type: 'FadeOut', enabled: true, speed: 7, color: '#000000' },
   Movement: { type: 'Movement', enabled: true, builtinEffect: 13, code: 'd=d*0.9', bilinear: true, wrap: false, coordinates: 'POLAR', sourceMapped: false },
   DynamicMovement: { type: 'DynamicMovement', enabled: true, code: { init: '', perFrame: '', onBeat: '', perPoint: '' }, bilinear: true, wrap: false, coordinates: 'CARTESIAN', gridW: 16, gridH: 16, blend: false, buffer: 0 },
