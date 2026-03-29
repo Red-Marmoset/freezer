@@ -160,17 +160,35 @@ const TRANS_TYPES = ['FadeOut','Movement','DynamicMovement','Blur','Invert','Mir
   'Interferences','DynamicShift','DynamicDistanceModifier','ColorMap'];
 
 // Known select-type fields and their options
+// Pretty display names for enum values
+const PRETTY_NAMES = {
+  REPLACE: 'Replace', ADDITIVE: 'Additive', FIFTY_FIFTY: '50/50',
+  MAXIMUM: 'Maximum', MINIMUM: 'Minimum', MULTIPLY: 'Multiply',
+  SUB_DEST_SRC: 'Sub (Dst-Src)', SUB_SRC_DEST: 'Sub (Src-Dst)',
+  EVERY_OTHER_LINE: 'Every Other Line', EVERY_OTHER_PIXEL: 'Every Other Pixel',
+  XOR: 'XOR', ADJUSTABLE: 'Adjustable', IGNORE: 'Ignore', BUFFER: 'Buffer',
+  WAVEFORM: 'Waveform', SPECTRUM: 'Spectrum',
+  LEFT: 'Left', RIGHT: 'Right', CENTER: 'Center',
+  DOTS: 'Dots', LINES: 'Lines', SOLID: 'Solid',
+  TOP: 'Top', BOTTOM: 'Bottom', CARTESIAN: 'Cartesian', POLAR: 'Polar',
+};
+
+const BLEND_OPTIONS = ['REPLACE', 'ADDITIVE', 'FIFTY_FIFTY', 'MAXIMUM', 'MINIMUM', 'MULTIPLY', 'SUB_DEST_SRC', 'SUB_SRC_DEST', 'EVERY_OTHER_LINE', 'EVERY_OTHER_PIXEL', 'XOR', 'ADJUSTABLE'];
+const BLEND_IO_OPTIONS = ['IGNORE', ...BLEND_OPTIONS, 'BUFFER'];
+
 const SELECT_FIELDS = {
   drawMode: ['DOTS', 'LINES'],
   audioSource: ['WAVEFORM', 'SPECTRUM'],
   audioChannel: ['LEFT', 'RIGHT', 'CENTER'],
-  input: ['IGNORE', 'REPLACE', 'FIFTY_FIFTY', 'MAXIMUM'],
-  output: ['IGNORE', 'REPLACE', 'FIFTY_FIFTY', 'MAXIMUM', 'ADDITIVE', 'SUB_1', 'SUB_2', 'EVERY_OTHER_LINE', 'EVERY_OTHER_PIXEL', 'XOR', 'ADJUSTABLE', 'MINIMUM'],
+  input: BLEND_IO_OPTIONS,
+  output: BLEND_IO_OPTIONS,
   renderType: ['DOTS', 'LINES', 'SOLID'],
   positionY: ['TOP', 'CENTER', 'BOTTOM'],
-  blendMode: ['REPLACE', 'ADDITIVE', 'FIFTY_FIFTY', 'DEFAULT', 'EVERY_OTHER_LINE', 'EVERY_OTHER_PIXEL', 'XOR', 'ADJUSTABLE', 'MULTIPLY', 'MAXIMUM', 'MINIMUM', 'SUB_1', 'SUB_2'],
+  blendMode: BLEND_OPTIONS,
+  onBeatBlendMode: BLEND_OPTIONS,
   onBeatAction: ['NONE', 'RANDOM', 'REVERSE'],
   sourceChannel: ['ZERO', 'RED', 'GREEN', 'BLUE'],
+  coordinates: ['POLAR', 'CARTESIAN'],
   mode: [0, 1, 2, 3],
 };
 
@@ -563,7 +581,7 @@ function buildDetailDom(container, comp, path) {
         for (const opt of SELECT_FIELDS[key]) {
           const o = document.createElement('option');
           o.value = opt;
-          o.textContent = opt;
+          o.textContent = PRETTY_NAMES[opt] || opt;
           if (String(val) === String(opt)) o.selected = true;
           sel.appendChild(o);
         }
@@ -573,6 +591,42 @@ function buildDetailDom(container, comp, path) {
           rebuildPreset();
         });
         valSpan.appendChild(sel);
+        // Show adjustable blend slider when ADJUSTABLE is selected
+        if ((key === 'blendMode' || key === 'onBeatBlendMode' || key === 'input' || key === 'output') && String(val) === 'ADJUSTABLE') {
+          const adjKey = key + 'Adjust';
+          const adjVal = comp[adjKey] !== undefined ? comp[adjKey] : (comp.adjustBlend !== undefined ? comp.adjustBlend : 128);
+          const adjWrap = document.createElement('div');
+          adjWrap.style.cssText = 'display:flex;gap:6px;align-items:center;margin-top:4px;';
+          const adjLabel = document.createElement('span');
+          adjLabel.className = 'key';
+          adjLabel.textContent = 'blend %';
+          adjLabel.style.minWidth = '50px';
+          const adjSlider = document.createElement('input');
+          adjSlider.type = 'range';
+          adjSlider.className = 'ed-slider';
+          adjSlider.min = 0; adjSlider.max = 255; adjSlider.step = 1;
+          adjSlider.value = adjVal;
+          const adjNum = document.createElement('input');
+          adjNum.type = 'number';
+          adjNum.className = 'ed-input';
+          adjNum.value = adjVal;
+          adjNum.style.width = '55px'; adjNum.style.flexShrink = '0';
+          adjSlider.addEventListener('input', () => {
+            adjNum.value = adjSlider.value;
+            comp[adjKey] = Number(adjSlider.value);
+            if (comp.adjustBlend !== undefined) comp.adjustBlend = Number(adjSlider.value);
+            rebuildPreset();
+          });
+          adjNum.addEventListener('change', () => {
+            adjSlider.value = adjNum.value;
+            comp[adjKey] = Number(adjNum.value);
+            rebuildPreset();
+          });
+          adjWrap.appendChild(adjLabel);
+          adjWrap.appendChild(adjSlider);
+          adjWrap.appendChild(adjNum);
+          valSpan.appendChild(adjWrap);
+        }
       } else if (typeof val === 'boolean') {
         const cb = document.createElement('input');
         cb.type = 'checkbox';
@@ -747,20 +801,76 @@ function buildDetailDom(container, comp, path) {
     container.appendChild(section);
   }
 
-  // Movement code (custom effect, builtinEffect=13)
-  // Always show for Movement so users can write custom code
+  // Movement: show builtin effect description + code editor for custom (13)
   if (comp.type === 'Movement') {
+    const EFFECT_NAMES = [
+      'None', 'Slight Fuzzify', 'Shift Rotate Left', 'Big Swirl Out',
+      'Medium Swirl', 'Sunburster', 'Squish', 'Chaos Dwarf',
+      'Infinitely Zooming Shift Rotate', 'Tunnel', 'Gentle Zoom In',
+      'Blocky Partial Out', 'Swirling Around Both Ways', 'User Defined',
+      'Gentle Zoom Out', 'Swirl To Center', 'Starfish',
+      'Yawning Rotation Left', 'Yawning Rotation Right',
+      'Mild Zoom In With Slight Rotation', 'Drain', 'Super Drain',
+      'Hyper Drain', 'Shift Down',
+    ];
+
+    const EFFECT_CODE = [
+      '', // 0: None
+      'd=d*0.99+0.005', // 1: Slight Fuzzify
+      'd=d*0.98; r=r+0.04', // 2: Shift Rotate Left
+      'd=d*1.01; r=r+0.05*(1.0-d)', // 3: Big Swirl Out
+      'r=r+0.03', // 4: Medium Swirl
+      'd=d*1.02; r=r+0.01', // 5: Sunburster
+      'd=d*0.9', // 6: Squish
+      'x=x+sin(y*4*$PI)*0.01; y=y+cos(x*4*$PI)*0.01', // 7: Chaos Dwarf
+      'd=d*0.96; r=r+0.02', // 8: Inf Zoom Shift Rotate
+      'd=0.8/(d+0.01)', // 9: Tunnel
+      'd=d*0.98', // 10: Gentle Zoom In
+      '// blocky partial out', // 11
+      'r=r+0.1*sin(d*$PI*2)', // 12: Swirling Both Ways
+      '', // 13: User Defined
+      'd=d*1.02', // 14: Gentle Zoom Out
+      'd=d*0.95; r=r+0.1*d', // 15: Swirl To Center
+      'd=d*(0.96+0.04*sin(r*5)); r=r+0.02', // 16: Starfish
+      'r=r+0.1*(1.0-d)', // 17: Yawning Rotation Left
+      'r=r-0.1*(1.0-d)', // 18: Yawning Rotation Right
+      'd=d*0.99; r=r+0.01', // 19: Mild Zoom + Rotation
+      'd=d*0.98; r=r+0.06*(1.0-d)', // 20: Drain
+      'd=d*0.96; r=r+0.1*(1.0-d)', // 21: Super Drain
+      'd=d*0.94; r=r+0.15*(1.0-d)', // 22: Hyper Drain
+      'y=y+0.02', // 23: Shift Down
+    ];
+
+    const idx = comp.builtinEffect || 0;
+    const effectName = EFFECT_NAMES[idx] || 'Unknown';
+
+    // Show effect name
+    const nameSection = document.createElement('div');
+    nameSection.className = 'tree-detail-section';
+    nameSection.innerHTML = `<div class="tree-detail-label">EFFECT: ${effectName}</div>`;
+    if (idx !== 13 && EFFECT_CODE[idx]) {
+      const codePreview = document.createElement('div');
+      codePreview.className = 'tree-detail-code';
+      codePreview.textContent = EFFECT_CODE[idx];
+      codePreview.style.opacity = '0.6';
+      nameSection.appendChild(codePreview);
+    }
+    container.appendChild(nameSection);
+
+    // Editable code textarea (for User Defined, effect 13)
     const section = document.createElement('div');
     section.className = 'tree-detail-section';
-    section.innerHTML = '<div class="tree-detail-label">CUSTOM CODE (effect 13)</div>';
+    section.innerHTML = '<div class="tree-detail-label">CUSTOM CODE</div>';
     const ta = document.createElement('textarea');
     ta.className = 'ed-textarea';
     ta.value = (typeof comp.code === 'string' ? comp.code : '') || '';
     ta.rows = 4;
     ta.placeholder = 'd=d*0.9; // polar: modify d (distance) and r (rotation)';
+    ta.disabled = (idx !== 13);
+    if (idx !== 13) ta.style.opacity = '0.3';
     ta.addEventListener('change', () => {
       comp.code = ta.value;
-      comp.builtinEffect = 13; // switch to User Defined when code is entered
+      comp.builtinEffect = 13;
       rebuildPreset();
     });
     section.appendChild(ta);
