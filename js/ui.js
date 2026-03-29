@@ -194,6 +194,7 @@ const DISPLAY_NAMES = {
 // Add component type names here as they are verified.
 const FINISHED_COMPONENTS = new Set([
   'Comment',
+  'FadeOut',
 ]);
 
 // Known select-type fields and their options
