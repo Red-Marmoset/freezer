@@ -30,6 +30,7 @@ export function createRenderer(canvas) {
       audioData: {
         waveform: audioEngine?.waveform,
         spectrum: audioEngine?.spectrum,
+        spectrumBytes: audioEngine?.spectrumBytes,
         fftSize: audioEngine?.fftSize ?? 2048
       },
       time: (performance.now() - startTime) / 1000,
@@ -69,6 +70,7 @@ export function createRenderer(canvas) {
       // Refresh references after update
       ctx.audioData.waveform = audioEngine.waveform;
       ctx.audioData.spectrum = audioEngine.spectrum;
+      ctx.audioData.spectrumBytes = audioEngine.spectrumBytes;
     }
 
     if (activePreset) {

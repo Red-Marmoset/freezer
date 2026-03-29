@@ -8,6 +8,7 @@ export function createAudioEngine() {
   const fftSize = 2048;
   let waveform = null;
   let spectrum = null;
+  let spectrumBytes = null;
 
   function ensureContext() {
     if (!audioCtx) {
@@ -16,6 +17,7 @@ export function createAudioEngine() {
       analyser.fftSize = fftSize;
       waveform = new Uint8Array(analyser.frequencyBinCount);
       spectrum = new Float32Array(analyser.frequencyBinCount);
+      spectrumBytes = new Uint8Array(analyser.frequencyBinCount);
     }
     if (audioCtx.state === 'suspended') {
       audioCtx.resume();
@@ -93,11 +95,13 @@ export function createAudioEngine() {
     if (!analyser) return;
     analyser.getByteTimeDomainData(waveform);
     analyser.getFloatFrequencyData(spectrum);
+    analyser.getByteFrequencyData(spectrumBytes);
   }
 
   return {
     get waveform() { return waveform; },
     get spectrum() { return spectrum; },
+    get spectrumBytes() { return spectrumBytes; },
     get fftSize() { return fftSize; },
     switchSource,
     loadFile,
