@@ -1213,58 +1213,52 @@ function parseTriangleAPE(r, endPos) {
 //   Trailing flags: wrap(uint32), resize(uint32)
 
 function parseTexerAPE(r, endPos) {
+  // Texer v1 binary layout:
+  //   16 bytes unused
+  //   260 bytes image filename (fixed, null-terminated)
+  //   1 byte input/output modes (lower nibble=input, upper=output)
+  //   3 bytes padding
+  //   4 bytes unused
+  //   4 bytes num_particles
+  // Texer v1 is NOT programmable — no EEL code.
   const result = {
     type: 'Texer',
     enabled: true,
     imageSrc: '',
-    code: { init: '', perFrame: '', onBeat: '', perPoint: '' },
     wrap: false,
     resize: false,
+    numParticles: 100,
   };
 
   try {
-    if (!r.hasBytes(1)) return result;
-
-    // Some Texer versions start with a version/enabled uint32.
-    // Peek: if the first byte is 0 or 1 and the next three are zero,
-    // treat it as a uint32 version field.
-    const firstByte = r.bytes[r.pos];
-
-    if (firstByte <= 1 && r.hasBytes(4) &&
-        r.bytes[r.pos + 1] === 0 && r.bytes[r.pos + 2] === 0 && r.bytes[r.pos + 3] === 0) {
-      r.uint32(); // skip version/enabled
+    // Skip 16 unused bytes
+    if (r.pos + 16 <= endPos) {
+      r.skip(16);
     }
 
-    // Read image source filename (null-terminated)
-    if (r.pos < endPos) {
-      result.imageSrc = r.ntString();
+    // Image filename — fixed 260 bytes
+    if (r.pos + 260 <= endPos) {
+      result.imageSrc = r.fixedString(260);
     }
 
-    // Try to read code strings (size-prefixed)
+    // Input/output mode byte
     if (r.pos + 4 <= endPos) {
-      result.code.init = r.sizeString();
-    }
-    if (r.pos + 4 <= endPos) {
-      result.code.perFrame = r.sizeString();
-    }
-    if (r.pos + 4 <= endPos) {
-      result.code.onBeat = r.sizeString();
-    }
-    if (r.pos + 4 <= endPos) {
-      result.code.perPoint = r.sizeString();
+      const modeByte = r.uint8();
+      result.inputMode = modeByte & 0x0f;
+      result.outputMode = (modeByte >> 4) & 0x0f;
+      r.skip(3); // padding
     }
 
-    // Trailing flags
+    // Skip unused uint32
     if (r.pos + 4 <= endPos) {
-      result.wrap = r.uint32() !== 0;
+      r.skip(4);
     }
+
+    // Particle count
     if (r.pos + 4 <= endPos) {
-      result.resize = r.uint32() !== 0;
+      result.numParticles = r.uint32();
     }
-  } catch {
-    // If parsing fails, return with empty code — the component will still render
-    // using the gaussian blob fallback with default behavior.
-  }
+  } catch {}
 
   return result;
 }
@@ -1292,12 +1286,12 @@ function parseTexer2APE(r, endPos) {
   try {
     if (!r.hasBytes(4)) return result;
 
-    // Version
+    // Version (uint32)
     const version = r.uint32();
 
-    // Image source — null-terminated string
-    if (r.pos < endPos) {
-      result.imageSrc = r.ntString();
+    // Image source — fixed 260-byte field (LEGACY_SAVE_PATH_LEN = MAX_PATH)
+    if (r.pos + 260 <= endPos) {
+      result.imageSrc = r.fixedString(260);
     }
 
     // Flags
@@ -1309,6 +1303,11 @@ function parseTexer2APE(r, endPos) {
     }
     if (r.pos + 4 <= endPos) {
       result.colorFilter = r.uint32();
+    }
+
+    // Unused padding (4 bytes)
+    if (r.pos + 4 <= endPos) {
+      r.skip(4);
     }
 
     // Code sections (size-prefixed strings)
