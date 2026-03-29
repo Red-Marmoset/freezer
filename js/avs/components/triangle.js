@@ -87,12 +87,10 @@ export class Triangle extends AvsComponent {
     const n = Math.max(0, Math.min(MAX_TRIS, Math.floor(s.n !== undefined ? s.n : 0)));
     if (n === 0) return;
 
-    const positions = this._geometry.attributes.position.array;
-    const colorsBuf = this._geometry.attributes.color.array;
-    let triCount = 0;
+    // Collect triangles first, then sort by z1 if zbuf is enabled
+    const tris = [];
 
     for (let t = 0; t < n; t++) {
-      // Reset per-triangle defaults
       s.i = n > 1 ? t / (n - 1) : 0;
       s.x1 = 0; s.y1 = 0;
       s.x2 = 0; s.y2 = 0;
@@ -106,43 +104,53 @@ export class Triangle extends AvsComponent {
 
       try { this.perPointFn(s, lib); } catch {}
 
-      if (s.skip >= 0.00001) continue;
+      if (s.skip !== 0) continue;
 
-      const base = triCount * 9; // 3 verts * 3 components
-
-      // Vertex 1
-      positions[base]     = s.x1;
-      positions[base + 1] = -(s.y1); // Y inverted
-      positions[base + 2] = 0;
-      // Vertex 2
-      positions[base + 3] = s.x2;
-      positions[base + 4] = -(s.y2);
-      positions[base + 5] = 0;
-      // Vertex 3
-      positions[base + 6] = s.x3;
-      positions[base + 7] = -(s.y3);
-      positions[base + 8] = 0;
-
-      // Colors — flat shading: if EEL only sets red1/green1/blue1,
-      // copy to all three vertices. Only use per-vertex colors if
-      // the code explicitly set red2/green2/blue2/red3/green3/blue3.
+      const hasV2Color = s._dirty.has('red2') || s._dirty.has('green2') || s._dirty.has('blue2');
+      const hasV3Color = s._dirty.has('red3') || s._dirty.has('green3') || s._dirty.has('blue3');
       const r1 = Math.max(0, Math.min(1, s.red1));
       const g1 = Math.max(0, Math.min(1, s.green1));
       const b1 = Math.max(0, Math.min(1, s.blue1));
 
-      const hasV2Color = s._dirty.has('red2') || s._dirty.has('green2') || s._dirty.has('blue2');
-      const hasV3Color = s._dirty.has('red3') || s._dirty.has('green3') || s._dirty.has('blue3');
+      tris.push({
+        x1: s.x1, y1: s.y1, x2: s.x2, y2: s.y2, x3: s.x3, y3: s.y3,
+        z1: s.z1,
+        r1, g1, b1,
+        r2: hasV2Color ? Math.max(0, Math.min(1, s.red2)) : r1,
+        g2: hasV2Color ? Math.max(0, Math.min(1, s.green2)) : g1,
+        b2: hasV2Color ? Math.max(0, Math.min(1, s.blue2)) : b1,
+        r3: hasV3Color ? Math.max(0, Math.min(1, s.red3)) : r1,
+        g3: hasV3Color ? Math.max(0, Math.min(1, s.green3)) : g1,
+        b3: hasV3Color ? Math.max(0, Math.min(1, s.blue3)) : b1,
+      });
+    }
 
-      const r2 = hasV2Color ? Math.max(0, Math.min(1, s.red2)) : r1;
-      const g2 = hasV2Color ? Math.max(0, Math.min(1, s.green2)) : g1;
-      const b2 = hasV2Color ? Math.max(0, Math.min(1, s.blue2)) : b1;
-      const r3 = hasV3Color ? Math.max(0, Math.min(1, s.red3)) : r1;
-      const g3 = hasV3Color ? Math.max(0, Math.min(1, s.green3)) : g1;
-      const b3 = hasV3Color ? Math.max(0, Math.min(1, s.blue3)) : b1;
+    // Sort by z1 ascending (painter's algorithm — far triangles first)
+    if (s.zbuf) {
+      tris.sort((a, b) => a.z1 - b.z1);
+    }
 
-      colorsBuf[base]     = r1; colorsBuf[base + 1] = g1; colorsBuf[base + 2] = b1;
-      colorsBuf[base + 3] = r2; colorsBuf[base + 4] = g2; colorsBuf[base + 5] = b2;
-      colorsBuf[base + 6] = r3; colorsBuf[base + 7] = g3; colorsBuf[base + 8] = b3;
+    // Write sorted triangles to geometry buffers
+    const positions = this._geometry.attributes.position.array;
+    const colorsBuf = this._geometry.attributes.color.array;
+    let triCount = 0;
+
+    for (const tri of tris) {
+      const base = triCount * 9;
+
+      positions[base]     = tri.x1;
+      positions[base + 1] = -(tri.y1);
+      positions[base + 2] = 0;
+      positions[base + 3] = tri.x2;
+      positions[base + 4] = -(tri.y2);
+      positions[base + 5] = 0;
+      positions[base + 6] = tri.x3;
+      positions[base + 7] = -(tri.y3);
+      positions[base + 8] = 0;
+
+      colorsBuf[base]     = tri.r1; colorsBuf[base + 1] = tri.g1; colorsBuf[base + 2] = tri.b1;
+      colorsBuf[base + 3] = tri.r2; colorsBuf[base + 4] = tri.g2; colorsBuf[base + 5] = tri.b2;
+      colorsBuf[base + 6] = tri.r3; colorsBuf[base + 7] = tri.g3; colorsBuf[base + 8] = tri.b3;
 
       triCount++;
     }

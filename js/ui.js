@@ -222,6 +222,11 @@ const FINISHED_COMPONENTS = new Set([
   'Comment',
   'FadeOut',
   'EelTrans',
+  'Blur',
+  'Multiplier',
+  'FastBrightness',
+  'BlitterFeedback',
+  'Holden03: Convolution Filter',
 ]);
 
 // Known select-type fields and their options
@@ -355,6 +360,16 @@ function getIcon(type, cat) {
 
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatSliderValue(key, val) {
+  const k = key.toLowerCase();
+  // BlitterFeedback scale/onBeatScale: 32=1.00x, 0=inf zoom in, 63=~2x zoom out
+  if (k === 'scale' || k === 'onbeatscale') {
+    if (val === 0) return 'MAX';
+    return (val / 32).toFixed(2) + 'x';
+  }
+  return Number.isInteger(val) ? String(val) : val.toFixed(3);
 }
 
 function getSliderRange(key, val) {
@@ -847,14 +862,19 @@ function buildDetailDom(container, comp, path) {
         const numInp = document.createElement('input');
         numInp.type = 'number';
         numInp.className = 'ed-input';
-        numInp.value = Number.isInteger(val) ? val : val.toFixed(3);
+        numInp.value = formatSliderValue(key, val);
         numInp.step = range.step;
         numInp.style.width = '65px';
         numInp.style.flexShrink = '0';
 
+        // Show value during drag without rebuilding preset (smooth dragging)
         slider.addEventListener('input', () => {
+          numInp.value = formatSliderValue(key, Number(slider.value));
+        });
+        // Only rebuild preset on release (change event)
+        slider.addEventListener('change', () => {
           const v = Number(slider.value);
-          numInp.value = Number.isInteger(v) ? v : v.toFixed(3);
+          numInp.value = formatSliderValue(key, v);
           comp[key] = v;
           rebuildPreset();
         });
