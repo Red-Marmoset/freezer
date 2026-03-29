@@ -265,6 +265,8 @@ const FINISHED_COMPONENTS = new Set([
   'FastBrightness',
   'BlitterFeedback',
   'Holden03: Convolution Filter',
+  'Mirror',
+  'Invert',
 ]);
 
 // Known select-type fields and their options
@@ -287,7 +289,7 @@ const PRETTY_NAMES = {
 const NUMERIC_PRETTY = {
   action: { 0: 'Save', 1: 'Restore', 2: 'Alt. Save/Restore', 3: 'Alt. Restore/Save' },
   clearMode: { 0: 'Clear', 1: 'No Clear' },
-  mode: { 0: 'Mode 0', 1: 'Mode 1', 2: 'Mode 2', 3: 'Mode 3' },
+  mode: { 0: 'Left \u2192 Right', 1: 'Right \u2192 Left', 2: 'Top \u2192 Bottom', 3: 'Bottom \u2192 Top' },
   colorFilter: { 0: 'Off', 1: 'On (Multiply)' },
 };
 
