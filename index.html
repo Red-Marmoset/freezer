@@ -65,24 +65,31 @@
         </div>
 
         <div class="splash-explain">
-          <div class="splash-section-label">HOW IT WORKS</div>
+          <div class="splash-section-label">CHOOSE AUDIO SOURCE</div>
           <p class="splash-body">
-            Freezer visualizes whatever audio is playing on your system.
-            To capture your audio, your browser will ask you to
-            <strong>share a screen or tab</strong> &mdash; this is how
-            we access the audio stream. The video is immediately discarded;
-            nothing is recorded or transmitted.
+            Freezer needs an audio source to visualize. Choose one:
           </p>
-          <div class="splash-note">
-            <span class="splash-note-icon">&#x1F6C8;</span>
-            In the share dialog, pick any screen or tab that has audio playing.
-            If you share a tab, only that tab's audio is captured.
-            Sharing a screen captures all system audio.
-          </div>
         </div>
 
-        <button id="btn-start">START CAPTURE</button>
+        <div class="splash-sources">
+          <button id="btn-src-screen" class="splash-src-btn" title="Capture audio from a screen or tab (Chrome/Edge only)">
+            <span class="splash-src-icon">&#x1F5B5;</span>
+            <span class="splash-src-label">Screen Share</span>
+            <span class="splash-src-desc">Capture system or tab audio</span>
+          </button>
+          <button id="btn-src-file" class="splash-src-btn" title="Play an audio file">
+            <span class="splash-src-icon">&#x1F3B5;</span>
+            <span class="splash-src-label">Audio File</span>
+            <span class="splash-src-desc">Load .mp3, .wav, .ogg, .flac</span>
+          </button>
+          <button id="btn-src-mic" class="splash-src-btn" title="Use microphone input">
+            <span class="splash-src-icon">&#x1F399;</span>
+            <span class="splash-src-label">Microphone</span>
+            <span class="splash-src-desc">Picks up audio from speakers</span>
+          </button>
+        </div>
         <div id="splash-status" class="splash-status"></div>
+        <input type="file" id="audio-file-input" accept="audio/*" style="display:none" />
 
         <div class="splash-footer">
           <span>Drag &amp; drop <kbd>.avs</kbd> or <kbd>.json</kbd> preset files onto the visualizer</span>
