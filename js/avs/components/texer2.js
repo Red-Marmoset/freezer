@@ -6,6 +6,7 @@ import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
 import { loadAvsImage, getFallbackTexture } from '../image-loader.js';
+import { applyLineBlend, restoreLineBlend } from '../line-blend.js';
 
 const MAX_POINTS = 4096;
 
@@ -66,13 +67,14 @@ const FRAG_SHADER = `
     vec4 tex = texture2D(tSprite, vUv);
     vec3 color;
     if (uColorize == 1) {
-      // Colorize: multiply texture by per-instance color
       color = tex.rgb * vColor;
     } else {
-      // No colorize: draw texture unmodified
       color = tex.rgb;
     }
-    gl_FragColor = vec4(color, tex.a);
+    // Skip black pixels — original AVS skips 0x000000 pixels in the inner loop.
+    // BMP sprites have no alpha, so black background acts as transparent.
+    if (dot(color, color) < 0.001) discard;
+    gl_FragColor = vec4(color, 1.0);
   }
 `;
 
@@ -154,7 +156,8 @@ export class Texer2 extends AvsComponent {
 
     this._geometry.instanceCount = 0;
 
-    // Shader material with additive blending
+    // Shader material — blending is managed manually via GL state
+    // to honor SetRenderMode (g_line_blend_mode)
     this._material = new THREE.RawShaderMaterial({
       vertexShader: VERT_SHADER,
       fragmentShader: FRAG_SHADER,
@@ -162,8 +165,8 @@ export class Texer2 extends AvsComponent {
         tSprite: { value: this._blobTexture },
         uColorize: { value: this.colorFilter ? 1 : 0 },
       },
-      transparent: true,
-      blending: THREE.AdditiveBlending,
+      transparent: false,
+      blending: THREE.NoBlending,
       depthTest: false,
       depthWrite: false,
     });
@@ -302,9 +305,22 @@ export class Texer2 extends AvsComponent {
     this._instanceColorAttr.needsUpdate = true;
     this._geometry.instanceCount = count;
 
+    // Apply blend mode from SetRenderMode (or default to additive)
+    const blended = applyLineBlend(ctx.renderer, ctx);
+    if (!blended) {
+      // Default: additive blending (original AVS default for Texer II)
+      const gl = ctx.renderer.getContext();
+      gl.enable(gl.BLEND);
+      gl.blendEquation(gl.FUNC_ADD);
+      gl.blendFunc(gl.ONE, gl.ONE);
+    }
+
     // Render onto the active framebuffer
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
     ctx.renderer.render(this._scene, this._camera);
+
+    // Restore GL state
+    restoreLineBlend(ctx.renderer);
   }
 
   destroy() {
