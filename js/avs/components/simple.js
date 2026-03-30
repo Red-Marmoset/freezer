@@ -2,6 +2,7 @@
 // Renders waveform or spectrum as lines, dots, or solid bars.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
+import { applyLineBlend, restoreLineBlend } from '../line-blend.js';
 
 const MAX_POINTS = 1024;
 
@@ -134,7 +135,9 @@ export class Simple extends AvsComponent {
     this._geometry.setDrawRange(0, drawCount);
 
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
+    const blended = applyLineBlend(ctx.renderer, ctx);
     ctx.renderer.render(this._scene, this._camera);
+    if (blended) restoreLineBlend(ctx.renderer);
   }
 
   destroy() {
