@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Freezer — Test Suite</title>
+  <style>
+    body { background: #111; color: #ccc; font-family: 'Consolas', monospace; font-size: 13px; padding: 20px; }
+    h1 { color: #00e5ff; font-size: 18px; }
+    h2 { color: #aaa; font-size: 14px; margin-top: 20px; }
+    .pass { color: #4caf50; }
+    .fail { color: #f44336; }
+    .error { color: #f44336; font-size: 11px; margin-left: 20px; }
+    .summary { margin-top: 20px; padding: 10px; border: 1px solid #333; }
+    .visual-test { display: inline-block; margin: 4px; text-align: center; }
+    .visual-test canvas { display: block; border: 1px solid #333; image-rendering: pixelated; }
+    .visual-test .label { font-size: 10px; color: #888; }
+    #visual-grid { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>FREEZER TEST SUITE</h1>
+  <div id="results"></div>
+  <h2>VISUAL COMPONENT TESTS</h2>
+  <div id="visual-grid"></div>
+  <div id="summary" class="summary"></div>
+
+  <script type="module">
+    import { componentTests } from './test-components.mjs';
+
+    const results = document.getElementById('results');
+    const visualGrid = document.getElementById('visual-grid');
+    const summary = document.getElementById('summary');
+    let passed = 0, failed = 0;
+
+    function log(msg, cls) {
+      const div = document.createElement('div');
+      div.className = cls || '';
+      div.textContent = msg;
+      results.appendChild(div);
+    }
+
+    // ── Run EEL tests (imported inline) ──────────────────────────────
+
+    async function runEELTests() {
+      const { compileEEL, createState } = await import('../js/avs/eel/nseel-compiler.js');
+      const { createStdlib } = await import('../js/avs/eel/nseel-stdlib.js');
+
+      const EPSILON = 0.0001;
+      const tests = [
+        ['3+4*2=11', 'x=3+4*2', 'x', 11],
+        ['(3+4)*2=14', 'x=(3+4)*2', 'x', 14],
+        ['sin(PI/2)=1', 'x=sin($PI/2)', 'x', 1],
+        ['cos(0)=1', 'x=cos(0)', 'x', 1],
+        ['sqr(5)=25', 'x=sqr(5)', 'x', 25],
+        ['sqrt(9)=3', 'x=sqrt(9)', 'x', 3],
+        ['$PI', 'x=$PI', 'x', Math.PI],
+        ['$E', 'x=$E', 'x', Math.E],
+        ['$PHI', 'x=$PHI', 'x', 1.618033],
+        ['if(1,5,10)=5', 'x=if(1,5,10)', 'x', 5],
+        ['if(0,5,10)=10', 'x=if(0,5,10)', 'x', 10],
+        ['above(5,3)=1', 'x=above(5,3)', 'x', 1],
+        ['below(3,5)=1', 'x=below(3,5)', 'x', 1],
+        ['equal(5,5)=1', 'x=equal(5,5)', 'x', 1],
+        ['8|3=11', 'x=8|3', 'x', 11],
+        ['255&15=15', 'x=255&15', 'x', 15],
+        ['loop(5,x=x+1)', 'x=0;loop(5,x=x+1)', 'x', 5],
+        ['reg00', 'reg00=42;x=reg00', 'x', 42],
+        ['floor(3.7)=3', 'x=floor(3.7)', 'x', 3],
+        ['ceil(3.2)=4', 'x=ceil(3.2)', 'x', 4],
+        ['abs(-7)=7', 'x=abs(-7)', 'x', 7],
+        ['min(3,7)=3', 'x=min(3,7)', 'x', 3],
+        ['max(3,7)=7', 'x=max(3,7)', 'x', 7],
+        ['pow(2,8)=256', 'x=pow(2,8)', 'x', 256],
+      ];
+
+      log('── EEL Expression Tests ──');
+      for (const [name, code, varName, expected] of tests) {
+        try {
+          const state = createState(new Float64Array(100), {});
+          const lib = createStdlib({ waveform: new Uint8Array(576).fill(128), spectrum: new Float32Array(512).fill(-100), fftSize: 1024, time: 1 });
+          const fn = compileEEL(code);
+          fn(state, lib);
+          const actual = state[varName];
+          if (Math.abs(actual - expected) < EPSILON) {
+            passed++;
+            log(`  ✓ ${name}`, 'pass');
+          } else {
+            failed++;
+            log(`  ✗ ${name}: expected ${expected}, got ${actual}`, 'fail');
+          }
+        } catch (e) {
+          failed++;
+          log(`  ✗ ${name}: ${e.message}`, 'fail');
+        }
+      }
+    }
+
+    // ── Run Component tests ──────────────────────────────────────────
+
+    async function runComponentTests() {
+      log('── Component Render Tests ──');
+      for (const t of componentTests) {
+        try {
+          await t.fn();
+          passed++;
+          log(`  ✓ ${t.name}`, 'pass');
+        } catch (e) {
+          failed++;
+          log(`  ✗ ${t.name}: ${e.message}`, 'fail');
+          const errDiv = document.createElement('div');
+          errDiv.className = 'error';
+          errDiv.textContent = e.stack?.split('\n')[1] || '';
+          results.appendChild(errDiv);
+        }
+      }
+    }
+
+    // ── Visual tests: render known presets and display ────────────────
+
+    async function runVisualTests() {
+      const { loadAvsPreset } = await import('../js/avs/avs-engine.js');
+      const THREE = await import('https://esm.sh/three@0.171.0');
+
+      const visualPresets = [
+        { name: 'Red Clear', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#ff0000' }
+        ]}},
+        { name: 'Green+Invert=Magenta', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#00ff00' },
+          { type: 'Invert', enabled: true }
+        ]}},
+        { name: 'SuperScope Line', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'FadeOut', enabled: true, speed: 10, color: '#000000' },
+          { type: 'SuperScope', enabled: true, drawMode: 'LINES', audioSource: 'WAVEFORM',
+            audioChannel: 'CENTER', colors: ['#00ffff'],
+            code: { init: 'n=200', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=sin(i*$PI*4)*0.3' } }
+        ]}},
+        { name: 'Movement Spiral', preset: { name: 'test', clearFrame: false, components: [
+          { type: 'FadeOut', enabled: true, speed: 3, color: '#000000' },
+          { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+            audioChannel: 'CENTER', colors: ['#ffff00'],
+            code: { init: 'n=50', perFrame: '', onBeat: '', perPoint: 'x=(i*2-1)*0.3; y=0' } },
+          { type: 'Movement', enabled: true, preset: 4, wrap: true }
+        ]}},
+        { name: 'Mirror', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+            audioChannel: 'CENTER', colors: ['#ff8800'],
+            code: { init: 'n=20', perFrame: '', onBeat: '', perPoint: 'x=-0.5+i*0.5; y=i*0.3-0.15' } },
+          { type: 'Mirror', enabled: true, mode: 0 }
+        ]}},
+        { name: 'Blur', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+            audioChannel: 'CENTER', colors: ['#ffffff'],
+            code: { init: 'n=5', perFrame: '', onBeat: '', perPoint: 'x=sin(i*$PI*2)*0.3; y=cos(i*$PI*2)*0.3' } },
+          { type: 'Blur', enabled: true, mode: 'MEDIUM' }
+        ]}},
+        { name: 'ColorReduction', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+            audioChannel: 'CENTER', colors: ['#ffffff'],
+            code: { init: 'n=256', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=0; red=i; green=1-i; blue=0.5' } },
+          { type: 'ColorReduction', enabled: true, levels: 2 }
+        ]}},
+        { name: 'EffectList', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'REPLACE',
+            components: [
+              { type: 'ClearScreen', enabled: true, color: '#0044ff' },
+              { type: 'SuperScope', enabled: true, drawMode: 'LINES', audioSource: 'WAVEFORM',
+                audioChannel: 'CENTER', colors: ['#ffffff'],
+                code: { init: 'n=100', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=sin(i*$PI*6)*0.4' } }
+            ]
+          }
+        ]}},
+      ];
+
+      for (const vt of visualPresets) {
+        const size = 128;
+        const renderer = new THREE.WebGLRenderer({ antialias: false });
+        renderer.setSize(size, size);
+        renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+        const scene = new THREE.Scene();
+        const ctx = {
+          scene, camera: new THREE.OrthographicCamera(-1,1,1,-1,0,1),
+          _renderer: renderer,
+          audioData: { waveform: new Uint8Array(1024).fill(128), spectrum: new Float32Array(512).fill(-60), fftSize: 1024 },
+          time: 0.5, dt: 1/60, width: size, height: size,
+        };
+
+        const preset = loadAvsPreset(vt.preset);
+        preset.init(ctx);
+        for (let f = 0; f < 10; f++) {
+          ctx.time = f / 60;
+          preset.update(ctx);
+        }
+
+        // Capture to display canvas
+        const displayCanvas = document.createElement('canvas');
+        displayCanvas.width = size;
+        displayCanvas.height = size;
+        displayCanvas.style.width = '96px';
+        displayCanvas.style.height = '96px';
+        const dc = displayCanvas.getContext('2d');
+        dc.drawImage(renderer.domElement, 0, 0);
+
+        const wrap = document.createElement('div');
+        wrap.className = 'visual-test';
+        wrap.appendChild(displayCanvas);
+        const label = document.createElement('div');
+        label.className = 'label';
+        label.textContent = vt.name;
+        wrap.appendChild(label);
+        visualGrid.appendChild(wrap);
+
+        preset.destroy(ctx);
+        renderer.dispose();
+      }
+    }
+
+    // ── Run all ──────────────────────────────────────────────────────
+
+    await runEELTests();
+    await runComponentTests();
+    await runVisualTests();
+
+    summary.innerHTML = `<span class="${failed ? 'fail' : 'pass'}">${passed} passed, ${failed} failed</span>`;
+    document.title = `Tests: ${passed}/${passed + failed} — Freezer`;
+  </script>
+</body>
+</html>
