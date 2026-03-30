@@ -9,6 +9,12 @@ export function createAudioEngine() {
   let waveform = null;
   let spectrum = null;
   let spectrumBytes = null;
+  let _sourceType = null;
+
+  // Detect if browser supports audio capture via getDisplayMedia
+  // Chrome/Edge: yes. Firefox/Safari: no.
+  const canScreenShareAudio = /Chrome|Edg/.test(navigator.userAgent) && !/OPR/.test(navigator.userAgent)
+    && typeof navigator.mediaDevices?.getDisplayMedia === 'function';
 
   function ensureContext() {
     if (!audioCtx) {
@@ -40,6 +46,7 @@ export function createAudioEngine() {
       audioEl.pause();
       audioEl.src = '';
     }
+    _sourceType = null;
   }
 
   async function switchSource(type) {
@@ -56,16 +63,19 @@ export function createAudioEngine() {
       currentStream = stream;
       currentSource = audioCtx.createMediaStreamSource(stream);
       currentSource.connect(analyser);
-      // Don't connect to destination — avoids feedback loop
+      _sourceType = 'system';
     } else if (type === 'mic') {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        }
+      });
       currentStream = stream;
       currentSource = audioCtx.createMediaStreamSource(stream);
       currentSource.connect(analyser);
-      // Don't connect to destination — avoids feedback loop
-    } else if (type === 'file') {
-      // File source is handled via loadFile()
-      document.getElementById('file-input').click();
+      _sourceType = 'mic';
     }
   }
 
@@ -76,6 +86,7 @@ export function createAudioEngine() {
     if (!audioEl) {
       audioEl = new Audio();
       audioEl.crossOrigin = 'anonymous';
+      audioEl.loop = true;
     }
 
     const url = URL.createObjectURL(file);
@@ -89,6 +100,7 @@ export function createAudioEngine() {
     currentSource = mediaElSource;
     currentSource.connect(analyser);
     analyser.connect(audioCtx.destination); // Play audio through speakers
+    _sourceType = 'file';
   }
 
   function update() {
@@ -103,6 +115,9 @@ export function createAudioEngine() {
     get spectrum() { return spectrum; },
     get spectrumBytes() { return spectrumBytes; },
     get fftSize() { return fftSize; },
+    get sourceType() { return _sourceType; },
+    get canScreenShareAudio() { return canScreenShareAudio; },
+    get audioElement() { return audioEl; },
     switchSource,
     loadFile,
     update

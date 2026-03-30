@@ -8,7 +8,10 @@ import { initHelp } from './help.js';
 const canvas = document.getElementById('visualizer');
 const controls = document.getElementById('controls');
 const splash = document.getElementById('splash');
-const btnStart = document.getElementById('btn-start');
+const btnSrcScreen = document.getElementById('btn-src-screen');
+const btnSrcFile = document.getElementById('btn-src-file');
+const btnSrcMic = document.getElementById('btn-src-mic');
+const audioFileInput = document.getElementById('audio-file-input');
 const splashStatus = document.getElementById('splash-status');
 const btnPresets = document.getElementById('btn-presets');
 const btnLoadPreset = document.getElementById('btn-load-preset');
@@ -51,25 +54,48 @@ viz.start(audio);
 // Current preset JSON (for editor)
 let currentPresetJSON = DEFAULT_PRESET;
 
-// --- Splash screen: start system audio capture ---
+// --- Splash screen: audio source selection ---
 
-btnStart.addEventListener('click', startCapture);
+// Disable screen share button on browsers that don't support it
+if (!audio.canScreenShareAudio) {
+  btnSrcScreen.disabled = true;
+  btnSrcScreen.querySelector('.splash-src-desc').textContent = 'Not supported in this browser';
+}
 
-async function startCapture() {
-  btnStart.textContent = 'CONNECTING...';
+btnSrcScreen.addEventListener('click', async () => {
   splashStatus.textContent = '';
   splashStatus.classList.remove('error');
-
   try {
     await audio.switchSource('system');
     dismissSplash();
   } catch (e) {
-    console.warn('System audio capture cancelled or failed:', e);
-    btnStart.textContent = 'START CAPTURE';
-    splashStatus.textContent = 'Capture cancelled \u2014 click to try again';
+    splashStatus.textContent = 'Screen share cancelled \u2014 try again or use another source';
     splashStatus.classList.add('error');
   }
-}
+});
+
+btnSrcFile.addEventListener('click', () => {
+  audioFileInput.click();
+});
+
+audioFileInput.addEventListener('change', () => {
+  if (audioFileInput.files.length > 0) {
+    audio.loadFile(audioFileInput.files[0]);
+    dismissSplash();
+  }
+});
+
+btnSrcMic.addEventListener('click', async () => {
+  splashStatus.textContent = '';
+  splashStatus.classList.remove('error');
+  try {
+    await audio.switchSource('mic');
+    dismissSplash();
+  } catch (e) {
+    splashStatus.textContent = 'Microphone access denied';
+    splashStatus.classList.add('error');
+  }
+});
 
 function dismissSplash() {
   splash.classList.add('hidden');
@@ -1835,13 +1861,9 @@ function toggleFullscreen() {
 
 btnFullscreen.addEventListener('click', toggleFullscreen);
 
-btnSource.addEventListener('click', async () => {
-  try {
-    await audio.switchSource('system');
-    dismissSplash();
-  } catch (e) {
-    console.warn('Audio source change cancelled:', e);
-  }
+btnSource.addEventListener('click', () => {
+  // Re-show the splash screen for source selection
+  splash.classList.remove('hidden');
 });
 
 // --- Fullscreen auto-hide controls ---
