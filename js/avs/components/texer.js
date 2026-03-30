@@ -4,7 +4,6 @@
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 import { loadAvsImage, getFallbackTexture } from '../image-loader.js';
-import { applyLineBlend, restoreLineBlend } from '../line-blend.js';
 
 const MAX_PARTICLES = 4096;
 
@@ -101,8 +100,8 @@ export class Texer extends AvsComponent {
         tSprite: { value: this._blobTexture },
         uColorize: { value: this.outputMode ? 1 : 0 },
       },
-      transparent: false,
-      blending: THREE.NoBlending,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
       depthTest: false,
       depthWrite: false,
     });
@@ -191,19 +190,8 @@ export class Texer extends AvsComponent {
         fb.clear(0x000000);
       }
 
-      // Apply blend mode from SetRenderMode (or default to additive)
-      const blended = applyLineBlend(ctx.renderer, ctx);
-      if (!blended) {
-        const gl2 = ctx.renderer.getContext();
-        gl2.enable(gl2.BLEND);
-        gl2.blendEquation(gl2.FUNC_ADD);
-        gl2.blendFunc(gl2.ONE, gl2.ONE);
-      }
-
       ctx.renderer.setRenderTarget(fb.getActiveTarget());
       ctx.renderer.render(this._scene, this._camera);
-
-      restoreLineBlend(ctx.renderer);
     }
   }
 

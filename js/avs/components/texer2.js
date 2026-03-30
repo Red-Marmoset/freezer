@@ -6,7 +6,42 @@ import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
 import { loadAvsImage, getFallbackTexture } from '../image-loader.js';
-import { applyLineBlend, restoreLineBlend } from '../line-blend.js';
+// Map SetRenderMode blend index to Three.js material blending
+function setTexerBlend(material, blendIdx) {
+  switch (blendIdx) {
+    case 0: // Replace — no blending, discard handles transparency
+      material.blending = THREE.NoBlending;
+      break;
+    case 1: // Additive
+      material.blending = THREE.AdditiveBlending;
+      break;
+    case 2: // Maximum
+      material.blending = THREE.CustomBlending;
+      material.blendEquation = THREE.MaxEquation;
+      material.blendSrc = THREE.OneFactor;
+      material.blendDst = THREE.OneFactor;
+      break;
+    case 3: // 50/50
+      material.blending = THREE.CustomBlending;
+      material.blendEquation = THREE.AddEquation;
+      material.blendSrc = THREE.OneFactor;
+      material.blendDst = THREE.OneFactor;
+      // Approximate 50/50 — halve the source color via the shader output
+      // (actual half is done in shader if needed, but this is close enough)
+      material.blendSrc = THREE.SrcAlphaFactor;
+      material.blendDst = THREE.SrcAlphaFactor;
+      break;
+    case 4: // Sub (dst - src)
+      material.blending = THREE.SubtractiveBlending;
+      break;
+    case 6: // Multiply
+      material.blending = THREE.MultiplyBlending;
+      break;
+    default: // Fallback to additive
+      material.blending = THREE.AdditiveBlending;
+      break;
+  }
+}
 
 const MAX_POINTS = 4096;
 
@@ -156,8 +191,7 @@ export class Texer2 extends AvsComponent {
 
     this._geometry.instanceCount = 0;
 
-    // Shader material — blending is managed manually via GL state
-    // to honor SetRenderMode (g_line_blend_mode)
+    // Shader material — default additive, dynamically updated for SetRenderMode
     this._material = new THREE.RawShaderMaterial({
       vertexShader: VERT_SHADER,
       fragmentShader: FRAG_SHADER,
@@ -165,8 +199,8 @@ export class Texer2 extends AvsComponent {
         tSprite: { value: this._blobTexture },
         uColorize: { value: this.colorFilter ? 1 : 0 },
       },
-      transparent: false,
-      blending: THREE.NoBlending,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
       depthTest: false,
       depthWrite: false,
     });
@@ -305,22 +339,16 @@ export class Texer2 extends AvsComponent {
     this._instanceColorAttr.needsUpdate = true;
     this._geometry.instanceCount = count;
 
-    // Apply blend mode from SetRenderMode (or default to additive)
-    const blended = applyLineBlend(ctx.renderer, ctx);
-    if (!blended) {
-      // Default: additive blending (original AVS default for Texer II)
-      const gl = ctx.renderer.getContext();
-      gl.enable(gl.BLEND);
-      gl.blendEquation(gl.FUNC_ADD);
-      gl.blendFunc(gl.ONE, gl.ONE);
+    // Set blend mode from SetRenderMode (or default to additive)
+    if (ctx.renderMode && ctx.renderMode.enabled) {
+      setTexerBlend(this._material, ctx.renderMode.blend);
+    } else {
+      this._material.blending = THREE.AdditiveBlending;
     }
 
     // Render onto the active framebuffer
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
     ctx.renderer.render(this._scene, this._camera);
-
-    // Restore GL state
-    restoreLineBlend(ctx.renderer);
   }
 
   destroy() {
