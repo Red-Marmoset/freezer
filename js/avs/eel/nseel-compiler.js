@@ -69,10 +69,11 @@ function compileStmt(node) {
 
 // Compile variable/register/constant identifier
 function compileIdentifier(name) {
-  // Constants
-  if (name === '$pi') return 'Math.PI';
-  if (name === '$e') return 'Math.E';
-  if (name === '$phi') return '1.6180339887498948';
+  // Constants (case-insensitive)
+  const lower = name.toLowerCase();
+  if (lower === '$pi') return 'Math.PI';
+  if (lower === '$e') return 'Math.E';
+  if (lower === '$phi') return '1.6180339887498948';
 
   // Registers: reg00 - reg99
   const regMatch = name.match(/^reg(\d{2})$/);

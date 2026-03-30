@@ -89,7 +89,9 @@ function tokenize(code) {
       while (pos < code.length && /[a-zA-Z0-9_.]/.test(code[pos])) pos++;
       const name = code.slice(start, pos).toLowerCase();
       // Check for $XX hex literals (e.g. $FF, $00, $1A)
-      if (name[0] === '$' && name.length > 1 && /^\$[0-9a-f]+$/.test(name)) {
+      // But NOT $pi, $e, $phi — those are constants, not hex
+      const isConstant = name === '$pi' || name === '$e' || name === '$phi';
+      if (!isConstant && name[0] === '$' && name.length > 1 && /^\$[0-9a-f]+$/.test(name)) {
         tokens.push({ type: T.NUM, value: parseInt(name.slice(1), 16) });
       } else {
         tokens.push({ type: T.ID, value: name });
