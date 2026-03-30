@@ -347,6 +347,59 @@ export function parseBump(r) {
   return { type: 'Bump', code: { init, perFrame, onBeat, perPoint }, onBeat: onBeatEnabled, depth };
 }
 
+export function parseText(r, endPos) {
+  // Binary layout from r_text.cpp:
+  // enabled(i32), color(i32), blend(i32), blendavg(i32), onbeat(i32),
+  // insertBlank(i32), randomPos(i32), valign(i32), halign(i32),
+  // onbeatSpeed(i32), normSpeed(i32),
+  // CHOOSEFONT struct (60 bytes), LOGFONT struct (92 bytes),
+  // text size(i32), text data(size bytes),
+  // outline(i32), outlinecolor(i32), xshift(i32), yshift(i32),
+  // outlinesize(i32), randomword(i32), shadow(i32)
+  const result = { type: 'Text', enabled: true, text: '', color: '#ffffff', blend: 0 };
+  try {
+    if (r.hasBytes(4)) result.enabled = r.uint32() !== 0;
+    if (r.hasBytes(4)) result.color = r.color();
+    if (r.hasBytes(4)) result.blend = r.uint32();
+    if (r.hasBytes(4)) result.blendavg = r.uint32();
+    if (r.hasBytes(4)) result.onbeat = r.uint32() !== 0;
+    if (r.hasBytes(4)) result.insertBlank = r.uint32() !== 0;
+    if (r.hasBytes(4)) result.randomPos = r.uint32() !== 0;
+    if (r.hasBytes(4)) result.valign = r.uint32(); // 0=top, 1=center, 2=bottom
+    if (r.hasBytes(4)) result.halign = r.uint32(); // 0=left, 1=center, 2=right
+    if (r.hasBytes(4)) result.onbeatSpeed = r.uint32();
+    if (r.hasBytes(4)) result.normSpeed = r.uint32();
+    // Skip CHOOSEFONT (60 bytes) and LOGFONT (92 bytes)
+    // Extract font info from LOGFONT: height at offset 0, faceName at offset 28 (32 chars)
+    if (r.hasBytes(60)) r.skip(60); // CHOOSEFONT
+    if (r.hasBytes(92)) {
+      const lfStart = r.pos;
+      result.fontHeight = Math.abs(r.int32()); // lfHeight (can be negative)
+      r.skip(24); // skip to lfFaceName at offset 28
+      result.fontName = r.fixedString(32); // LF_FACESIZE = 32
+      r.pos = lfStart + 92; // ensure we advance past full LOGFONT
+    }
+    // Text content: size-prefixed
+    if (r.hasBytes(4)) {
+      const size = r.uint32();
+      if (size > 0 && r.hasBytes(size)) {
+        result.text = r.decodeString(r.pos, r.pos + size);
+        r.pos += size;
+      }
+    }
+    // Trailing fields
+    if (r.hasBytes(4)) result.outline = r.uint32() !== 0;
+    if (r.hasBytes(4)) result.outlineColor = r.color();
+    if (r.hasBytes(4)) result.xshift = r.int32();
+    if (r.hasBytes(4)) result.yshift = r.int32();
+    if (r.hasBytes(4)) result.outlineSize = r.uint32();
+    if (r.hasBytes(4)) result.randomWord = r.uint32() !== 0;
+    if (r.hasBytes(4)) result.shadow = r.uint32() !== 0;
+  } catch {}
+  r.pos = endPos;
+  return result;
+}
+
 export function parseSetRenderMode(r) {
   // g_line_blend_mode packed uint32: bit 31 = ENABLED (set = active), bits 0-7 = blend,
   // bits 8-15 = alpha, bits 16-23 = linesize. Default = 0x80010000 (enabled, blend 0, linesize 1)
