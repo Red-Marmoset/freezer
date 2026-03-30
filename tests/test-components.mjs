@@ -752,6 +752,188 @@ test('Global registers shared between components', async () => {
   if (nonBlack < 2) throw new Error(`Expected 2+ dots from register sharing, got ${nonBlack}`);
 });
 
+// ── UniqueTone tests ────────────────────────────────────────────────
+
+test('UniqueTone: white + cyan tone = cyan', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+      { type: 'UniqueTone', enabled: true, color: '#00ffff', blendMode: 0 }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  if (pixels[mid] > 10) throw new Error(`Expected R~0 for cyan tone, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 200) throw new Error(`Expected G>200 for cyan tone, got G=${pixels[mid + 1]}`);
+  if (pixels[mid + 2] < 200) throw new Error(`Expected B>200 for cyan tone, got B=${pixels[mid + 2]}`);
+});
+
+test('UniqueTone: black + any tone = black', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#000000' },
+      { type: 'UniqueTone', enabled: true, color: '#ff0000', blendMode: 0 }
+    ]
+  });
+  const avg = avgBrightness(pixels);
+  if (avg > 2) throw new Error(`Expected black (tone of black = black), got avg=${avg.toFixed(1)}`);
+});
+
+test('UniqueTone: gray + red tone = dark red', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#808080' },
+      { type: 'UniqueTone', enabled: true, color: '#ff0000', blendMode: 0 }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  // Gray(128/255≈0.5) * red(1,0,0) = (0.5, 0, 0) ≈ R=128
+  if (pixels[mid] < 80) throw new Error(`Expected R>80 for gray+red tone, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] > 10) throw new Error(`Expected G~0, got G=${pixels[mid + 1]}`);
+  if (pixels[mid + 2] > 10) throw new Error(`Expected B~0, got B=${pixels[mid + 2]}`);
+});
+
+// ── Starfield test ──────────────────────────────────────────────────
+
+test('Starfield renders particles', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [{ type: 'Starfield', enabled: true }]
+  }, 20);
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 5) throw new Error(`Expected Starfield particles, got ${nonBlack} pixels`);
+});
+
+// ── Ring test ───────────────────────────────────────────────────────
+
+test('Ring draws circular shape', async () => {
+  const { pixels, width, height } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [{ type: 'Ring', enabled: true, colors: ['#ffffff'] }]
+  });
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 20) throw new Error(`Expected Ring circle, got ${nonBlack} pixels`);
+  // Ring should have pixels near the center, not just edges
+  const centerPixels = countPixelsInRing(pixels, width, height, 0, 0.5);
+  if (centerPixels < 5) throw new Error(`Expected Ring near center, got ${centerPixels}`);
+});
+
+// ── FastBrightness test ─────────────────────────────────────────────
+
+test('FastBrightness 2x doubles pixel values', async () => {
+  const { pixels: before } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [{ type: 'ClearScreen', enabled: true, color: '#404040' }]
+  });
+  const { pixels: after } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#404040' },
+      { type: 'FastBrightness', enabled: true, dir: 0 }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  // 0x40=64 → 2x = 128
+  if (after[mid] <= before[mid]) throw new Error(`Expected 2x brightness: before=${before[mid]}, after=${after[mid]}`);
+});
+
+test('FastBrightness 0.5x halves pixel values', async () => {
+  const { pixels: before } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [{ type: 'ClearScreen', enabled: true, color: '#808080' }]
+  });
+  const { pixels: after } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#808080' },
+      { type: 'FastBrightness', enabled: true, dir: 1 }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  if (after[mid] >= before[mid]) throw new Error(`Expected 0.5x brightness: before=${before[mid]}, after=${after[mid]}`);
+});
+
+// ── Additive blend test ─────────────────────────────────────────────
+
+test('EffectList additive blend combines colors', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#800000' },
+      { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+        components: [
+          { type: 'ClearScreen', enabled: true, color: '#008000' }
+        ]
+      }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  // Additive: red(128,0,0) + green(0,128,0) = yellow(128,128,0)
+  if (pixels[mid] < 80) throw new Error(`Expected R from additive, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 80) throw new Error(`Expected G from additive, got G=${pixels[mid + 1]}`);
+});
+
+// ── EffectList 50/50 blend ──────────────────────────────────────────
+
+test('EffectList 50/50 blend averages colors', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+      { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'FIFTY_FIFTY',
+        components: [
+          { type: 'ClearScreen', enabled: true, color: '#0000ff' }
+        ]
+      }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  // 50/50: red(255,0,0) avg blue(0,0,255) = (127,0,127)
+  if (pixels[mid] < 80 || pixels[mid] > 180) throw new Error(`Expected R≈127 from 50/50, got R=${pixels[mid]}`);
+  if (pixels[mid + 2] < 80 || pixels[mid + 2] > 180) throw new Error(`Expected B≈127, got B=${pixels[mid + 2]}`);
+});
+
+// ── ColorFade test ──────────────────────────────────────────────────
+
+test('ColorFade shifts color toward target', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+      { type: 'ColorFade', enabled: true, enabled2: true, color: '#ff0000', speed: 8 }
+    ]
+  }, 5);
+  const mid = (64 * 128 + 64) * 4;
+  // After fading white toward red, green and blue should decrease
+  if (pixels[mid + 1] > 240) throw new Error(`Expected G to decrease from ColorFade, got G=${pixels[mid + 1]}`);
+});
+
+// ── OscStar test ────────────────────────────────────────────────────
+
+test('OscStar draws star shape', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'OscStar', enabled: true, colors: ['#ffffff'], size: 16, rot: 0 }
+    ]
+  });
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 10) throw new Error(`Expected OscStar to draw >10 pixels, got ${nonBlack}`);
+});
+
+// ── DotGrid test ────────────────────────────────────────────────────
+
+test('DotGrid renders grid of dots', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [{ type: 'DotGrid', enabled: true }]
+  });
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 20) throw new Error(`Expected DotGrid dots, got ${nonBlack} pixels`);
+});
+
 // ── Helpers ─────────────────────────────────────────────────────────
 
 function countPixelsInRing(pixels, width, height, innerR, outerR) {
