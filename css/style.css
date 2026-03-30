@@ -425,6 +425,62 @@ button.active {
   color: var(--warn);
 }
 
+/* ---- Audio source buttons ---- */
+
+.splash-sources {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.splash-src-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.1s;
+  color: var(--text-bright);
+}
+.splash-src-btn:hover {
+  border-color: var(--accent);
+  background: rgba(0, 229, 255, 0.08);
+  transform: translateY(-1px);
+}
+.splash-src-btn:active {
+  transform: translateY(0);
+}
+.splash-src-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+.splash-src-btn:disabled:hover {
+  border-color: var(--glass-border);
+  background: var(--glass-bg);
+}
+.splash-src-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+.splash-src-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--accent);
+}
+.splash-src-desc {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
 /* ---- Footer hints ---- */
 
 .splash-footer {
