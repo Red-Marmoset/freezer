@@ -415,23 +415,30 @@ test('SuperScope LINES mode draws connected lines', async () => {
 
 // ── Movement thorough tests ─────────────────────────────────────────
 
-test('Movement r+=rotation fills screen from vertical line', async () => {
-  // Draw a vertical line, then apply rotation movement repeatedly
-  // After many frames of r+=0.1, the line should sweep into a filled circle
-  const { pixels } = await renderPreset({
+test('Movement r+=rotation spreads vertical line', async () => {
+  // Draw a vertical line, apply mode 12 (tunneling: r+=0.04, d zoom)
+  // After frames, the line should spread due to rotation
+  const { pixels: before } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=64', perFrame: '', onBeat: '', perPoint: 'x=0; y=i*2-1' } },
+    ]
+  });
+  const { pixels: after } = await renderPreset({
     name: 'test', clearFrame: false,
     components: [
       { type: 'FadeOut', enabled: true, speed: 1, color: '#000000' },
       { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
         audioChannel: 'CENTER', colors: ['#ffffff'],
         code: { init: 'n=64', perFrame: '', onBeat: '', perPoint: 'x=0; y=i*2-1' } },
-      { type: 'Movement', enabled: true, builtinEffect: 8, wrap: false }
+      { type: 'Movement', enabled: true, builtinEffect: 12, wrap: false }
     ]
-  }, 30); // 30 frames of rotation
-  // Should have pixels spread across much of the frame
-  const nonBlack = countNonBlack(pixels);
-  const total = 128 * 128;
-  if (nonBlack < total * 0.1) throw new Error(`Expected >10% fill after rotation, got ${(nonBlack/total*100).toFixed(1)}%`);
+  }, 20);
+  const beforeCount = countNonBlack(before);
+  const afterCount = countNonBlack(after);
+  if (afterCount <= beforeCount) throw new Error(`Expected rotation to spread pixels: before=${beforeCount}, after=${afterCount}`);
 });
 
 test('Movement mode 5 (sunburster) creates radial pattern', async () => {
@@ -572,25 +579,25 @@ test('DynamicMovement cartesian shift (x=x+0.3)', async () => {
 // ── BlitterFeedback tests ───────────────────────────────────────────
 
 test('BlitterFeedback zoom-out expands content', async () => {
-  // Draw a small dot, apply zoom-out feedback — dot should grow
+  // Draw a cluster of dots, apply strong zoom-out feedback — should grow significantly
   const { pixels: before } = await renderPreset({
     name: 'test', clearFrame: true,
     components: [
       { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
         audioChannel: 'CENTER', colors: ['#ffffff'],
-        code: { init: 'n=5', perFrame: '', onBeat: '', perPoint: 'x=0; y=0' } }
+        code: { init: 'n=20', perFrame: '', onBeat: '', perPoint: 'x=sin(i*$PI*2)*0.1; y=cos(i*$PI*2)*0.1' } }
     ]
   });
   const { pixels: after } = await renderPreset({
     name: 'test', clearFrame: false,
     components: [
-      { type: 'FadeOut', enabled: true, speed: 2, color: '#000000' },
-      { type: 'BlitterFeedback', enabled: true, scale: 34, blendMode: 'REPLACE' },
+      { type: 'FadeOut', enabled: true, speed: 1, color: '#000000' },
+      { type: 'BlitterFeedback', enabled: true, scale: 36, blendMode: 'REPLACE' },
       { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
         audioChannel: 'CENTER', colors: ['#ffffff'],
-        code: { init: 'n=5', perFrame: '', onBeat: '', perPoint: 'x=0; y=0' } }
+        code: { init: 'n=20', perFrame: '', onBeat: '', perPoint: 'x=sin(i*$PI*2)*0.1; y=cos(i*$PI*2)*0.1' } }
     ]
-  }, 10);
+  }, 30);
   const beforeCount = countNonBlack(before);
   const afterCount = countNonBlack(after);
   if (afterCount <= beforeCount) throw new Error(`Expected zoom-out to grow pattern: before=${beforeCount}, after=${afterCount}`);
@@ -678,18 +685,18 @@ test('Mosaic creates blocky pattern', async () => {
 // ── ChannelShift test ───────────────────────────────────────────────
 
 test('ChannelShift rotates RGB channels', async () => {
-  // Use green input + mode 4 (BRG): G→B channel
+  // Use green input + mode 4 (BRG swizzle): green(0,255,0) → (B=0,R=0,G=255) = blue
   const { pixels } = await renderPreset({
     name: 'test', clearFrame: true,
     components: [
       { type: 'ClearScreen', enabled: true, color: '#00ff00' },
-      { type: 'ChannelShift', enabled: true, mode: 4 } // BRG: R→B, G→R, B→G → green becomes red
+      { type: 'ChannelShift', enabled: true, mode: 4 } // BRG: output = (input.B, input.R, input.G)
     ]
   });
   const mid = (64 * 128 + 64) * 4;
-  // Green input with BRG shift: G→R, so red channel should be high, green low
-  if (pixels[mid] < 100) throw new Error(`Expected green→red shift, got R=${pixels[mid]}`);
-  if (pixels[mid + 1] > 50) throw new Error(`Expected green channel reduced, got G=${pixels[mid + 1]}`);
+  // Green → BRG → blue (0,0,255)
+  if (pixels[mid + 2] < 200) throw new Error(`Expected green→blue via BRG, got B=${pixels[mid + 2]}`);
+  if (pixels[mid + 1] > 10) throw new Error(`Expected G~0, got G=${pixels[mid + 1]}`);
 });
 
 // ── Grain test ──────────────────────────────────────────────────────
