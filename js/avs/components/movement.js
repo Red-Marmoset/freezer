@@ -386,10 +386,10 @@ export class Movement extends AvsComponent {
 
         let newU, newV;
         if (usePolar) {
-          const r = s.r - Math.PI * 0.5;
           const nd = s.d * 0.5;
-          newU = Math.cos(r) * nd + 0.5;
-          newV = Math.sin(r) * nd + 0.5;
+          const rOut = s.r - Math.PI * 0.5;
+          newU = Math.cos(rOut) * nd + 0.5;
+          newV = Math.sin(rOut) * nd + 0.5;
         } else {
           newU = (s.x + 1) / 2;
           newV = (s.y + 1) / 2;
