@@ -259,8 +259,9 @@ export class Texer2 extends AvsComponent {
 
       const x = s.x || 0;
       const y = -(s.y || 0); // Y inverted (AVS convention)
-      const sx = Math.abs(s.sizex || 1) * defaultSizeX;
-      const sy = Math.abs(s.sizey || 1) * defaultSizeY;
+      // When resize=true, sizex/sizey scale the image. When false, native pixel size.
+      const sx = this.resize ? Math.abs(s.sizex || 1) * defaultSizeX : defaultSizeX;
+      const sy = this.resize ? Math.abs(s.sizey || 1) * defaultSizeY : defaultSizeY;
 
       const r = Math.max(0, Math.min(1, s.red || 0));
       const g = Math.max(0, Math.min(1, s.green || 0));
