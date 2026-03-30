@@ -143,5 +143,17 @@ export function createStdlib(opts = {}) {
       if (x > -2.001 && x < -1.999) return 0;
       return (opts.time || 0) - x;
     },
+
+    /**
+     * getkbmouse(which) — keyboard/mouse state
+     * 1=mouse X (-1..1), 2=mouse Y (-1..1),
+     * 3=left button, 4=right button, 5=middle button,
+     * >5=GetAsyncKeyState(which)
+     */
+    getkbmouse(which) {
+      // Stub — returns 0 for all. Mouse position could be tracked
+      // but most presets only use this for optional interactivity.
+      return 0;
+    },
   };
 }

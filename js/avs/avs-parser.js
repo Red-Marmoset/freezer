@@ -73,6 +73,37 @@ function parseDllComponent(dllId, r, endPos) {
   if (cleanId.startsWith('Misc: AVSTrans') || cleanId === 'AVS Trans Automation') return A.parseEelTransAPE(r, endPos);
   if (cleanId === 'Jheriko: Global' || cleanId.includes('Global')) return A.parseGlobalVariablesAPE(r, endPos);
 
+  // APE aliases for components we've implemented
+  if (cleanId === 'Holden04: Video Delay' || cleanId === 'Video Delay') {
+    const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+    const useBeats = r.hasBytes(4) ? r.uint32() !== 0 : false;
+    const delay = r.hasBytes(4) ? r.uint32() : 10;
+    return { type: 'VideoDelay', enabled, useBeats, delay };
+  }
+  if (cleanId === 'Holden05: Multi Delay' || cleanId === 'Multi Delay') {
+    return { type: 'MultiDelay', enabled: true, _unsupported: true, _apeId: cleanId };
+  }
+  if (cleanId === 'Color Reduction') {
+    const levels = r.hasBytes(4) ? r.uint32() : 7;
+    return { type: 'ColorReduction', enabled: true, levels };
+  }
+  if (cleanId === 'Winamp Starfield v1') {
+    return { type: 'Starfield', enabled: true };
+  }
+  if (cleanId.startsWith('Virtual Effect: Addborders') || cleanId === 'Addborders') {
+    // Simple border effect — just read enabled state and skip data
+    const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+    const color = r.hasBytes(4) ? r.color() : '#000000';
+    const size = r.hasBytes(4) ? r.uint32() : 1;
+    return { type: 'AddBorders', enabled, color, size, _unsupported: true };
+  }
+  if (cleanId === 'Normalise' || cleanId === 'Normalize') {
+    return { type: 'Normalize', enabled: true, _unsupported: true };
+  }
+  if (cleanId === 'Buffer blend' || cleanId === 'Buffer Blend') {
+    return { type: 'BufferBlend', enabled: true, _unsupported: true };
+  }
+
   return { type: cleanId || 'UnknownAPE', enabled: true, _unsupported: true, _apeId: cleanId };
 }
 
