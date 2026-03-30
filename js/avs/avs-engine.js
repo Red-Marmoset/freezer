@@ -123,11 +123,26 @@ class AvsPreset {
     // framebuffer texture and any render target bindings.
     this._blitScene = new THREE.Scene();
     this._blitCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    // Direct blit — no gamma correction.
-    // Original AVS used raw linear framebuffer blitted straight to DirectDraw.
-    // CRT monitors applied their own ~2.2 gamma naturally.
-    this._outputMaterial = new THREE.MeshBasicMaterial({
-      map: null,
+    // Final blit with sRGB gamma encoding.
+    // AVS pixel values are raw 0-255 integers designed for sRGB displays.
+    // The intermediate rendering stays in linear space (correct math for
+    // blend, invert, etc), but the final output needs sRGB encoding so
+    // brightness levels look correct on modern displays.
+    this._outputMaterial = new THREE.ShaderMaterial({
+      uniforms: { tSource: { value: null } },
+      vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+      fragmentShader: `
+        precision mediump float;
+        uniform sampler2D tSource;
+        varying vec2 vUv;
+        void main() {
+          vec3 c = texture2D(tSource, vUv).rgb;
+          // Linear → sRGB: matches CRT gamma curve that AVS was designed for
+          vec3 lo = c * 12.92;
+          vec3 hi = 1.055 * pow(c, vec3(1.0/2.4)) - 0.055;
+          gl_FragColor = vec4(mix(lo, hi, step(0.0031308, c)), 1.0);
+        }
+      `,
       depthTest: false,
     });
     this._blitScene.add(new THREE.Mesh(
@@ -194,9 +209,9 @@ class AvsPreset {
     renderer.resetState();
 
     // Now safely bind the framebuffer texture and render to screen
-    this._outputMaterial.map = this.framebuffer.getActiveTexture();
+    this._outputMaterial.uniforms.tSource.value = this.framebuffer.getActiveTexture();
     renderer.render(this._blitScene, this._blitCamera);
-    this._outputMaterial.map = null;
+    this._outputMaterial.uniforms.tSource.value = null;
   }
 
   /**
