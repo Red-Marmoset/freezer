@@ -110,5 +110,11 @@ export function createRenderer(canvas) {
     new ResizeObserver(resize).observe(canvas);
   }
 
-  return { setPreset, start, resize, scene, camera };
+  function hotReloadComponent(path, json) {
+    if (activePreset && activePreset.hotReload) {
+      activePreset.hotReload(path, json);
+    }
+  }
+
+  return { setPreset, start, resize, scene, camera, hotReloadComponent };
 }
