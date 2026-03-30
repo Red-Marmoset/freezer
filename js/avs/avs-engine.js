@@ -65,6 +65,11 @@ import './components/custom-shader.js';
 import './components/darken-center.js';
 import './components/echo.js';
 import './components/geiss-effect.js';
+import './components/osc-star.js';
+import './components/fast-brightness.js';
+import './components/color-reduction.js';
+import './components/video-delay.js';
+import './components/multi-delay.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object
