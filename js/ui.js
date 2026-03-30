@@ -607,6 +607,37 @@ function rebuildPreset() {
   buildEditorTree();
 }
 
+/**
+ * Hot-reload a single component without rebuilding the entire preset.
+ * Finds the component's path in the JSON tree and asks the renderer
+ * to replace just that component, preserving the framebuffer.
+ */
+function updateComponent(comp) {
+  if (!currentPresetJSON || !currentPresetJSON.components) {
+    rebuildPreset();
+    return;
+  }
+  const path = findComponentPath(currentPresetJSON.components, comp);
+  if (path) {
+    viz.hotReloadComponent(path, comp);
+  } else {
+    // Couldn't find it — fall back to full rebuild
+    rebuildPreset();
+  }
+}
+
+function findComponentPath(components, target, prefix) {
+  prefix = prefix || [];
+  for (let i = 0; i < components.length; i++) {
+    if (components[i] === target) return [...prefix, i];
+    if (components[i].components) {
+      const found = findComponentPath(components[i].components, target, [...prefix, i]);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 // --- Toolbar button states ---
 
 function updateToolbarState() {
@@ -914,7 +945,7 @@ function buildDetailDom(container, comp, path) {
         sel.addEventListener('change', () => {
           const newVal = typeof val === 'number' ? Number(sel.value) : sel.value;
           comp[key] = newVal;
-          rebuildPreset();
+          updateComponent(comp);
         });
         valSpan.appendChild(sel);
         // Show adjustable blend slider when ADJUSTABLE is selected
@@ -941,12 +972,12 @@ function buildDetailDom(container, comp, path) {
             adjNum.value = adjSlider.value;
             comp[adjKey] = Number(adjSlider.value);
             if (comp.adjustBlend !== undefined) comp.adjustBlend = Number(adjSlider.value);
-            rebuildPreset();
+            updateComponent(comp);
           });
           adjNum.addEventListener('change', () => {
             adjSlider.value = adjNum.value;
             comp[adjKey] = Number(adjNum.value);
-            rebuildPreset();
+            updateComponent(comp);
           });
           adjWrap.appendChild(adjLabel);
           adjWrap.appendChild(adjSlider);
@@ -960,7 +991,7 @@ function buildDetailDom(container, comp, path) {
         cb.checked = val;
         cb.addEventListener('change', () => {
           comp[key] = cb.checked;
-          rebuildPreset();
+          updateComponent(comp);
         });
         valSpan.appendChild(cb);
       } else if (typeof val === 'number') {
@@ -995,13 +1026,13 @@ function buildDetailDom(container, comp, path) {
           const v = Number(slider.value);
           numInp.value = formatSliderValue(key, v);
           comp[key] = v;
-          rebuildPreset();
+          updateComponent(comp);
         });
         numInp.addEventListener('change', () => {
           const v = Number(numInp.value);
           slider.value = v;
           comp[key] = v;
-          rebuildPreset();
+          updateComponent(comp);
         });
         wrap.appendChild(slider);
         wrap.appendChild(numInp);
@@ -1015,7 +1046,7 @@ function buildDetailDom(container, comp, path) {
           colorInp.value = val;
           colorInp.addEventListener('change', () => {
             comp[key] = colorInp.value;
-            rebuildPreset();
+            updateComponent(comp);
           });
           valSpan.appendChild(colorInp);
         } else {
@@ -1025,7 +1056,7 @@ function buildDetailDom(container, comp, path) {
           inp.value = val;
           inp.addEventListener('change', () => {
             comp[key] = inp.value;
-            rebuildPreset();
+            updateComponent(comp);
           });
           valSpan.appendChild(inp);
         }
@@ -1076,7 +1107,7 @@ function buildDetailDom(container, comp, path) {
         colorInp.title = c;
         colorInp.addEventListener('change', () => {
           comp.colors[ci] = colorInp.value;
-          rebuildPreset();
+          updateComponent(comp);
         });
         swatch.appendChild(colorInp);
 
@@ -1089,7 +1120,7 @@ function buildDetailDom(container, comp, path) {
           e.stopPropagation();
           comp.colors.splice(ci, 1);
           rebuildColors();
-          rebuildPreset();
+          updateComponent(comp);
         });
         swatch.appendChild(removeBtn);
 
@@ -1105,7 +1136,7 @@ function buildDetailDom(container, comp, path) {
         e.stopPropagation();
         comp.colors.push('#ffffff');
         rebuildColors();
-        rebuildPreset();
+        updateComponent(comp);
       });
       colorRow.appendChild(addBtn);
     }
@@ -1140,7 +1171,7 @@ function buildDetailDom(container, comp, path) {
     ta.rows = 5;
     ta.addEventListener('change', () => {
       comp.text = ta.value;
-      rebuildPreset();
+      updateComponent(comp);
     });
     section.appendChild(ta);
     container.appendChild(section);
@@ -1176,7 +1207,7 @@ function buildDetailDom(container, comp, path) {
     }
     blendSel.addEventListener('change', () => {
       comp.blend = Number(blendSel.value);
-      rebuildPreset();
+      updateComponent(comp);
     });
     const blendVal = document.createElement('span');
     blendVal.className = 'val val-edit';
@@ -1206,12 +1237,12 @@ function buildDetailDom(container, comp, path) {
     sizeSlider.addEventListener('input', () => {
       sizeNum.value = sizeSlider.value;
       comp.lineSize = Number(sizeSlider.value);
-      rebuildPreset();
+      updateComponent(comp);
     });
     sizeNum.addEventListener('change', () => {
       sizeSlider.value = sizeNum.value;
       comp.lineSize = Number(sizeNum.value);
-      rebuildPreset();
+      updateComponent(comp);
     });
     sizeWrap.appendChild(sizeSlider);
     sizeWrap.appendChild(sizeNum);
@@ -1243,12 +1274,12 @@ function buildDetailDom(container, comp, path) {
     alphaSlider.addEventListener('input', () => {
       alphaNum.value = alphaSlider.value;
       comp.alpha = Number(alphaSlider.value);
-      rebuildPreset();
+      updateComponent(comp);
     });
     alphaNum.addEventListener('change', () => {
       alphaSlider.value = alphaNum.value;
       comp.alpha = Number(alphaNum.value);
-      rebuildPreset();
+      updateComponent(comp);
     });
     alphaWrap.appendChild(alphaSlider);
     alphaWrap.appendChild(alphaNum);
@@ -1331,7 +1362,7 @@ function buildDetailDom(container, comp, path) {
     ta.addEventListener('change', () => {
       comp.code = ta.value;
       comp.builtinEffect = 13;
-      rebuildPreset();
+      updateComponent(comp);
     });
     section.appendChild(ta);
     container.appendChild(section);
@@ -1350,7 +1381,7 @@ function buildDetailDom(container, comp, path) {
       ta.rows = Math.max(2, (comp.code[sec] || '').split('\n').length);
       ta.addEventListener('change', () => {
         comp.code[sec] = ta.value;
-        rebuildPreset();
+        updateComponent(comp);
       });
       section.appendChild(ta);
       container.appendChild(section);
@@ -1376,7 +1407,7 @@ function buildDetailDom(container, comp, path) {
       const idx = i;
       inp.addEventListener('change', () => {
         comp.kernel[idx] = Number(inp.value);
-        rebuildPreset();
+        updateComponent(comp);
       });
       grid.appendChild(inp);
     }
@@ -1393,7 +1424,7 @@ function buildDetailDom(container, comp, path) {
       if (comp.twoPass) sum *= 2;
       comp.scale = sum + (comp.bias || 0);
       if (comp.scale === 0) comp.scale = 1;
-      rebuildPreset();
+      updateComponent(comp);
       buildDetailDom(container, comp, path);
     });
     section.appendChild(autoBtn);
@@ -1455,7 +1486,7 @@ function buildDetailDom(container, comp, path) {
         enableCb.checked = map.enabled !== false;
         enableCb.addEventListener('change', () => {
           map.enabled = enableCb.checked;
-          rebuildPreset();
+          updateComponent(comp);
         });
         header.appendChild(enableCb);
 
@@ -1491,7 +1522,7 @@ function buildDetailDom(container, comp, path) {
             colorInp.addEventListener('change', () => {
               stop.color = colorInp.value;
               drawGradient(canvas, map.colors);
-              rebuildPreset();
+              updateComponent(comp);
             });
             stopWrap.appendChild(colorInp);
 
@@ -1504,7 +1535,7 @@ function buildDetailDom(container, comp, path) {
             posInp.addEventListener('change', () => {
               stop.position = Math.max(0, Math.min(255, Number(posInp.value)));
               drawGradient(canvas, map.colors);
-              rebuildPreset();
+              updateComponent(comp);
             });
             stopWrap.appendChild(posInp);
 
@@ -1517,7 +1548,7 @@ function buildDetailDom(container, comp, path) {
                 map.colors.splice(si, 1);
                 rebuildStops();
                 drawGradient(canvas, map.colors);
-                rebuildPreset();
+                updateComponent(comp);
               });
               stopWrap.appendChild(rmBtn);
             }
@@ -1535,7 +1566,7 @@ function buildDetailDom(container, comp, path) {
             map.colors.push({ position: Math.min(255, lastPos + 32), color: '#ffffff' });
             rebuildStops();
             drawGradient(canvas, map.colors);
-            rebuildPreset();
+            updateComponent(comp);
           });
           stopsRow.appendChild(addBtn);
         }
