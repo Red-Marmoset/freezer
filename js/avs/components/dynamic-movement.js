@@ -219,6 +219,7 @@ export class DynamicMovement extends AvsComponent {
     }
 
     ctx.renderer.setRenderTarget(fb.getBackTarget());
+    ctx.renderer.clear();
     ctx.renderer.render(this._scene, this._camera);
     this._material.uniforms.tSource.value = null;
     if (this._material.uniforms.tDest) this._material.uniforms.tDest.value = null;
