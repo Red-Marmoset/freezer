@@ -50,7 +50,7 @@ const BUILTIN_PARSERS = {
   0x0D: B.parseRotatingStars, 0x27: B.parseTimescope, 0x14: B.parseWater,
   0x1F: B.parseWaterBump, 0x1D: B.parseBump, 0x28: B.parseSetRenderMode,
   0x29: B.parseInterferences, 0x2A: B.parseDynamicShift,
-  0x23: B.parseDynamicDistanceModifier, 0x22: B.parsePicture,
+  0x23: B.parseDynamicDistanceModifier, 0x22: B.parsePicture, 0x1C: B.parseText,
   0x08: B.parseMovingParticle,
   0x02: B.parseOscStar, 0x2C: B.parseFastBrightness, 0x21: B.parseCustomBPM,
 };

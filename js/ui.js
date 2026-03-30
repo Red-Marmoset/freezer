@@ -9,7 +9,10 @@ import { initInputTracking } from './avs/eel/nseel-stdlib.js';
 const canvas = document.getElementById('visualizer');
 const controls = document.getElementById('controls');
 const splash = document.getElementById('splash');
-const btnStart = document.getElementById('btn-start');
+const btnSrcScreen = document.getElementById('btn-src-screen');
+const btnSrcFile = document.getElementById('btn-src-file');
+const btnSrcMic = document.getElementById('btn-src-mic');
+const audioFileInput = document.getElementById('audio-file-input');
 const splashStatus = document.getElementById('splash-status');
 const btnPresets = document.getElementById('btn-presets');
 const btnLoadPreset = document.getElementById('btn-load-preset');
@@ -53,25 +56,48 @@ viz.start(audio);
 // Current preset JSON (for editor)
 let currentPresetJSON = DEFAULT_PRESET;
 
-// --- Splash screen: start system audio capture ---
+// --- Splash screen: audio source selection ---
 
-btnStart.addEventListener('click', startCapture);
+// Disable screen share button on browsers that don't support it
+if (!audio.canScreenShareAudio) {
+  btnSrcScreen.disabled = true;
+  btnSrcScreen.querySelector('.splash-src-desc').textContent = 'Not supported in this browser';
+}
 
-async function startCapture() {
-  btnStart.textContent = 'CONNECTING...';
+btnSrcScreen.addEventListener('click', async () => {
   splashStatus.textContent = '';
   splashStatus.classList.remove('error');
-
   try {
     await audio.switchSource('system');
     dismissSplash();
   } catch (e) {
-    console.warn('System audio capture cancelled or failed:', e);
-    btnStart.textContent = 'START CAPTURE';
-    splashStatus.textContent = 'Capture cancelled \u2014 click to try again';
+    splashStatus.textContent = 'Screen share cancelled \u2014 try again or use another source';
     splashStatus.classList.add('error');
   }
-}
+});
+
+btnSrcFile.addEventListener('click', () => {
+  audioFileInput.click();
+});
+
+audioFileInput.addEventListener('change', () => {
+  if (audioFileInput.files.length > 0) {
+    audio.loadFile(audioFileInput.files[0]);
+    dismissSplash();
+  }
+});
+
+btnSrcMic.addEventListener('click', async () => {
+  splashStatus.textContent = '';
+  splashStatus.classList.remove('error');
+  try {
+    await audio.switchSource('mic');
+    dismissSplash();
+  } catch (e) {
+    splashStatus.textContent = 'Microphone access denied';
+    splashStatus.classList.add('error');
+  }
+});
 
 function dismissSplash() {
   splash.classList.add('hidden');
@@ -340,6 +366,7 @@ const FINISHED_COMPONENTS = new Set([
   'Holden03: Convolution Filter',
   'Mirror',
   'Invert',
+  'UniqueTone',
 ]);
 
 // Known select-type fields and their options
@@ -1868,13 +1895,9 @@ function toggleFullscreen() {
 
 btnFullscreen.addEventListener('click', toggleFullscreen);
 
-btnSource.addEventListener('click', async () => {
-  try {
-    await audio.switchSource('system');
-    dismissSplash();
-  } catch (e) {
-    console.warn('Audio source change cancelled:', e);
-  }
+btnSource.addEventListener('click', () => {
+  // Re-show the splash screen for source selection
+  splash.classList.remove('hidden');
 });
 
 // --- Fullscreen auto-hide controls ---
@@ -1915,7 +1938,7 @@ function toggleFps() {
     if (!fpsEl) {
       fpsEl = document.createElement('div');
       fpsEl.id = 'fps-counter';
-      fpsEl.style.cssText = 'position:fixed;top:6px;right:8px;z-index:600;font-family:"Share Tech Mono",Consolas,monospace;font-size:12px;color:rgba(0,229,255,0.7);pointer-events:none;text-shadow:0 0 4px rgba(0,0,0,0.8);';
+      fpsEl.style.cssText = 'position:fixed;top:12px;left:12px;z-index:600;font-family:"Share Tech Mono",Consolas,monospace;font-size:14px;font-weight:600;color:var(--accent,#00e5ff);pointer-events:none;padding:6px 12px;background:rgba(0,10,20,0.6);border:1px solid rgba(0,229,255,0.15);border-radius:8px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);letter-spacing:1px;';
       document.body.appendChild(fpsEl);
     }
     fpsEl.style.display = '';
@@ -1947,11 +1970,12 @@ document.addEventListener('keydown', (e) => {
   // Don't trigger shortcuts while typing in inputs
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
-  if (e.key === 'f' || e.key === 'F') {
-    toggleFps();
-  }
-  if (e.key === 'Enter' && e.altKey) {
-    e.preventDefault();
-    toggleFullscreen();
+  switch (e.key) {
+    case 'f': case 'F':
+      if (!e.ctrlKey && !e.altKey && !e.metaKey) toggleFps();
+      break;
+    case 'Enter':
+      if (e.altKey) { e.preventDefault(); toggleFullscreen(); }
+      break;
   }
 });

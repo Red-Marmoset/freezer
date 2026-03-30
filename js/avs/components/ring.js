@@ -2,6 +2,7 @@
 // Draws an 80-segment circle where radius is driven by audio sample values.
 import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
+import { applyLineBlend, restoreLineBlend } from '../line-blend.js';
 
 const NUM_SEGMENTS = 80;
 // +1 to close the loop (first vertex duplicated at end)
@@ -94,7 +95,9 @@ export class Ring extends AvsComponent {
     this._geometry.setDrawRange(0, NUM_VERTS);
 
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
+    const blended = applyLineBlend(ctx.renderer, ctx);
     ctx.renderer.render(this._scene, this._camera);
+    if (blended) restoreLineBlend(ctx.renderer);
   }
 
   _getCurrentColor() {
