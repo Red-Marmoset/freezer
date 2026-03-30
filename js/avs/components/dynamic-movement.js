@@ -198,18 +198,18 @@ export class DynamicMovement extends AvsComponent {
         newV = 1 - (s.y + 1) * 0.5;
       }
 
-      if (this.wrap) {
-        newU = newU - Math.floor(newU);
-        newV = newV - Math.floor(newV);
-      } else {
-        newU = Math.max(0, Math.min(1, newU));
-        newV = Math.max(0, Math.min(1, newV));
-      }
-
+      // Don't clamp UVs here — let GPU texture wrap mode handle edges.
+      // JS clamping creates ugly flat regions at boundaries.
       uvAttr.setXY(i, newU, newV);
     }
     uvAttr.needsUpdate = true;
     if (this._alphaAttr) this._alphaAttr.needsUpdate = true;
+
+    // Set texture wrap mode based on wrap setting
+    if (srcTexture) {
+      srcTexture.wrapS = this.wrap ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
+      srcTexture.wrapT = this.wrap ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
+    }
 
     this._material.uniforms.tSource.value = srcTexture;
 
