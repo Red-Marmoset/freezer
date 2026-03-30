@@ -1914,7 +1914,7 @@ function toggleFps() {
     if (!fpsEl) {
       fpsEl = document.createElement('div');
       fpsEl.id = 'fps-counter';
-      fpsEl.style.cssText = 'position:fixed;top:6px;right:8px;z-index:600;font-family:"Share Tech Mono",Consolas,monospace;font-size:12px;color:rgba(0,229,255,0.7);pointer-events:none;text-shadow:0 0 4px rgba(0,0,0,0.8);';
+      fpsEl.style.cssText = 'position:fixed;top:12px;left:12px;z-index:600;font-family:"Share Tech Mono",Consolas,monospace;font-size:14px;font-weight:600;color:var(--accent,#00e5ff);pointer-events:none;padding:6px 12px;background:rgba(0,10,20,0.6);border:1px solid rgba(0,229,255,0.15);border-radius:8px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);letter-spacing:1px;';
       document.body.appendChild(fpsEl);
     }
     fpsEl.style.display = '';
@@ -1946,11 +1946,12 @@ document.addEventListener('keydown', (e) => {
   // Don't trigger shortcuts while typing in inputs
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
-  if (e.key === 'f' || e.key === 'F') {
-    toggleFps();
-  }
-  if (e.key === 'Enter' && e.altKey) {
-    e.preventDefault();
-    toggleFullscreen();
+  switch (e.key) {
+    case 'f': case 'F':
+      if (!e.ctrlKey && !e.altKey && !e.metaKey) toggleFps();
+      break;
+    case 'Enter':
+      if (e.altKey) { e.preventDefault(); toggleFullscreen(); }
+      break;
   }
 });
