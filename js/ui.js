@@ -3,6 +3,7 @@ import { createRenderer } from './renderer.js';
 import { loadAvsPreset } from './avs/avs-engine.js';
 import { parseAvsFileWithName } from './avs/avs-parser.js';
 import { initPresetBrowser, open as openPresetLibrary, close as closePresetLibrary, isOpen as isPresetLibraryOpen, loadPresetById, findPresetId } from './preset-library/preset-browser.js';
+import { initHelp } from './help.js';
 
 const canvas = document.getElementById('visualizer');
 const controls = document.getElementById('controls');
@@ -238,6 +239,9 @@ btnPresets.addEventListener('click', () => {
     openPresetLibrary();
   }
 });
+
+// --- Help dialog ---
+initHelp();
 
 // --- URL preset parameter ---
 // Check for ?preset=<id> and auto-load (but keep splash for screen share)

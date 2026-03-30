@@ -37,6 +37,7 @@
         <button id="btn-fullscreen" title="Toggle fullscreen (F)">
           <span class="btn-icon">&#x26F6;</span> Full
         </button>
+        <button id="btn-help" class="preset-btn" title="Expression language reference">Help</button>
       </div>
     </div>
   </div>
@@ -248,6 +249,25 @@
         <button id="btn-comment-close" class="comment-overlay-close">&times;</button>
       </div>
       <div id="comment-overlay-text" class="comment-overlay-text"></div>
+    </div>
+  </div>
+
+  <!-- Expression Help Dialog (ported from vis_avs) -->
+  <div id="help-dialog" class="preset-lib hidden">
+    <div class="preset-lib-backdrop"></div>
+    <div class="preset-lib-dialog" style="width:600px;max-width:92vw;height:auto;max-height:80vh">
+      <div class="preset-lib-header">
+        <span class="preset-lib-title">EXPRESSION HELP</span>
+        <button id="btn-help-close" class="editor-close">&times;</button>
+      </div>
+      <div class="preset-lib-tabs" style="padding:8px 16px 0">
+        <button class="lib-tab active" data-help-tab="general">General</button>
+        <button class="lib-tab" data-help-tab="operators">Operators</button>
+        <button class="lib-tab" data-help-tab="functions">Functions</button>
+        <button class="lib-tab" data-help-tab="constants">Constants</button>
+        <button class="lib-tab" data-help-tab="variables">Variables</button>
+      </div>
+      <div id="help-content" class="help-content" style="padding:12px 16px 16px;overflow-y:auto;max-height:60vh;font-family:'Share Tech Mono',Consolas,monospace;font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap"></div>
     </div>
   </div>
 
