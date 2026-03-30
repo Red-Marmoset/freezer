@@ -167,15 +167,21 @@ export class DynamicMovement extends AvsComponent {
     this._material.uniforms.tSource.value = srcTexture;
 
     if (this.blend) {
-      // Render displaced content to back target, then blend onto active using alpha
+      // Render displaced content to back target
       ctx.renderer.setRenderTarget(fb.getBackTarget());
+      ctx.renderer.clear();
       ctx.renderer.render(this._scene, this._camera);
       this._material.uniforms.tSource.value = null;
 
       // Average alpha across grid for blend amount
       const avgAlpha = vertCount > 0 ? alphaSum / vertCount : 1;
-      // Blend back→active using ADJUSTABLE mode with the computed alpha
-      blendTexture(ctx.renderer, fb.getBackTarget().texture, fb.getActiveTarget(), BLEND.ADJUSTABLE, avgAlpha);
+      if (avgAlpha >= 0.999) {
+        // Full replacement — just swap (faster than blending)
+        fb.swap();
+      } else {
+        // Partial blend: composite displaced content onto active FB
+        blendTexture(ctx.renderer, fb.getBackTarget().texture, fb.getActiveTarget(), BLEND.ADJUSTABLE, avgAlpha);
+      }
     } else {
       // No blend: displaced content replaces FB entirely
       ctx.renderer.setRenderTarget(fb.getBackTarget());
