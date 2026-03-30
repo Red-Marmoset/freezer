@@ -457,3 +457,27 @@ export function parsePicture(r, endPos) {
   if (onBeatAdditive) onBeatBlendMode = 'ADDITIVE';
   return { type: 'Picture', enabled, blendMode, onBeatBlendMode, imageSrc, onBeatDuration, keepAspect };
 }
+
+export function parseOscStar(r, endPos) {
+  // r_oscstar.cpp save: effect(4), num_colors(4), colors[num_colors](4 each), size(4), rot(4)
+  const effect = r.hasBytes(4) ? r.uint32() : 0;
+  const numColors = r.hasBytes(4) ? r.uint32() : 1;
+  const colors = [];
+  for (let i = 0; i < Math.min(numColors, 16) && r.hasBytes(4); i++) colors.push(r.color());
+  const size = r.hasBytes(4) ? r.uint32() : 8;
+  const rot = r.hasBytes(4) ? r.int32() : 3;
+  const channelBits = (effect >> 2) & 3;
+  const audioChannel = channelBits === 0 ? 'LEFT' : channelBits === 1 ? 'RIGHT' : 'CENTER';
+  return { type: 'OscStar', enabled: true, effect, audioChannel, colors, size, rot };
+}
+
+export function parseCustomBPM(r) {
+  const enabled = r.hasBytes(4) ? r.uint32() : 1;
+  const arbitrary = r.hasBytes(4) ? r.uint32() : 1;
+  const skip = r.hasBytes(4) ? r.uint32() : 0;
+  const invert = r.hasBytes(4) ? r.uint32() : 0;
+  const arbVal = r.hasBytes(4) ? r.uint32() : 500;
+  const skipVal = r.hasBytes(4) ? r.uint32() : 1;
+  const skipFirst = r.hasBytes(4) ? r.uint32() : 0;
+  return { type: 'CustomBPM', enabled: !!enabled, arbitrary, skip, invert, arbVal, skipVal, skipFirst };
+}

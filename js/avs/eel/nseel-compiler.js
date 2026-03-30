@@ -252,7 +252,7 @@ function compileCall(node) {
   }
 
   // Audio functions — delegated to lib
-  if (name === 'getosc' || name === 'getspec' || name === 'gettime') {
+  if (name === 'getosc' || name === 'getspec' || name === 'gettime' || name === 'getkbmouse') {
     const compiledArgs = args.map(compileExpr).join(', ');
     return `lib.${name}(${compiledArgs})`;
   }
