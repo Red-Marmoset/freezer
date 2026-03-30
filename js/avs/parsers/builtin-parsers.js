@@ -369,15 +369,19 @@ export function parseText(r, endPos) {
     if (r.hasBytes(4)) result.halign = r.uint32(); // 0=left, 1=center, 2=right
     if (r.hasBytes(4)) result.onbeatSpeed = r.uint32();
     if (r.hasBytes(4)) result.normSpeed = r.uint32();
-    // Skip CHOOSEFONT (60 bytes) and LOGFONT (92 bytes)
-    // Extract font info from LOGFONT: height at offset 0, faceName at offset 28 (32 chars)
-    if (r.hasBytes(60)) r.skip(60); // CHOOSEFONT
-    if (r.hasBytes(92)) {
+    // Skip CHOOSEFONT (60 bytes on 32-bit Windows)
+    if (r.hasBytes(60)) r.skip(60);
+    // LOGFONTA: 28 bytes header + 32 bytes faceName = 60 bytes total
+    if (r.hasBytes(60)) {
       const lfStart = r.pos;
-      result.fontHeight = Math.abs(r.int32()); // lfHeight (can be negative)
-      r.skip(24); // skip to lfFaceName at offset 28
-      result.fontName = r.fixedString(32); // LF_FACESIZE = 32
-      r.pos = lfStart + 92; // ensure we advance past full LOGFONT
+      result.fontHeight = Math.abs(r.int32()); // lfHeight (negative = char height)
+      r.pos = lfStart + 16; // skip to lfWeight
+      const weight = r.uint32();
+      result.bold = weight >= 700;
+      result.italic = r.uint8() !== 0;
+      r.pos = lfStart + 28; // skip to lfFaceName
+      result.fontName = r.fixedString(32);
+      r.pos = lfStart + 60;
     }
     // Text content: size-prefixed
     if (r.hasBytes(4)) {
