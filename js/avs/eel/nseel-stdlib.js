@@ -2,6 +2,64 @@
 // Maps EEL function names to Math.* equivalents and provides
 // runtime functions for audio access, timing, etc.
 
+// Global input state — updated by initInputTracking()
+const inputState = {
+  mouseX: 0,    // -1..1 (0 = center)
+  mouseY: 0,    // -1..1 (0 = center)
+  mouseLeft: 0,
+  mouseRight: 0,
+  mouseMiddle: 0,
+  keys: {},     // keyCode → 1/0
+};
+
+let inputInitialized = false;
+
+/**
+ * Call once to start tracking mouse/keyboard input on the canvas.
+ * @param {HTMLCanvasElement} canvas
+ */
+export function initInputTracking(canvas) {
+  if (inputInitialized) return;
+  inputInitialized = true;
+
+  const target = canvas || document;
+
+  target.addEventListener('mousemove', (e) => {
+    const rect = (canvas || document.documentElement).getBoundingClientRect();
+    // Map to -1..1 range (0,0 = center)
+    inputState.mouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    inputState.mouseY = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+  });
+
+  target.addEventListener('mousedown', (e) => {
+    if (e.button === 0) inputState.mouseLeft = 1;
+    if (e.button === 2) inputState.mouseRight = 1;
+    if (e.button === 1) inputState.mouseMiddle = 1;
+  });
+
+  target.addEventListener('mouseup', (e) => {
+    if (e.button === 0) inputState.mouseLeft = 0;
+    if (e.button === 2) inputState.mouseRight = 0;
+    if (e.button === 1) inputState.mouseMiddle = 0;
+  });
+
+  // Keyboard tracking
+  document.addEventListener('keydown', (e) => {
+    inputState.keys[e.keyCode] = 1;
+  });
+  document.addEventListener('keyup', (e) => {
+    inputState.keys[e.keyCode] = 0;
+  });
+
+  // Reset buttons on blur (user switches away)
+  window.addEventListener('blur', () => {
+    inputState.mouseLeft = 0;
+    inputState.mouseRight = 0;
+    inputState.mouseMiddle = 0;
+    inputState.keys = {};
+  });
+}
+
 // Functions that map directly to Math.* (used at compile time)
 // Key = EEL name (lowercase), Value = JS expression prefix
 export const STDLIB_MATH = {
@@ -151,8 +209,13 @@ export function createStdlib(opts = {}) {
      * >5=GetAsyncKeyState(which)
      */
     getkbmouse(which) {
-      // Stub — returns 0 for all. Mouse position could be tracked
-      // but most presets only use this for optional interactivity.
+      const w = Math.round(which);
+      if (w === 1) return inputState.mouseX;
+      if (w === 2) return inputState.mouseY;
+      if (w === 3) return inputState.mouseLeft;
+      if (w === 4) return inputState.mouseRight;
+      if (w === 5) return inputState.mouseMiddle;
+      if (w > 5) return inputState.keys[w] ? 1 : 0;
       return 0;
     },
   };

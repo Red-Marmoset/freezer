@@ -4,6 +4,7 @@ import { loadAvsPreset } from './avs/avs-engine.js';
 import { parseAvsFileWithName } from './avs/avs-parser.js';
 import { initPresetBrowser, open as openPresetLibrary, close as closePresetLibrary, isOpen as isPresetLibraryOpen, loadPresetById, findPresetId } from './preset-library/preset-browser.js';
 import { initHelp } from './help.js';
+import { initInputTracking } from './avs/eel/nseel-stdlib.js';
 
 const canvas = document.getElementById('visualizer');
 const controls = document.getElementById('controls');
@@ -18,6 +19,7 @@ const btnFullscreen = document.getElementById('btn-fullscreen');
 const btnSource = document.getElementById('btn-source');
 
 const audio = createAudioEngine();
+initInputTracking(canvas);
 const viz = createRenderer(canvas);
 
 // Default preset: circular scope with color cycling, fadeout, blitter feedback
