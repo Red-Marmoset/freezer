@@ -92,7 +92,7 @@ export class SuperScope extends AvsComponent {
 
     if (this.drawMode === 'DOTS') {
       this._material = new THREE.PointsMaterial({
-        size: Math.max(2, this.thickness * 2),
+        size: 1,
         vertexColors: true,
         sizeAttenuation: false,
       });
