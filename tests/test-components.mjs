@@ -126,19 +126,27 @@ test('Invert flips colors', async () => {
 });
 
 test('Mirror creates symmetry', async () => {
-  const { pixels, width } = await renderPreset({
+  const { pixels, width, height } = await renderPreset({
     name: 'test', clearFrame: true,
     components: [
       { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
         audioChannel: 'CENTER', colors: ['#ffffff'],
-        code: { init: 'n=1', perFrame: '', onBeat: '', perPoint: 'x=-0.5; y=0' } },
+        code: { init: 'n=20', perFrame: '', onBeat: '', perPoint: 'x=-0.3-i*0.3; y=i*0.5-0.25' } },
       { type: 'Mirror', enabled: true, mode: 0 } // left-right
     ]
   });
-  // Should have pixels on both sides
-  const leftCount = countNonBlack(pixels.slice(0, width * 128 * 2));
-  const rightCount = countNonBlack(pixels.slice(width * 128 * 2));
-  if (leftCount === 0 || rightCount === 0) {
+  // Count non-black pixels in left and right halves
+  let leftCount = 0, rightCount = 0;
+  const halfW = Math.floor(width / 2);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4;
+      if (pixels[i] > 2 || pixels[i+1] > 2 || pixels[i+2] > 2) {
+        if (x < halfW) leftCount++; else rightCount++;
+      }
+    }
+  }
+  if (leftCount < 3 || rightCount < 3) {
     throw new Error(`Expected pixels on both sides: left=${leftCount}, right=${rightCount}`);
   }
 });
@@ -195,18 +203,28 @@ test('Brightness changes pixel values', async () => {
 });
 
 test('Movement mode 3 distorts frame', async () => {
-  const { pixels } = await renderPreset({
-    name: 'test', clearFrame: false,
+  // Draw an asymmetric pattern, then apply movement — should change the pattern
+  const { pixels: before } = await renderPreset({
+    name: 'test', clearFrame: true,
     components: [
-      { type: 'ClearScreen', enabled: true, color: '#ffffff' },
-      { type: 'Movement', enabled: true, preset: 3, wrap: false }
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=50', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=0' } },
     ]
-  }, 5);
-  // After movement, should not be uniform white anymore
-  const nonBlack = countNonBlack(pixels);
-  const avg = avgBrightness(pixels);
-  // Movement should create non-uniform pattern (some black from wrapping)
-  if (avg > 250) throw new Error(`Expected distortion to create variation, avg=${avg.toFixed(1)}`);
+  });
+  const { pixels: after } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=50', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=0' } },
+      { type: 'Movement', enabled: true, builtinEffect: 3, wrap: false }
+    ]
+  }, 3);
+  // The pixel distribution should differ after movement distortion
+  const beforeCount = countNonBlack(before);
+  const afterCount = countNonBlack(after);
+  if (beforeCount === afterCount) throw new Error(`Expected Movement to change pixel distribution: before=${beforeCount}, after=${afterCount}`);
 });
 
 test('ColorReduction posterizes', async () => {
