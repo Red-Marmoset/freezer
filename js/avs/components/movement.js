@@ -66,8 +66,9 @@ function buildBuiltinFrag(effectIdx, wrap) {
         vec2 uv = vUv;
         vec2 c = uv - 0.5;
         float d = length(c) * 2.0;
-        float r = atan(c.y, c.x);
+        float r = atan(c.y, c.x) + PI * 0.5;
         ${polarCode}
+        r -= PI * 0.5;
         uv = vec2(cos(r), sin(r)) * d * 0.5 + 0.5;
         ${wrapCode}
         gl_FragColor = texture2D(tSource, uv);
@@ -162,8 +163,9 @@ function tryTranspileToGLSL(code, isPolar, wrap) {
       void main() {
         vec2 c = vUv - 0.5;
         float d = length(c) * 2.0;
-        float r = atan(c.y, c.x);
+        float r = atan(c.y, c.x) + PI * 0.5;
         ${glslLines.join('\n        ')}
+        r -= PI * 0.5;
         vec2 uv = vec2(cos(r), sin(r)) * d * 0.5 + 0.5;
         ${wrapCode}
         gl_FragColor = texture2D(tSource, uv);
@@ -374,7 +376,7 @@ export class Movement extends AvsComponent {
           const cx = origX - 0.5;
           const cy = origY - 0.5;
           s.d = Math.sqrt(cx * cx + cy * cy) * 2;
-          s.r = Math.atan2(cy, cx);
+          s.r = Math.atan2(cy, cx) + Math.PI * 0.5;
         } else {
           s.x = origX * 2 - 1;
           s.y = origY * 2 - 1;
@@ -384,9 +386,10 @@ export class Movement extends AvsComponent {
 
         let newU, newV;
         if (usePolar) {
+          const r = s.r - Math.PI * 0.5;
           const nd = s.d * 0.5;
-          newU = Math.cos(s.r) * nd + 0.5;
-          newV = Math.sin(s.r) * nd + 0.5;
+          newU = Math.cos(r) * nd + 0.5;
+          newV = Math.sin(r) * nd + 0.5;
         } else {
           newU = (s.x + 1) / 2;
           newV = (s.y + 1) / 2;
