@@ -6,7 +6,7 @@ import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
 import { applyLineBlend, restoreLineBlend } from '../line-blend.js';
 
-const MAX_POINTS = 4096;
+const MAX_POINTS = 16384;
 
 export class SuperScope extends AvsComponent {
   constructor(opts) {
