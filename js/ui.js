@@ -375,8 +375,6 @@ const FINISHED_COMPONENTS = new Set([
   'ClearScreen',
   'ColorModifier',
   'ColorMap',
-  'EffectList',
-  'BufferSave',
   'SetRenderMode',
   'OnBeatClear',
   'Brightness',
