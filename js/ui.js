@@ -338,6 +338,7 @@ const FINISHED_COMPONENTS = new Set([
   'Holden03: Convolution Filter',
   'Mirror',
   'Invert',
+  'UniqueTone',
 ]);
 
 // Known select-type fields and their options
