@@ -72,6 +72,7 @@ import './components/video-delay.js';
 import './components/multi-delay.js';
 import './components/custom-bpm.js';
 import './components/text.js';
+import './components/text3d.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object
