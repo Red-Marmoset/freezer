@@ -64,7 +64,6 @@ import './components/milkdrop-motion.js';
 import './components/custom-shader.js';
 import './components/darken-center.js';
 import './components/echo.js';
-import './components/geiss-effect.js';
 import './components/osc-star.js';
 import './components/fast-brightness.js';
 import './components/color-reduction.js';

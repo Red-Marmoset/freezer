@@ -1,7 +1,0 @@
-{
-  "name": "Geiss - Phonic Rings (Scope)",
-  "clearFrame": false,
-  "components": [
-    { "type": "GeissEffect", "enabled": true, "mode": 22, "waveform": 1 }
-  ]
-}

@@ -1,7 +1,0 @@
-{
-  "name": "Geiss - Super Perspective (Scope)",
-  "clearFrame": false,
-  "components": [
-    { "type": "GeissEffect", "enabled": true, "mode": 5, "waveform": 1 }
-  ]
-}

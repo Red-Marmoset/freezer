@@ -295,7 +295,7 @@ function renderVisibleRows() {
 
     const authorName = authorById[p.authorId]?.name || '';
     const packName = p.packIds.map(pid => packById[pid]?.name || '').join(', ');
-    const wip = (p.packIds.includes('milkdrop') || p.packIds.includes('geiss')) ? ' \u{1F6A7}' : '';
+    const wip = p.packIds.includes('milkdrop') ? ' \u{1F6A7}' : '';
     row.innerHTML = `<span class="lib-preset-title">${esc(p.title)}${wip}</span><span class="lib-preset-meta">${esc(authorName)} &middot; ${esc(packName)}</span>`;
     row.addEventListener('click', () => loadPreset(p));
     presetList.appendChild(row);

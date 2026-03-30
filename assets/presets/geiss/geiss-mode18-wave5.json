@@ -1,7 +1,0 @@
-{
-  "name": "Geiss - Vertical Tunnel (Circle)",
-  "clearFrame": false,
-  "components": [
-    { "type": "GeissEffect", "enabled": true, "mode": 18, "waveform": 5 }
-  ]
-}

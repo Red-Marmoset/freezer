@@ -1,7 +1,0 @@
-{
-  "name": "Geiss - Vortex (Circle)",
-  "clearFrame": false,
-  "components": [
-    { "type": "GeissEffect", "enabled": true, "mode": 19, "waveform": 5 }
-  ]
-}
