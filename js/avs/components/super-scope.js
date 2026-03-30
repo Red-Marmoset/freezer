@@ -4,26 +4,9 @@ import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
+import { applyLineBlend, restoreLineBlend } from '../line-blend.js';
 
 const MAX_POINTS = 4096;
-
-// Map AVS line blend mode index to GL blend config
-// These match the SetRenderMode blend indices from r_linemode.cpp
-function getLineBlendGL(gl, blendIdx) {
-  switch (blendIdx) {
-    case 0: return null; // Replace — no blending
-    case 1: return { eq: gl.FUNC_ADD, src: gl.ONE, dst: gl.ONE }; // Additive
-    case 2: if (!gl.MAX) console.warn('gl.MAX not available — Maximum blend unsupported'); return gl.MAX ? { eq: gl.MAX, src: gl.ONE, dst: gl.ONE } : null; // Maximum
-    case 3: return { eq: gl.FUNC_ADD, src: gl.CONSTANT_COLOR, dst: gl.CONSTANT_COLOR, color: [0.5, 0.5, 0.5, 0.5] }; // 50/50
-    case 4: return { eq: gl.FUNC_REVERSE_SUBTRACT, src: gl.ONE, dst: gl.ONE }; // Sub (dst-src)
-    case 5: return { eq: gl.FUNC_SUBTRACT, src: gl.ONE, dst: gl.ONE }; // Sub (src-dst)
-    case 6: return { eq: gl.FUNC_ADD, src: gl.DST_COLOR, dst: gl.ZERO }; // Multiply
-    // 7 = Adjustable (needs alpha from renderMode)
-    // 8 = XOR (not possible with GL blend)
-    case 9: if (!gl.MIN) console.warn('gl.MIN not available — Minimum blend unsupported'); return gl.MIN ? { eq: gl.MIN, src: gl.ONE, dst: gl.ONE } : null; // Minimum
-    default: return null;
-  }
-}
 
 export class SuperScope extends AvsComponent {
   constructor(opts) {
@@ -268,30 +251,10 @@ export class SuperScope extends AvsComponent {
 
       // Render onto the active framebuffer with line blend mode
       ctx.renderer.setRenderTarget(fb.getActiveTarget());
-      this._applyLineBlend(ctx);
+      const blended = applyLineBlend(ctx.renderer, ctx);
       ctx.renderer.render(this._scene, this._camera);
-      this._restoreBlend(ctx);
+      if (blended) restoreLineBlend(ctx.renderer);
     }
-  }
-
-  _applyLineBlend(ctx) {
-    if (!ctx.renderMode || !ctx.renderMode.enabled) return;
-    const gl = ctx.renderer.getContext();
-    const cfg = getLineBlendGL(gl, ctx.renderMode.blend);
-    if (!cfg) return;
-    gl.enable(gl.BLEND);
-    gl.blendEquation(cfg.eq);
-    gl.blendFunc(cfg.src, cfg.dst);
-    if (cfg.color) gl.blendColor(...cfg.color);
-    this._blendActive = true;
-  }
-
-  _restoreBlend(ctx) {
-    if (!this._blendActive) return;
-    const gl = ctx.renderer.getContext();
-    gl.disable(gl.BLEND);
-    ctx.renderer.resetState();
-    this._blendActive = false;
   }
 
   /**
@@ -408,9 +371,9 @@ export class SuperScope extends AvsComponent {
     this._thickGeo.setDrawRange(0, ii);
 
     ctx.renderer.setRenderTarget(fb.getActiveTarget());
-    this._applyLineBlend(ctx);
+    const blended = applyLineBlend(ctx.renderer, ctx);
     ctx.renderer.render(this._scene, this._camera);
-    this._restoreBlend(ctx);
+    if (blended) restoreLineBlend(ctx.renderer);
   }
 
   _getCurrentColor() {
