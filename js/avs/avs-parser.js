@@ -193,7 +193,42 @@ export function parseAvsFile(buffer) {
     throw new Error('Not a valid AVS preset file');
   }
   r.pos = 24;
-  const clearFrame = r.uint8() !== 0;
+
+  // Root EffectList uses the SAME load_config as nested ones (vis_avs r_list.cpp:1268).
+  // Mode byte: bit 0=clearfb, bit 1=!enabled, bit 7=has extended uint32
+  let mode = r.uint8();
+  if (mode & 0x80) {
+    mode = (mode & ~0x80) | r.uint32();
+  }
+
+  const clearFrame = !!(mode & 1);
+  const extDataSize = (mode >> 24) & 0xFF;
+
+  // Skip extended data fields if present (same as nested EffectList)
+  // ext = get_extended_datasize() + 5 (the +5 accounts for the mode byte+uint32)
+  if (extDataSize > 0) {
+    // inblendval, outblendval, bufferin, bufferout, ininvert, outinvert, beat_render, beat_render_frames
+    const extBytes = Math.min(extDataSize * 4, r.length - r.pos);
+    r.skip(extBytes);
+
+    // Check for the code section marker (0x4000) that may follow extended data
+    // This is the APE-style embedded code section for the root EffectList
+    if (r.hasBytes(4)) {
+      const peek = r.bytes[r.pos] | (r.bytes[r.pos + 1] << 8) | (r.bytes[r.pos + 2] << 16) | (r.bytes[r.pos + 3] << 24);
+      if (peek >= BUILTIN_MAX) {
+        // This is an APE/DLL identifier for the code section — parse like nested EL
+        r.skip(4); // effect_index (DLLRENDERBASE+)
+        if (r.hasBytes(32)) r.skip(32); // DLL ID string
+        if (r.hasBytes(4)) {
+          const codeLen = r.uint32();
+          if (codeLen > 0 && r.hasBytes(codeLen)) {
+            r.skip(codeLen); // code section data
+          }
+        }
+      }
+    }
+  }
+
   const components = parseComponents(r, r.length);
   return { name: 'AVS Preset', clearFrame, components };
 }
