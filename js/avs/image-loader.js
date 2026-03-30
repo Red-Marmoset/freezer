@@ -130,7 +130,7 @@ function parseBMP(buffer) {
   if (bitsPerPixel === 24) {
     const rowSize = Math.ceil((width * 3) / 4) * 4; // rows padded to 4 bytes
     for (let y = 0; y < height; y++) {
-      const srcY = topDown ? y : (height - 1 - y);
+      const srcY = topDown ? (height - 1 - y) : y;
       const srcRowStart = dataOffset + srcY * rowSize;
       for (let x = 0; x < width; x++) {
         const srcIdx = srcRowStart + x * 3;
@@ -144,7 +144,7 @@ function parseBMP(buffer) {
   } else if (bitsPerPixel === 32) {
     const rowSize = width * 4;
     for (let y = 0; y < height; y++) {
-      const srcY = topDown ? y : (height - 1 - y);
+      const srcY = topDown ? (height - 1 - y) : y;
       const srcRowStart = dataOffset + srcY * rowSize;
       for (let x = 0; x < width; x++) {
         const srcIdx = srcRowStart + x * 4;
@@ -169,7 +169,7 @@ function parseBMP(buffer) {
     }
     const rowSize = Math.ceil(width / 4) * 4;
     for (let y = 0; y < height; y++) {
-      const srcY = topDown ? y : (height - 1 - y);
+      const srcY = topDown ? (height - 1 - y) : y;
       const srcRowStart = dataOffset + srcY * rowSize;
       for (let x = 0; x < width; x++) {
         const idx = bytes[srcRowStart + x];
