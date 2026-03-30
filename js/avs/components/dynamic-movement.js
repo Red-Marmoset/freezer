@@ -3,34 +3,9 @@ import * as THREE from 'https://esm.sh/three@0.171.0';
 import { AvsComponent } from '../avs-component.js';
 import { compileEEL, createState } from '../eel/nseel-compiler.js';
 import { createStdlib } from '../eel/nseel-stdlib.js';
+import { blendTexture, BLEND } from '../blend.js';
 
-const VERT_BLEND = `
-  attribute float aAlpha;
-  varying vec2 vUv;
-  varying float vAlpha;
-  void main() {
-    vUv = uv;
-    vAlpha = aAlpha;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-const FRAG_BLEND = `
-  precision mediump float;
-  uniform sampler2D tSource;
-  uniform sampler2D tDest;
-  uniform vec2 uResolution;
-  varying vec2 vUv;
-  varying float vAlpha;
-  void main() {
-    vec4 src = texture2D(tSource, vUv);
-    vec2 screenUv = gl_FragCoord.xy / uResolution;
-    vec4 dst = texture2D(tDest, screenUv);
-    gl_FragColor = vec4(mix(dst.rgb, src.rgb, vAlpha), 1.0);
-  }
-`;
-
-const VERT_SIMPLE = `
+const VERT = `
   varying vec2 vUv;
   void main() {
     vUv = uv;
@@ -38,7 +13,7 @@ const VERT_SIMPLE = `
   }
 `;
 
-const FRAG_SIMPLE = `
+const FRAG = `
   precision mediump float;
   uniform sampler2D tSource;
   varying vec2 vUv;
@@ -81,32 +56,12 @@ export class DynamicMovement extends AvsComponent {
 
     this._geometry = new THREE.PlaneGeometry(2, 2, this.gridW, this.gridH);
 
-    if (this.blend || this.alphaOnly) {
-      // Blend mode: per-vertex alpha, reads both source and dest
-      const vertCount = this._geometry.attributes.position.count;
-      const alphas = new Float32Array(vertCount).fill(1);
-      this._alphaAttr = new THREE.BufferAttribute(alphas, 1);
-      this._geometry.setAttribute('aAlpha', this._alphaAttr);
-
-      this._material = new THREE.ShaderMaterial({
-        uniforms: {
-          tSource: { value: null },
-          tDest: { value: null },
-          uResolution: { value: new THREE.Vector2(ctx.width, ctx.height) },
-        },
-        vertexShader: VERT_BLEND,
-        fragmentShader: FRAG_BLEND,
-        depthTest: false,
-      });
-    } else {
-      // No blend: simple displaced UV sampling
-      this._material = new THREE.ShaderMaterial({
-        uniforms: { tSource: { value: null } },
-        vertexShader: VERT_SIMPLE,
-        fragmentShader: FRAG_SIMPLE,
-        depthTest: false,
-      });
-    }
+    this._material = new THREE.ShaderMaterial({
+      uniforms: { tSource: { value: null } },
+      vertexShader: VERT,
+      fragmentShader: FRAG,
+      depthTest: false,
+    });
 
     this._scene.add(new THREE.Mesh(this._geometry, this._material));
     this.firstFrame = true;
@@ -156,6 +111,7 @@ export class DynamicMovement extends AvsComponent {
     const maxD = Math.sqrt(w * w + h * h) * 0.5;
     const hw = w * 0.5, hh = h * 0.5;
 
+    let alphaSum = 0;
     for (let i = 0; i < vertCount; i++) {
       // Grid point position → UV (0..1)
       const origX = (posAttr.getX(i) + 1) / 2; // 0..1
@@ -179,9 +135,7 @@ export class DynamicMovement extends AvsComponent {
 
       try { this.perPointFn(s, lib); } catch {}
 
-      if (this._alphaAttr) {
-        this._alphaAttr.array[i] = Math.max(0, Math.min(1, s.alpha));
-      }
+      alphaSum += Math.max(0, Math.min(1, s.alpha));
 
       let newU, newV;
       if (this.usePolar) {
@@ -209,20 +163,26 @@ export class DynamicMovement extends AvsComponent {
       uvAttr.setXY(i, newU, newV);
     }
     uvAttr.needsUpdate = true;
-    if (this._alphaAttr) this._alphaAttr.needsUpdate = true;
 
     this._material.uniforms.tSource.value = srcTexture;
 
-    if (this.blend || this.alphaOnly) {
-      this._material.uniforms.tDest.value = fb.getActiveTexture();
-      this._material.uniforms.uResolution.value.set(ctx.width, ctx.height);
-    }
+    if (this.blend) {
+      // Render displaced content to back target, then blend onto active using alpha
+      ctx.renderer.setRenderTarget(fb.getBackTarget());
+      ctx.renderer.render(this._scene, this._camera);
+      this._material.uniforms.tSource.value = null;
 
-    ctx.renderer.setRenderTarget(fb.getBackTarget());
-    ctx.renderer.render(this._scene, this._camera);
-    this._material.uniforms.tSource.value = null;
-    if (this._material.uniforms.tDest) this._material.uniforms.tDest.value = null;
-    fb.swap();
+      // Average alpha across grid for blend amount
+      const avgAlpha = vertCount > 0 ? alphaSum / vertCount : 1;
+      // Blend back→active using ADJUSTABLE mode with the computed alpha
+      blendTexture(ctx.renderer, fb.getBackTarget().texture, fb.getActiveTarget(), BLEND.ADJUSTABLE, avgAlpha);
+    } else {
+      // No blend: displaced content replaces FB entirely
+      ctx.renderer.setRenderTarget(fb.getBackTarget());
+      ctx.renderer.render(this._scene, this._camera);
+      this._material.uniforms.tSource.value = null;
+      fb.swap();
+    }
   }
 
   destroy() {
