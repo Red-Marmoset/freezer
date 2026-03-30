@@ -72,6 +72,12 @@ function parseDllComponent(dllId, r, endPos) {
   if (cleanId === 'Picture II') return A.parsePicture2APE(r, endPos);
   if (cleanId.startsWith('Misc: AVSTrans') || cleanId === 'AVS Trans Automation') return A.parseEelTransAPE(r, endPos);
   if (cleanId === 'Jheriko: Global' || cleanId.includes('Global')) return A.parseGlobalVariablesAPE(r, endPos);
+  if (cleanId === 'Jheriko : MULTIFILTER' || cleanId.toLowerCase().includes('multifilter')) {
+    const enabled = r.hasBytes(4) ? r.uint32() !== 0 : true;
+    const effect = r.hasBytes(4) ? r.uint32() : 0;
+    const toggleOnBeat = r.hasBytes(4) ? r.uint32() !== 0 : false;
+    return { type: 'MultiFilter', enabled, effect, toggleOnBeat };
+  }
 
   // APE aliases for components we've implemented
   if (cleanId === 'Holden04: Video Delay' || cleanId === 'Video Delay') {

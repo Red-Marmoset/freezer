@@ -11,7 +11,7 @@ import { AvsComponent } from '../avs-component.js';
 
 const VERT = `
   varying vec2 vUv;
-  void main() { vUv = uv; gl_Position = projectionMatrix * modelViewPosition * vec4(position, 1.0); }
+  void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
 `;
 
 const FRAG_REPLACE = `
@@ -79,17 +79,20 @@ export class TextComponent extends AvsComponent {
     this.shadow = opts.shadow || false;
     this.outlineSize = opts.outlineSize || 2;
     this.blend = opts.blend || 0; // 0=replace, 1=additive, 2=50/50
-    this.onBeat = opts.onBeat || false;
+    this.onBeat = opts.onBeat || opts.onbeat || false;
     this.normSpeed = opts.normSpeed || 15;  // frames between word changes
-    this.onBeatSpeed = opts.onBeatSpeed || 15;
-    this.halign = opts.halign || 'center'; // left, center, right
-    this.valign = opts.valign || 'center'; // top, center, bottom
-    this.xShift = opts.xShift || 0; // 0-100 percent
-    this.yShift = opts.yShift || 0;
+    this.onBeatSpeed = opts.onBeatSpeed || opts.onbeatSpeed || 15;
+    // halign/valign: parser gives numeric (0=left/top, 1=center, 2=right/bottom)
+    const HA = ['left', 'center', 'right'];
+    const VA = ['top', 'center', 'bottom'];
+    this.halign = typeof opts.halign === 'number' ? (HA[opts.halign] || 'center') : (opts.halign || 'center');
+    this.valign = typeof opts.valign === 'number' ? (VA[opts.valign] || 'center') : (opts.valign || 'center');
+    this.xShift = opts.xShift ?? opts.xshift ?? 0; // 0-100 percent
+    this.yShift = opts.yShift ?? opts.yshift ?? 0;
     this.randomPos = opts.randomPos || false;
     this.randomWord = opts.randomWord || false;
     this.insertBlank = opts.insertBlank || false;
-    this.fontSize = opts.fontSize || 24;
+    this.fontSize = opts.fontSize || opts.fontHeight || 24;
     this.fontName = opts.fontName || 'Arial';
     this.bold = opts.bold !== undefined ? opts.bold : true;
     this.italic = opts.italic || false;

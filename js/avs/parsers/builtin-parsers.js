@@ -352,7 +352,7 @@ export function parseText(r, endPos) {
   // enabled(i32), color(i32), blend(i32), blendavg(i32), onbeat(i32),
   // insertBlank(i32), randomPos(i32), valign(i32), halign(i32),
   // onbeatSpeed(i32), normSpeed(i32),
-  // CHOOSEFONT struct (60 bytes), LOGFONT struct (92 bytes),
+  // CHOOSEFONT struct (60 bytes), LOGFONTA struct (60 bytes),
   // text size(i32), text data(size bytes),
   // outline(i32), outlinecolor(i32), xshift(i32), yshift(i32),
   // outlinesize(i32), randomword(i32), shadow(i32)
