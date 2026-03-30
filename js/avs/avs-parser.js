@@ -9,7 +9,7 @@ const EFFECTLIST_CODE = 0xFFFFFFFE;
 const BUILTIN_MAX = 16384;
 
 const COMPONENT_MAP = {
-  0x00: 'Simple', 0x01: 'DotPlane', 0x02: 'OscilloscopeStar',
+  0x00: 'Simple', 0x01: 'DotPlane', 0x02: 'OscStar',
   0x03: 'FadeOut', 0x04: 'BlitterFeedback', 0x05: 'OnBeatClear',
   0x06: 'Blur', 0x07: 'BassSpin', 0x08: 'MovingParticle',
   0x09: 'RotoBlitter', 0x0A: 'SVP', 0x0B: 'ColorFade',
@@ -52,6 +52,7 @@ const BUILTIN_PARSERS = {
   0x29: B.parseInterferences, 0x2A: B.parseDynamicShift,
   0x23: B.parseDynamicDistanceModifier, 0x22: B.parsePicture,
   0x08: B.parseMovingParticle,
+  0x02: B.parseOscStar, 0x2C: B.parseFastBrightness, 0x21: B.parseCustomBPM,
 };
 
 // ---- APE/DLL component dispatch ----
@@ -78,60 +79,110 @@ function parseDllComponent(dllId, r, endPos) {
 // ---- EffectList parser ----
 
 function parseEffectList(r, endPos) {
-  if (!r.hasBytes(5)) { r.pos = endPos; return null; }
+  if (!r.hasBytes(1)) { r.pos = endPos; return null; }
 
   // Mode byte: bit 0=clearfb, bit 1=!enabled, bit 7=has extended uint32
-  // When bit 7 set: read next 4 bytes as uint32, OR into mode
-  // mode bits 8-12 = blendin (5 bits), bits 16-20 = blendout^1 (5 bits)
-  // bits 24-31 = extended data size
+  // vis_avs r_list.cpp load_config:
+  //   mode = data[pos++]
+  //   if (mode & 0x80) { mode &= ~0x80; mode |= GET_INT(); pos+=4; }
+  //   ext = get_extended_datasize() + 5
+  //   (extended_datasize is bytes 24-31 of mode, it's a BYTE count not uint32 count)
+  const startPos = r.pos;
   let mode = r.uint8();
   if (mode & 0x80) {
+    if (!r.hasBytes(4)) { r.pos = endPos; return null; }
     mode = (mode & ~0x80) | r.uint32();
   } else {
-    // Legacy: bytes 1,2,3 are unused,blendin,blendout
-    r.skip(1);
-    const bi = r.uint8();
-    const bo = r.uint8();
-    mode = (mode & 0xFF) | (bi << 8) | (bo << 16);
+    // Legacy: 3 more bytes (unused, blendin, blendout)
+    if (r.hasBytes(3)) {
+      r.skip(1);
+      const bi = r.uint8();
+      const bo = r.uint8();
+      mode = (mode & 0xFF) | (bi << 8) | (bo << 16);
+    }
   }
 
-  const enabled = !!((mode & 2) ^ 2); // bit 1 set = disabled
+  const enabled = !!((mode & 2) ^ 2);
   const clearFrame = !!(mode & 1);
   const inputBlend = (mode >> 8) & 31;
-  const outputBlend = ((mode >> 16) & 31) ^ 1; // XOR 1 per original
-  const extDataSize = (mode >> 24) & 0xFF;
+  const outputBlend = ((mode >> 16) & 31) ^ 1;
+  const extDataSizeBytes = (mode >> 24) & 0xFF; // BYTE count of extended data
 
   let enableOnBeat = false, enableOnBeatFor = 1;
   let inAdjust = 128, outAdjust = 128;
   let codeInit = '', codePerFrame = '', codeEnabled = false;
 
-  if (extDataSize > 0) {
-    if (r.hasBytes(extDataSize * 4)) {
-      inAdjust = r.uint32();
-      outAdjust = r.uint32();
-      r.skip(16); // inBuffer, outBuffer, invert flags
-      enableOnBeat = r.uint32() !== 0;
-      enableOnBeatFor = r.uint32();
-    }
-    if (r.hasBytes(4)) {
-      const marker = r.bytes[r.pos] | (r.bytes[r.pos + 1] << 8);
-      if (marker === 0x4000) {
-        r.skip(36);
-        if (r.hasBytes(4)) {
-          const codeSize = r.uint32();
-          if (codeSize > 0 && r.hasBytes(codeSize)) {
-            const codeEnd = r.pos + codeSize;
-            codeEnabled = r.uint32() !== 0;
-            codeInit = r.sizeString();
-            codePerFrame = r.sizeString();
-            r.pos = codeEnd;
-          }
-        }
-      }
-    }
+  // vis_avs load_config: ext = get_extended_datasize() + 5
+  // pos starts at 5 (after mode byte + uint32), reads while pos < ext
+  // Standard ext data is 36 bytes: 8 uint32 fields + 4 bytes padding
+  // ("size of extended data + 4 cause we fucked up" — from vis_avs source)
+  if (extDataSizeBytes > 0) {
+    const extEnd = startPos + extDataSizeBytes + 5;
+    const safeEnd = Math.min(extEnd, endPos);
+    if (r.pos + 4 <= safeEnd) inAdjust = r.uint32();
+    if (r.pos + 4 <= safeEnd) outAdjust = r.uint32();
+    if (r.pos + 4 <= safeEnd) r.uint32(); // bufferin
+    if (r.pos + 4 <= safeEnd) r.uint32(); // bufferout
+    if (r.pos + 4 <= safeEnd) r.uint32(); // ininvert
+    if (r.pos + 4 <= safeEnd) r.uint32(); // outinvert
+    // Last two use pos<ext-4 in vis_avs (stricter check)
+    if (r.pos + 8 <= safeEnd) enableOnBeat = r.uint32() !== 0;
+    if (r.pos + 8 <= safeEnd) enableOnBeatFor = r.uint32();
+    // Do NOT jump to extEnd — vis_avs continues from wherever pos ended up
+    // The "+4 cause we fucked up" padding is NOT skipped in the original
   }
 
-  const children = parseComponents(r, endPos);
+  // After extended data, the component stream follows.
+  // The EffectList's own code section (if any) appears as a DLL component
+  // with a special extsigstr identifier — parseComponents/parseDllComponent
+  // will handle it. We detect it there and extract the code.
+  const children = [];
+  while (r.pos <= endPos - 8 && r.hasBytes(8)) {
+    const compStart = r.pos;
+    const code = r.uint32();
+    const isDll = (code !== EFFECTLIST_CODE && code >= BUILTIN_MAX);
+    let dllId = '';
+    if (isDll) {
+      if (!r.hasBytes(32)) break;
+      dllId = r.fixedString(32);
+    }
+    const size = r.uint32();
+    const dataEnd = Math.min(r.pos + size, endPos);
+
+    // Check for EffectList code section (extsigstr)
+    if (isDll && extDataSizeBytes > 0) {
+      const cleanId = dllId.replace(/\0/g, '').trim();
+      if (cleanId.startsWith('AVS 2.8')) {
+        // This is the EffectList's embedded code section, not a real component
+        if (size > 0 && r.pos + 4 <= dataEnd) {
+          codeEnabled = r.uint32() !== 0;
+          codeInit = r.hasBytes(4) ? r.sizeString() : '';
+          codePerFrame = r.hasBytes(4) ? r.sizeString() : '';
+        }
+        r.pos = dataEnd;
+        continue;
+      }
+    }
+
+    if (code === EFFECTLIST_CODE) {
+      const comp = parseEffectList(r, dataEnd);
+      if (comp) children.push(comp);
+    } else if (isDll) {
+      const comp = parseDllComponent(dllId, r, dataEnd);
+      if (comp) children.push(comp);
+      r.pos = dataEnd;
+    } else {
+      const parser = BUILTIN_PARSERS[code];
+      if (parser) {
+        const comp = parser(r, dataEnd);
+        if (comp) children.push(comp);
+      } else {
+        const typeName = COMPONENT_MAP[code];
+        if (typeName) children.push({ type: typeName, enabled: true, _unsupported: true });
+      }
+      r.pos = dataEnd;
+    }
+  }
 
   return {
     type: 'EffectList', enabled, clearFrame,
