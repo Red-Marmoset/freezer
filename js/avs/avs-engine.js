@@ -70,6 +70,8 @@ import './components/fast-brightness.js';
 import './components/color-reduction.js';
 import './components/video-delay.js';
 import './components/multi-delay.js';
+import './components/custom-bpm.js';
+import './components/text.js';
 
 /**
  * Load an AVS preset from JSON and return a preset object
