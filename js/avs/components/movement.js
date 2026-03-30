@@ -14,48 +14,78 @@ const VERT_SHADER = `
   }
 `;
 
-// Built-in effects as individual fragment shaders (no branching)
-const BUILTIN_FRAGS = {
-  0: null, // None
-  1: 'uv = uv * 0.99 + 0.005;', // Slight fuzzify
-  2: 'd *= 0.98; r += 0.04;', // Shift rotate left
-  3: 'd *= 1.01; r += 0.05 * (1.0 - d);', // Big swirl out
-  4: 'r += 0.03;', // Medium swirl
-  5: 'd *= 1.02; r += 0.01;', // Sunburster
-  6: 'd *= 0.9;', // Squish
-  7: null, // Chaos dwarf (cartesian, handled separately)
-  8: 'd *= 0.96; r += 0.02;', // Inf zoom shift rotate
-  9: 'd = 0.8 / (d + 0.01);', // Tunnel
-  10: 'd *= 0.98;', // Gentle zoom in
-  11: null, // Blocky partial out (cartesian, handled separately)
-  12: 'r += 0.1 * sin(d * PI * 2.0);', // Swirling both ways
-  13: null, // User defined (CPU path)
-  14: 'd *= 1.02;', // Gentle zoom out
-  15: 'd *= 0.95; r += 0.1 * d;', // Swirl to center
-  16: 'd *= (0.96 + 0.04 * sin(r * 5.0)); r += 0.02;', // Starfish
-  17: 'r += 0.1 * (1.0 - d);', // Yawning rotation left
-  18: 'r -= 0.1 * (1.0 - d);', // Yawning rotation right
-  19: 'd *= 0.99; r += 0.01;', // Mild zoom + rotation
-  20: 'd *= 0.98; r += 0.06 * (1.0 - d);', // Drain
-  21: 'd *= 0.96; r += 0.1 * (1.0 - d);', // Super drain
-  22: 'd *= 0.94; r += 0.15 * (1.0 - d);', // Hyper drain
-  23: null, // Shift down (cartesian, handled separately)
+// Built-in effects — EXACT formulas from vis_avs r_trans.cpp
+// Polar effects operate on r (angle, radians) and d (distance, 0..1 normalized)
+// Cartesian effects operate on x,y in -1..1 range
+// uses_rect flag from descriptions[] table determines coordinate mode
+const BUILTIN_POLAR = {
+  // 0: none (passthrough)
+  // 1: slight fuzzify (special, random perturbation — approximated)
+  3:  'r += 0.1 - 0.2 * d; d *= 0.96;',                                          // big swirl out
+  4:  'd *= 0.99 * (1.0 - sin(r - PI*0.5) / 32.0); r += 0.03 * sin(d * PI * 4.0);', // medium swirl
+  5:  'd *= 0.94 + cos((r - PI*0.5) * 32.0) * 0.06;',                            // sunburster
+  6:  'd *= 1.01 + cos((r - PI*0.5) * 4.0) * 0.04; r += 0.03 * sin(d * PI * 4.0);', // swirl to center
+  // 7: blocky partial out (special)
+  8:  'r += 0.1 * sin(d * PI * 5.0);',                                            // swirling around both ways
+  9:  'float t9 = sin(d * PI); d -= 8.0*t9*t9*t9*t9*t9 / sqrt((sw*sw+sh*sh)/4.0);', // bubbling outward
+  10: 'float t10 = sin(d * PI); d -= 8.0*t10*t10*t10*t10*t10 / sqrt((sw*sw+sh*sh)/4.0); float t10b = cos(d*PI/2.0); r += 0.1*t10b*t10b*t10b;', // bubbling outward with swirl
+  11: 'd *= 0.95 + cos((r - PI*0.5) * 5.0 - PI / 2.50) * 0.03;',                 // 5 pointed distro
+  12: 'r += 0.04; d *= 0.96 + cos(d * PI) * 0.05;',                               // tunneling
+  13: 'float t13 = cos(d * PI); r += 0.07 * t13; d *= 0.98 + t13 * 0.10;',        // bleedin
+  15: 'd = 0.15;',                                                                 // psychotic beaming outward
+  16: 'r = cos(r * 3.0);',                                                         // cosine radial 3-way
+  17: 'd *= 1.0 - ((d - 0.35) * 0.5); r += 0.1;',                                 // spinny tube
 };
 
-// Special cartesian effects
-const CARTESIAN_FRAGS = {
-  7: 'uv += vec2(sin(uv.y * PI * 4.0) * 0.01, cos(uv.x * PI * 4.0) * 0.01);', // Chaos dwarf
-  11: 'uv = floor(uv * 8.0) / 8.0 * 0.98 + 0.01;', // Blocky partial out
-  23: 'uv.y += 0.02;', // Shift down
+// EEL-evaluated effects (uses_eval=1 in vis_avs) — compiled to GLSL
+// These use d,r (polar) or x,y (rect) with sw,sh (screen size) available
+const BUILTIN_EVAL_POLAR = {
+  18: 'd *= 1.0 - sin((r - PI*0.5) * 7.0) * 0.03; r += cos(d * 12.0) * 0.03;',   // radial swirlies
+  19: 'd *= 1.0 - sin((r - PI*0.5) * 12.0) * 0.05; r += cos(d * 18.0) * 0.05; d *= 1.0 - (d - 0.4) * 0.03; r += (d - 0.4) * 0.13;', // swill
 };
 
-function buildBuiltinFrag(effectIdx, wrap) {
-  const polarCode = BUILTIN_FRAGS[effectIdx];
-  const cartCode = CARTESIAN_FRAGS[effectIdx];
+const BUILTIN_EVAL_RECT = {
+  2:  'x = x + 1.0/32.0;',                                                         // shift rotate left
+  14: 'float d14 = sqrt(x*x+y*y); float r14 = atan(y,x); r14 += 0.1 - 0.2*d14; d14 *= 0.96; x = cos(r14)*d14 + 8.0/128.0; y = sin(r14)*d14;', // shifted big swirl out
+  20: 'x += cos(y * 18.0) * 0.02; y += sin(x * 14.0) * 0.03;',                    // gridley
+  21: 'x += cos(abs(y-0.5) * 8.0) * 0.02; y += sin(abs(x-0.5) * 8.0) * 0.05; x *= 0.95; y *= 0.95;', // grapevine
+  22: 'x *= 1.0 + sin(atan(y,x) + PI/2.0) * 0.3; y *= 1.0 + cos(atan(y,x) + PI/2.0) * 0.3; x *= 0.995; y *= 0.995;', // quadrant
+  23: 'y = (atan(y,x)*6.0)/PI; x = sqrt(x*x+y*y);',                               // 6-way kaleida
+};
+
+// Which effects use rectangular coordinates (from descriptions[].uses_rect)
+const USES_RECT = { 2: true, 14: true, 20: true, 21: true, 22: true, 23: true };
+
+function buildBuiltinFrag(effectIdx, wrap, width, height) {
   const wrapCode = wrap
     ? 'uv = fract(uv);'
     : 'uv = clamp(uv, 0.0, 1.0);';
 
+  // Check for rectangular coordinate effects first
+  const rectCode = BUILTIN_EVAL_RECT[effectIdx];
+  if (rectCode || USES_RECT[effectIdx]) {
+    const code = rectCode || '';
+    return `
+      precision mediump float;
+      uniform sampler2D tSource;
+      varying vec2 vUv;
+      #define PI 3.14159265358979
+      void main() {
+        vec2 uv = vUv;
+        float x = uv.x * 2.0 - 1.0;
+        float y = uv.y * 2.0 - 1.0;
+        float sw = ${(width || 640).toFixed(1)};
+        float sh = ${(height || 480).toFixed(1)};
+        ${code}
+        uv = vec2((x + 1.0) * 0.5, (y + 1.0) * 0.5);
+        ${wrapCode}
+        gl_FragColor = texture2D(tSource, uv);
+      }
+    `;
+  }
+
+  // Polar coordinate effects
+  const polarCode = BUILTIN_POLAR[effectIdx] || BUILTIN_EVAL_POLAR[effectIdx];
   if (polarCode) {
     return `
       precision mediump float;
@@ -65,31 +95,51 @@ function buildBuiltinFrag(effectIdx, wrap) {
       void main() {
         vec2 uv = vUv;
         vec2 c = uv - 0.5;
-        float d = length(c) * 2.0;
+        float maxD = sqrt(0.5 * 0.5 + 0.5 * 0.5);
+        float d = length(c) / maxD;
         float r = atan(c.y, c.x) + PI * 0.5;
+        float sw = ${(width || 640).toFixed(1)};
+        float sh = ${(height || 480).toFixed(1)};
         ${polarCode}
         r -= PI * 0.5;
-        uv = vec2(cos(r), sin(r)) * d * 0.5 + 0.5;
+        uv = vec2(cos(r), sin(r)) * d * maxD + 0.5;
         ${wrapCode}
         gl_FragColor = texture2D(tSource, uv);
       }
     `;
   }
-  if (cartCode) {
+
+  // Special effects
+  if (effectIdx === 1) {
+    // Slight fuzzify: random ±1px perturbation (approximated with noise)
     return `
       precision mediump float;
       uniform sampler2D tSource;
       varying vec2 vUv;
-      #define PI 3.14159265358979
+      uniform float uTime;
       void main() {
         vec2 uv = vUv;
-        ${cartCode}
-        ${wrapCode}
+        float n1 = fract(sin(dot(uv + uTime, vec2(12.9898, 78.233))) * 43758.5453);
+        float n2 = fract(sin(dot(uv + uTime + 0.5, vec2(12.9898, 78.233))) * 43758.5453);
+        uv += (vec2(n1, n2) - 0.5) * 0.003;
         gl_FragColor = texture2D(tSource, uv);
       }
     `;
   }
-  // Fallback: passthrough
+  if (effectIdx === 7) {
+    // Blocky partial out: quantize to 8x8 grid
+    return `
+      precision mediump float;
+      uniform sampler2D tSource;
+      varying vec2 vUv;
+      void main() {
+        vec2 uv = floor(vUv * 8.0) / 8.0 * 0.98 + 0.01;
+        gl_FragColor = texture2D(tSource, uv);
+      }
+    `;
+  }
+
+  // Fallback: passthrough (mode 0)
   return `
     precision mediump float;
     uniform sampler2D tSource;
@@ -311,7 +361,7 @@ export class Movement extends AvsComponent {
       this._material = new THREE.ShaderMaterial({
         uniforms: { tSource: { value: null } },
         vertexShader: VERT_SHADER,
-        fragmentShader: buildBuiltinFrag(this.effectIndex, this.wrap),
+        fragmentShader: buildBuiltinFrag(this.effectIndex, this.wrap, ctx.width, ctx.height),
         depthTest: false,
       });
     }
