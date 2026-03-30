@@ -162,6 +162,32 @@ testVar('complex 1', 'x=sin($PI/4)*cos($PI/4)', 'x', Math.sin(Math.PI/4)*Math.co
 testVar('complex 2', 'n=100; x=0; loop(n, x=x+1); y=x/n', 'y', 1);
 testVar('ternary-style if', 'x=if(above(5,3), 100, 200)', 'x', 100);
 
+// ── Edge cases ──────────────────────────────────────────────────────
+
+testVar('negative modulo', 'x=-7%3', 'x', -7 % 3);
+testVar('chained assignment', 'x=y=z=5', 'z', 5);
+testVar('nested if', 'x=if(1, if(0, 10, 20), 30)', 'x', 20);
+testVar('atan2', 'x=atan2(1,0)', 'x', Math.atan2(1, 0));
+testVar('multiple semicolons', 'x=1;;;y=2;;', 'y', 2);
+testVar('variable reuse', 'x=5; x=x*x; x=x+1', 'x', 26);
+testVar('negative power', 'x=pow(2,-1)', 'x', 0.5);
+testVar('loop modifies var', 'x=1; loop(4, x=x*2)', 'x', 16);
+testVar('band with floats', 'x=band(0.5, 0.5)', 'x', 1); // both truthy
+testVar('band with zero', 'x=band(0.5, 0)', 'x', 0);
+testVar('sigmoid', 'x=sigmoid(0, 1)', 'x', 0.5);
+testVar('select', 'x=select(1, 10, 20, 30)', 'x', 20);
+testVar('$pi lowercase', 'x=$pi', 'x', Math.PI);
+testVar('$PI uppercase', 'x=$PI', 'x', Math.PI);
+testVar('hex literal $FF', 'x=$FF', 'x', 255);
+testVar('hex literal $1A', 'x=$1A', 'x', 26);
+testVar('comparison chain', 'x=above(5,3)*below(3,5)*equal(7,7)', 'x', 1);
+testVar('assign returns value', 'y=0; x=assign(y,42)', 'y', 42);
+testVar('exec2 returns second', 'x=exec2(assign(y,1), assign(z,2))', 'z', 2);
+testVar('deeply nested math', 'x=sqrt(sqr(sin($PI/6))+sqr(cos($PI/6)))', 'x', 1); // sin²+cos²=1
+testVar('register cross-component', 'reg05=123; x=reg05', 'x', 123);
+testVar('megabuf write/read', 'megabuf(0)=42; x=megabuf(0)', 'x', 42);
+testVar('megabuf indexed', 'megabuf(10)=99; x=megabuf(10)', 'x', 99);
+
 // ── Results ─────────────────────────────────────────────────────────
 
 console.log(`\n=== EEL Tests: ${passed} passed, ${failed} failed ===`);
