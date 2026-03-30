@@ -150,3 +150,5 @@ function parseHexColor(hex) {
 }
 
 AvsComponent.register('Starfield', Starfield);
+// APE alias — some presets reference it by this name
+AvsComponent.register('Winamp Starfield v1', Starfield);
