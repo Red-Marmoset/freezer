@@ -112,6 +112,7 @@ class AvsPreset {
 
     // Init all components
     const avsCtx = this._buildAvsCtx(ctx, renderer);
+    this._lastAvsCtx = avsCtx;
     for (const comp of this.components) {
       comp.init(avsCtx);
     }
@@ -148,6 +149,7 @@ class AvsPreset {
     const beat = this.beatDetector.update(ctx.audioData.spectrum);
     const avsCtx = this._buildAvsCtx(ctx, renderer);
     avsCtx.beat = beat;
+    this._lastAvsCtx = avsCtx;
 
     // Disable autoClear — components manage clearing themselves
     const prevAutoClear = renderer.autoClear;
@@ -195,6 +197,46 @@ class AvsPreset {
     this._outputMaterial.map = this.framebuffer.getActiveTexture();
     renderer.render(this._blitScene, this._blitCamera);
     this._outputMaterial.map = null;
+  }
+
+  /**
+   * Hot-reload a single component without rebuilding the entire preset.
+   * Preserves the framebuffer and all other components' state.
+   * @param {number[]} path - Index path to the component (e.g. [2] for top-level, [0, 1] for nested in EffectList)
+   * @param {object} json - Updated component JSON
+   */
+  hotReload(path, json) {
+    if (!this._lastAvsCtx || !path.length) return;
+
+    // Navigate to the correct component array and index
+    let components = this.components;
+    for (let i = 0; i < path.length - 1; i++) {
+      const idx = path[i];
+      // EffectList stores children in .children
+      if (components[idx] && components[idx].children) {
+        components = components[idx].children;
+      } else {
+        return; // Can't navigate further
+      }
+    }
+
+    const idx = path[path.length - 1];
+    if (idx < 0 || idx >= components.length) return;
+
+    // Destroy the old component
+    if (components[idx]) {
+      components[idx].destroy();
+    }
+
+    // Create and init the new one
+    const newComp = AvsComponent.fromJSON(json);
+    if (newComp) {
+      newComp.init(this._lastAvsCtx);
+      components[idx] = newComp;
+    }
+
+    // Re-check for FadeOut (in case that changed)
+    this._hasFadeOut = this._checkForFadeOut(this.json.components || []);
   }
 
   destroy(ctx) {
