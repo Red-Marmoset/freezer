@@ -54,6 +54,9 @@ export function createAudioEngine() {
       // Stop the video track — we only need audio
       stream.getVideoTracks().forEach(t => t.stop());
       currentStream = stream;
+      if (stream.getAudioTracks().length === 0) {
+        throw new Error('No audio track \u2014 try sharing a tab with audio playing');
+      }
       currentSource = audioCtx.createMediaStreamSource(stream);
       currentSource.connect(analyser);
       // Don't connect to destination — avoids feedback loop
