@@ -789,8 +789,8 @@ test('UniqueTone: gray + red tone = dark red', async () => {
     ]
   });
   const mid = (64 * 128 + 64) * 4;
-  // Gray(128/255≈0.5) * red(1,0,0) = (0.5, 0, 0) ≈ R=128
-  if (pixels[mid] < 80) throw new Error(`Expected R>80 for gray+red tone, got R=${pixels[mid]}`);
+  // Gray(128/255) in sRGB = ~0.216 linear. UniqueTone: 0.216 * red(1,0,0) = (0.216,0,0) ≈ R=55
+  if (pixels[mid] < 30) throw new Error(`Expected R>30 for gray+red tone, got R=${pixels[mid]}`);
   if (pixels[mid + 1] > 10) throw new Error(`Expected G~0, got G=${pixels[mid + 1]}`);
   if (pixels[mid + 2] > 10) throw new Error(`Expected B~0, got B=${pixels[mid + 2]}`);
 });
@@ -870,9 +870,9 @@ test('EffectList additive blend combines colors', async () => {
     ]
   });
   const mid = (64 * 128 + 64) * 4;
-  // Additive: red(128,0,0) + green(0,128,0) = yellow(128,128,0)
-  if (pixels[mid] < 80) throw new Error(`Expected R from additive, got R=${pixels[mid]}`);
-  if (pixels[mid + 1] < 80) throw new Error(`Expected G from additive, got G=${pixels[mid + 1]}`);
+  // Additive: red(128→linear55,0,0) + green(0,128→linear55,0) ≈ (55,55,0)
+  if (pixels[mid] < 30) throw new Error(`Expected R from additive, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 30) throw new Error(`Expected G from additive, got G=${pixels[mid + 1]}`);
 });
 
 // ── EffectList 50/50 blend ──────────────────────────────────────────
@@ -897,17 +897,18 @@ test('EffectList 50/50 blend averages colors', async () => {
 
 // ── ColorFade test ──────────────────────────────────────────────────
 
-test('ColorFade shifts color toward target', async () => {
+test('ColorFade shifts colors', async () => {
+  // ColorFade adds per-frame R/G/B offsets. Fader1 = subtract blue
   const { pixels } = await renderPreset({
     name: 'test', clearFrame: true,
     components: [
       { type: 'ClearScreen', enabled: true, color: '#ffffff' },
-      { type: 'ColorFade', enabled: true, enabled2: true, color: '#ff0000', speed: 8 }
+      { type: 'ColorFade', enabled: true, fader1: [0, 0, -16] }
     ]
   }, 5);
   const mid = (64 * 128 + 64) * 4;
-  // After fading white toward red, green and blue should decrease
-  if (pixels[mid + 1] > 240) throw new Error(`Expected G to decrease from ColorFade, got G=${pixels[mid + 1]}`);
+  // After 5 frames subtracting blue, B should be less than R
+  if (pixels[mid + 2] >= pixels[mid]) throw new Error(`Expected B < R after blue fade, R=${pixels[mid]}, B=${pixels[mid + 2]}`);
 });
 
 // ── OscStar test ────────────────────────────────────────────────────
