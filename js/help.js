@@ -295,12 +295,12 @@ Global Registers
 
 Hotkeys
 ───────
-  Space     Random preset
-  R         Toggle random switching
-  Y / U     Cycle through presets
-  Enter     Toggle fullscreen
-  F         Toggle framerate counter
-  Escape    Close open dialog`,
+  Space       Random preset
+  R           Toggle random switching
+  Y / U       Cycle through presets
+  Alt+Enter   Toggle fullscreen
+  F           Toggle FPS counter
+  Escape      Close open dialog`,
 };
 
 export function initHelp() {

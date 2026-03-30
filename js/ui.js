@@ -1869,12 +1869,56 @@ document.addEventListener('fullscreenchange', () => {
   }
 });
 
+// --- FPS counter ---
+
+let fpsVisible = false;
+let fpsEl = null;
+let fpsFrames = 0;
+let fpsLastTime = performance.now();
+
+function toggleFps() {
+  fpsVisible = !fpsVisible;
+  if (fpsVisible) {
+    if (!fpsEl) {
+      fpsEl = document.createElement('div');
+      fpsEl.id = 'fps-counter';
+      fpsEl.style.cssText = 'position:fixed;top:6px;right:8px;z-index:600;font-family:"Share Tech Mono",Consolas,monospace;font-size:12px;color:rgba(0,229,255,0.7);pointer-events:none;text-shadow:0 0 4px rgba(0,0,0,0.8);';
+      document.body.appendChild(fpsEl);
+    }
+    fpsEl.style.display = '';
+    fpsFrames = 0;
+    fpsLastTime = performance.now();
+    requestAnimationFrame(updateFps);
+  } else if (fpsEl) {
+    fpsEl.style.display = 'none';
+  }
+}
+
+function updateFps() {
+  if (!fpsVisible) return;
+  fpsFrames++;
+  const now = performance.now();
+  const elapsed = now - fpsLastTime;
+  if (elapsed >= 500) {
+    const fps = (fpsFrames / elapsed * 1000).toFixed(1);
+    fpsEl.textContent = `${fps} fps`;
+    fpsFrames = 0;
+    fpsLastTime = now;
+  }
+  requestAnimationFrame(updateFps);
+}
+
 // --- Keyboard shortcuts ---
 
 document.addEventListener('keydown', (e) => {
   // Don't trigger shortcuts while typing in inputs
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+
   if (e.key === 'f' || e.key === 'F') {
+    toggleFps();
+  }
+  if (e.key === 'Enter' && e.altKey) {
+    e.preventDefault();
     toggleFullscreen();
   }
 });
