@@ -34,9 +34,10 @@
     <div class="panel panel-display">
       <div class="panel-label">DISPLAY</div>
       <div class="panel-buttons">
-        <button id="btn-fullscreen" title="Toggle fullscreen (F)">
+        <button id="btn-fullscreen" title="Toggle fullscreen (Alt+Enter)">
           <span class="btn-icon">&#x26F6;</span> Full
         </button>
+        <button id="btn-help" class="preset-btn" title="Expression language reference">Help</button>
       </div>
     </div>
   </div>
@@ -86,7 +87,9 @@
         <div class="splash-footer">
           <span>Drag &amp; drop <kbd>.avs</kbd> or <kbd>.json</kbd> preset files onto the visualizer</span>
           <span class="splash-dot"></span>
-          <span><kbd>F</kbd> for fullscreen</span>
+          <span><kbd>F</kbd> FPS counter</span>
+          <span class="splash-dot"></span>
+          <span><kbd>Alt+Enter</kbd> fullscreen</span>
         </div>
       </div>
       <div class="splash-accent-bar bottom"></div>
@@ -248,6 +251,25 @@
         <button id="btn-comment-close" class="comment-overlay-close">&times;</button>
       </div>
       <div id="comment-overlay-text" class="comment-overlay-text"></div>
+    </div>
+  </div>
+
+  <!-- Expression Help Dialog (ported from vis_avs) -->
+  <div id="help-dialog" class="preset-lib hidden">
+    <div class="preset-lib-backdrop"></div>
+    <div class="preset-lib-dialog" style="width:600px;max-width:92vw;height:auto;max-height:80vh">
+      <div class="preset-lib-header">
+        <span class="preset-lib-title">EXPRESSION HELP</span>
+        <button id="btn-help-close" class="editor-close">&times;</button>
+      </div>
+      <div class="preset-lib-tabs" style="padding:8px 16px 0">
+        <button class="lib-tab active" data-help-tab="general">General</button>
+        <button class="lib-tab" data-help-tab="operators">Operators</button>
+        <button class="lib-tab" data-help-tab="functions">Functions</button>
+        <button class="lib-tab" data-help-tab="constants">Constants</button>
+        <button class="lib-tab" data-help-tab="variables">Variables</button>
+      </div>
+      <div id="help-content" class="help-content" style="padding:12px 16px 16px;overflow-y:auto;max-height:60vh;font-family:'Share Tech Mono',Consolas,monospace;font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap"></div>
     </div>
   </div>
 
