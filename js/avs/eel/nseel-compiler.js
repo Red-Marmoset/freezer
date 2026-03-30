@@ -69,10 +69,11 @@ function compileStmt(node) {
 
 // Compile variable/register/constant identifier
 function compileIdentifier(name) {
-  // Constants
-  if (name === '$pi') return 'Math.PI';
-  if (name === '$e') return 'Math.E';
-  if (name === '$phi') return '1.6180339887498948';
+  // Constants (case-insensitive)
+  const lower = name.toLowerCase();
+  if (lower === '$pi') return 'Math.PI';
+  if (lower === '$e') return 'Math.E';
+  if (lower === '$phi') return '1.6180339887498948';
 
   // Registers: reg00 - reg99
   const regMatch = name.match(/^reg(\d{2})$/);
@@ -137,13 +138,13 @@ function compileBinary(node) {
   // Bitwise OR (ns-eel: | converts to int, does bitwise OR, converts back)
   // || is also bitwise OR in ns-eel (NOT logical OR — that's bor())
   if (op === '|' || op === '||') {
-    return `(((${compileExpr(left)}) | 0) | ((${compileExpr(right)}) | 0))`;
+    return `(Math.trunc(${compileExpr(left)}) | Math.trunc(${compileExpr(right)}))`;
   }
 
   // Bitwise AND (ns-eel: & converts to int, does bitwise AND, converts back)
   // && is also bitwise AND in ns-eel (NOT logical AND — that's band())
   if (op === '&' || op === '&&') {
-    return `(((${compileExpr(left)}) | 0) & ((${compileExpr(right)}) | 0))`;
+    return `(Math.trunc(${compileExpr(left)}) & Math.trunc(${compileExpr(right)}))`;
   }
 
   // Comparison operators (return 0 or 1)
