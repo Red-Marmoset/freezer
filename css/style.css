@@ -221,8 +221,8 @@ button.active {
 }
 
 .splash-card {
-  max-width: 480px;
-  width: 92%;
+  max-width: 560px;
+  width: 94%;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
@@ -476,9 +476,11 @@ button.active {
   color: var(--accent);
 }
 .splash-src-desc {
+  font-family: var(--font-body);
   font-size: 10px;
   color: var(--text-dim);
   text-align: center;
+  line-height: 1.3;
 }
 
 /* ---- Footer hints ---- */
