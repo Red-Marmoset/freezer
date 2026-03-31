@@ -238,10 +238,55 @@
         { name: 'Additive Blend', preset: { name: 'test', clearFrame: true, components: [
           { type: 'ClearScreen', enabled: true, color: '#800000' },
           { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+            components: [{ type: 'ClearScreen', enabled: true, color: '#008000' }] }
+        ]}},
+        { name: 'Out=50/50 R+B', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'FIFTY_FIFTY',
+            components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] }
+        ]}},
+        { name: 'Out=MAX R+B=M', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'MAXIMUM',
+            components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] }
+        ]}},
+        { name: 'Out=SUB W-R=C', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'SUB_DEST_SRC',
+            components: [{ type: 'ClearScreen', enabled: true, color: '#ff0000' }] }
+        ]}},
+        { name: 'Out=IGNORE', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'IGNORE',
+            components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] }
+        ]}},
+        { name: 'In=REPLACE', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+          { type: 'EffectList', enabled: true, clearFrame: false, input: 'REPLACE', output: 'REPLACE',
+            components: [] }
+        ]}},
+        { name: '3x Add=White', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#000000' },
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+            components: [{ type: 'ClearScreen', enabled: true, color: '#ff0000' }] },
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+            components: [{ type: 'ClearScreen', enabled: true, color: '#00ff00' }] },
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+            components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] },
+        ]}},
+        { name: 'Nested Add+Add', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#000000' },
+          { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'REPLACE',
             components: [
-              { type: 'ClearScreen', enabled: true, color: '#008000' }
+              { type: 'ClearScreen', enabled: true, color: '#800000' },
+              { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+                components: [{ type: 'ClearScreen', enabled: true, color: '#008000' }] }
             ]
           }
+        ]}},
+        { name: 'UniqueTone Cyan', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+          { type: 'UniqueTone', enabled: true, color: '#00ffff', blendMode: 0 }
         ]}},
       ];
 

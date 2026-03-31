@@ -935,6 +935,189 @@ test('DotGrid renders grid of dots', async () => {
   if (nonBlack < 20) throw new Error(`Expected DotGrid dots, got ${nonBlack} pixels`);
 });
 
+// ── EffectList Input Blend Mode Tests ────────────────────────────────
+// Each test: parent has a color, child clears to another color.
+// The INPUT mode controls what the child sees before rendering.
+
+test('EL input=IGNORE: child starts black', async () => {
+  // Parent=red, input=IGNORE → child doesn't get parent → child clears to green → output=REPLACE → green
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'REPLACE',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#00ff00' }] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  if (pixels[mid] > 10) throw new Error(`Expected no red (input ignored), got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 200) throw new Error(`Expected green from child, got G=${pixels[mid + 1]}`);
+});
+
+test('EL input=REPLACE: child gets parent content', async () => {
+  // Parent=red, input=REPLACE → child gets red → child does nothing → output=REPLACE → red
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+    { type: 'EffectList', enabled: true, clearFrame: false, input: 'REPLACE', output: 'REPLACE',
+      components: [] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  if (pixels[mid] < 200) throw new Error(`Expected red from parent via REPLACE input, got R=${pixels[mid]}`);
+});
+
+test('EL input=FIFTY_FIFTY: child gets 50% parent', async () => {
+  // Parent=white, input=FIFTY_FIFTY → child gets 50% white → child does nothing → output=REPLACE
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+    { type: 'EffectList', enabled: true, clearFrame: false, input: 'FIFTY_FIFTY', output: 'REPLACE',
+      components: [] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // 50% of 255 ≈ 127
+  if (pixels[mid] < 90 || pixels[mid] > 170) throw new Error(`Expected ~127 from 50/50 input, got R=${pixels[mid]}`);
+});
+
+test('EL input=ADDITIVE: child adds parent', async () => {
+  // Parent=red(255,0,0), child clears to green(0,255,0), input=ADDITIVE
+  // Child FB starts black, additive blends parent in → child gets red → then clear to green → output=REPLACE → green
+  // Actually: input=ADDITIVE adds parent onto child FB (which starts black after clearFrame)
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+    { type: 'EffectList', enabled: true, clearFrame: false, input: 'ADDITIVE', output: 'REPLACE',
+      components: [] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // Additive of red onto black child = red
+  if (pixels[mid] < 200) throw new Error(`Expected red from additive input, got R=${pixels[mid]}`);
+});
+
+// ── EffectList Output Blend Mode Tests ──────────────────────────────
+// Each test: parent has one color, child renders another.
+// OUTPUT mode controls how child result is composited back to parent.
+
+test('EL output=REPLACE: child overwrites parent', async () => {
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'REPLACE',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  if (pixels[mid] > 10) throw new Error(`Expected red gone (replaced), got R=${pixels[mid]}`);
+  if (pixels[mid + 2] < 200) throw new Error(`Expected blue from child, got B=${pixels[mid + 2]}`);
+});
+
+test('EL output=IGNORE: child result discarded', async () => {
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'IGNORE',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // Output=IGNORE → parent unchanged = still red
+  if (pixels[mid] < 200) throw new Error(`Expected red preserved (output ignored), got R=${pixels[mid]}`);
+  if (pixels[mid + 2] > 10) throw new Error(`Expected no blue (output ignored), got B=${pixels[mid + 2]}`);
+});
+
+test('EL output=ADDITIVE: adds child onto parent', async () => {
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#800000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#008000' }] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // Additive: parent dark red + child dark green → both channels present
+  if (pixels[mid] < 20) throw new Error(`Expected R from parent after additive, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 20) throw new Error(`Expected G from child after additive, got G=${pixels[mid + 1]}`);
+});
+
+test('EL output=FIFTY_FIFTY: averages parent and child', async () => {
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'FIFTY_FIFTY',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // 50/50 of red and blue → both present at ~half
+  if (pixels[mid] < 80 || pixels[mid] > 180) throw new Error(`Expected R≈127 from 50/50, got R=${pixels[mid]}`);
+  if (pixels[mid + 2] < 80 || pixels[mid + 2] > 180) throw new Error(`Expected B≈127, got B=${pixels[mid + 2]}`);
+});
+
+test('EL output=MAXIMUM: takes max of parent and child', async () => {
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'MAXIMUM',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // MAX of red(255,0,0) and blue(0,0,255) → (255,0,255) = magenta
+  if (pixels[mid] < 200) throw new Error(`Expected R=255 from max, got R=${pixels[mid]}`);
+  if (pixels[mid + 2] < 200) throw new Error(`Expected B=255 from max, got B=${pixels[mid + 2]}`);
+});
+
+test('EL output=SUB_DEST_SRC: parent minus child', async () => {
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'SUB_DEST_SRC',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#ff0000' }] }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // white(255,255,255) - red(255,0,0) = cyan(0,255,255)
+  if (pixels[mid] > 10) throw new Error(`Expected R~0 from sub, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 200) throw new Error(`Expected G=255 from sub, got G=${pixels[mid + 1]}`);
+  if (pixels[mid + 2] < 200) throw new Error(`Expected B=255 from sub, got B=${pixels[mid + 2]}`);
+});
+
+// ── Nested EffectList Tests ─────────────────────────────────────────
+
+test('Nested EL: outer replace, inner additive', async () => {
+  // Outer EL replaces parent with its child. Inner EL adds green onto outer's red.
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#000000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'REPLACE',
+      components: [
+        { type: 'ClearScreen', enabled: true, color: '#800000' },
+        { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+          components: [{ type: 'ClearScreen', enabled: true, color: '#008000' }] }
+      ]
+    }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // Outer starts red, inner adds green → outer has (red+green) → parent gets replaced
+  if (pixels[mid] < 20) throw new Error(`Expected R from outer, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 20) throw new Error(`Expected G from inner additive, got G=${pixels[mid + 1]}`);
+});
+
+test('Nested EL: outer additive, inner replace', async () => {
+  // Parent=red. Outer EL(output=ADDITIVE) clears to blue → adds blue onto red = magenta
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+      components: [
+        { type: 'ClearScreen', enabled: true, color: '#0000ff' }
+      ]
+    }
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // red + blue = magenta
+  if (pixels[mid] < 200) throw new Error(`Expected R from parent, got R=${pixels[mid]}`);
+  if (pixels[mid + 2] < 200) throw new Error(`Expected B from additive EL, got B=${pixels[mid + 2]}`);
+});
+
+test('Triple nested EL: additive chain builds white', async () => {
+  // Three nested ELs each add a primary color → should build toward white
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#000000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#ff0000' }] },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#00ff00' }] },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'ADDITIVE',
+      components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] },
+  ]});
+  const mid = (64 * 128 + 64) * 4;
+  // black + red + green + blue = white
+  if (pixels[mid] < 200) throw new Error(`Expected R~255, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 200) throw new Error(`Expected G~255, got G=${pixels[mid + 1]}`);
+  if (pixels[mid + 2] < 200) throw new Error(`Expected B~255, got B=${pixels[mid + 2]}`);
+});
+
 // ── BufferSave/Restore round-trip test ──────────────────────────────
 
 test('BufferSave+ClearScreen+Restore preserves original', async () => {
