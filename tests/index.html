@@ -298,6 +298,24 @@
           { type: 'ClearScreen', enabled: true, color: '#ffffff' },
           { type: 'UniqueTone', enabled: true, color: '#00ffff', blendMode: 0 }
         ]}},
+        { name: 'ColorMap W→R', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+          { type: 'Color Map', enabled: true, key: 'MAX', blendMode: 'REPLACE',
+            maps: [{ enabled: true, colors: [
+              { color: '#000000', position: 0 }, { color: '#ff0000', position: 255 }
+            ]}] }
+        ]}},
+        { name: 'ColorMap Rainbow', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+            audioChannel: 'CENTER', colors: ['#ffffff'],
+            code: { init: 'n=256', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=0; red=i; green=i; blue=i' } },
+          { type: 'Color Map', enabled: true, key: 'MAX', blendMode: 'REPLACE',
+            maps: [{ enabled: true, colors: [
+              { color: '#ff0000', position: 0 }, { color: '#ffff00', position: 64 },
+              { color: '#00ff00', position: 128 }, { color: '#00ffff', position: 192 },
+              { color: '#0000ff', position: 255 }
+            ]}] }
+        ]}},
         { name: 'Texer II Center', preset: { name: 'test', clearFrame: true, components: [
           { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
             code: { init: 'n=1', perFrame: '', onBeat: '',

@@ -1256,6 +1256,98 @@ test('Text empty string renders nothing', async () => {
   }
 });
 
+// ── ColorMap Tests ───────────────────────────────────────────────────
+
+test('ColorMap: white→red gradient maps white to red', async () => {
+  // Gradient from black(0) to red(255) — white input (key=max=1.0) → red
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+      { type: 'Color Map', enabled: true, key: 'MAX', blendMode: 'REPLACE',
+        maps: [{ enabled: true, colors: [
+          { color: '#000000', position: 0 },
+          { color: '#ff0000', position: 255 }
+        ]}] }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  if (pixels[mid] < 200) throw new Error(`Expected R>200 from white→red map, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] > 30) throw new Error(`Expected G~0, got G=${pixels[mid + 1]}`);
+});
+
+test('ColorMap: black input maps to gradient start', async () => {
+  // Gradient from blue(0) to red(255) — black input (key=0) → blue
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#000000' },
+      { type: 'Color Map', enabled: true, key: 'MAX', blendMode: 'REPLACE',
+        maps: [{ enabled: true, colors: [
+          { color: '#0000ff', position: 0 },
+          { color: '#ff0000', position: 255 }
+        ]}] }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  if (pixels[mid + 2] < 200) throw new Error(`Expected B>200 from black→blue map start, got B=${pixels[mid + 2]}`);
+});
+
+test('ColorMap: gray input maps to gradient middle', async () => {
+  // Gradient from red(0) to green(255) — gray input → orange/yellow (mid-gradient)
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#808080' },
+      { type: 'Color Map', enabled: true, key: 'MAX', blendMode: 'REPLACE',
+        maps: [{ enabled: true, colors: [
+          { color: '#ff0000', position: 0 },
+          { color: '#00ff00', position: 255 }
+        ]}] }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  // Gray (linear ~0.216) should map to early in gradient → mostly red with some green
+  if (pixels[mid] < 50) throw new Error(`Expected some R from gradient, got R=${pixels[mid]}`);
+});
+
+test('ColorMap: additive blend mode', async () => {
+  // Red background + ColorMap maps to green (additive) → should have both R and G
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#ff0000' },
+      { type: 'Color Map', enabled: true, key: 'RED', blendMode: 'ADDITIVE',
+        maps: [{ enabled: true, colors: [
+          { color: '#000000', position: 0 },
+          { color: '#00ff00', position: 255 }
+        ]}] }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  // Red stays, green added from map
+  if (pixels[mid] < 150) throw new Error(`Expected R preserved in additive, got R=${pixels[mid]}`);
+  if (pixels[mid + 1] < 100) throw new Error(`Expected G added from map, got G=${pixels[mid + 1]}`);
+});
+
+test('ColorMap: key=RED uses red channel', async () => {
+  // Cyan input (#00ffff) has R=0, so RED key → position 0 → gradient start
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#00ffff' },
+      { type: 'Color Map', enabled: true, key: 'RED', blendMode: 'REPLACE',
+        maps: [{ enabled: true, colors: [
+          { color: '#ff0000', position: 0 },
+          { color: '#0000ff', position: 255 }
+        ]}] }
+    ]
+  });
+  const mid = (64 * 128 + 64) * 4;
+  // Cyan has R=0 → maps to gradient start (red)
+  if (pixels[mid] < 200) throw new Error(`Expected red from R=0 key mapping, got R=${pixels[mid]}`);
+});
+
 // ── Texer II Tests ──────────────────────────────────────────────────
 
 test('Texer II renders sprites at EEL positions', async () => {
