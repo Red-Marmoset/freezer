@@ -1184,6 +1184,78 @@ test('BufferSave+ClearScreen+Restore preserves original', async () => {
   }
 });
 
+// ── Text Component Tests ────────────────────────────────────────────
+
+test('Text component renders white text on black background', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#000000' },
+      { type: 'Text', enabled: true, text: 'HELLO', color: '#ffffff',
+        fontSize: 48, bold: true, halign: 'center', valign: 'center' }
+    ]
+  });
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 10) throw new Error(`Expected Text to render >10 non-black pixels, got ${nonBlack}`);
+});
+
+test('Text component renders on colored background', async () => {
+  // White text on blue background — text pixels should have high R+G
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#0000ff' },
+      { type: 'Text', enabled: true, text: 'TEST', color: '#ffffff',
+        fontSize: 64, bold: true, halign: 'center', valign: 'center' }
+    ]
+  });
+  // Some pixels should be white (text) on blue background
+  let whiteish = 0;
+  for (let i = 0; i < pixels.length; i += 4) {
+    if (pixels[i] > 200 && pixels[i+1] > 200 && pixels[i+2] > 200) whiteish++;
+  }
+  if (whiteish < 5) throw new Error(`Expected white text pixels on blue bg, got ${whiteish}`);
+});
+
+test('Text component with red color renders red text', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#000000' },
+      { type: 'Text', enabled: true, text: 'RED', color: '#ff0000',
+        fontSize: 64, bold: true, halign: 'center', valign: 'center' }
+    ]
+  });
+  // Should have red pixels (R>200, G<50, B<50)
+  let redPixels = 0;
+  for (let i = 0; i < pixels.length; i += 4) {
+    if (pixels[i] > 200 && pixels[i+1] < 50 && pixels[i+2] < 50) redPixels++;
+  }
+  if (redPixels < 5) throw new Error(`Expected red text pixels, got ${redPixels}`);
+});
+
+test('Text empty string renders nothing', async () => {
+  const { pixels: withText } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#444444' },
+      { type: 'Text', enabled: true, text: '', color: '#ffffff',
+        fontSize: 48, halign: 'center', valign: 'center' }
+    ]
+  });
+  const { pixels: without } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'ClearScreen', enabled: true, color: '#444444' }
+    ]
+  });
+  // Empty text should not change the frame
+  const mid = (64 * 128 + 64) * 4;
+  if (Math.abs(withText[mid] - without[mid]) > 3) {
+    throw new Error(`Empty text changed pixels: with=${withText[mid]}, without=${without[mid]}`);
+  }
+});
+
 // ── Helpers ─────────────────────────────────────────────────────────
 
 function countPixelsInRing(pixels, width, height, innerR, outerR) {
