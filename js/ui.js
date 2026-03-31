@@ -30,7 +30,8 @@ const DEFAULT_PRESET = {
   name: 'Freezer Default',
   clearFrame: false,
   components: [
-    { type: 'FadeOut', enabled: true, speed: 4, color: '#000000' },
+    { type: 'FadeOut', enabled: true, speed: 2, color: '#000000' },
+    { type: 'Movement', enabled: true, builtinEffect: 6, wrap: true },
     { type: 'BlitterFeedback', enabled: true, scale: 31, onBeatScale: 31, blendMode: 'REPLACE' },
     {
       type: 'SuperScope',
