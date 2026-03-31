@@ -367,6 +367,7 @@ const FINISHED_COMPONENTS = new Set([
   'Mirror',
   'Invert',
   'UniqueTone',
+  'SuperScope',
 ]);
 
 // Known select-type fields and their options
