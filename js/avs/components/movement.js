@@ -71,13 +71,13 @@ function buildBuiltinFrag(effectIdx, wrap, width, height) {
       varying vec2 vUv;
       #define PI 3.14159265358979
       void main() {
-        vec2 uv = vUv;
+        vec2 uv = vec2(vUv.x, 1.0 - vUv.y);
         float x = uv.x * 2.0 - 1.0;
         float y = uv.y * 2.0 - 1.0;
         float sw = ${(width || 640).toFixed(1)};
         float sh = ${(height || 480).toFixed(1)};
         ${code}
-        uv = vec2((x + 1.0) * 0.5, (y + 1.0) * 0.5);
+        uv = vec2((x + 1.0) * 0.5, 1.0 - (y + 1.0) * 0.5);
         ${wrapCode}
         gl_FragColor = texture2D(tSource, uv);
       }
@@ -93,7 +93,7 @@ function buildBuiltinFrag(effectIdx, wrap, width, height) {
       varying vec2 vUv;
       #define PI 3.14159265358979
       void main() {
-        vec2 uv = vUv;
+        vec2 uv = vec2(vUv.x, 1.0 - vUv.y);
         vec2 c = uv - 0.5;
         float maxD = sqrt(0.5 * 0.5 + 0.5 * 0.5);
         float d = length(c) / maxD;
@@ -102,7 +102,7 @@ function buildBuiltinFrag(effectIdx, wrap, width, height) {
         float sh = ${(height || 480).toFixed(1)};
         ${polarCode}
         r -= PI * 0.5;
-        uv = vec2(cos(r), sin(r)) * d * maxD + 0.5;
+        uv = vec2(cos(r) * d * maxD + 0.5, 1.0 - (sin(r) * d * maxD + 0.5));
         ${wrapCode}
         gl_FragColor = texture2D(tSource, uv);
       }
@@ -211,12 +211,12 @@ function tryTranspileToGLSL(code, isPolar, wrap) {
       varying vec2 vUv;
       #define PI 3.14159265358979
       void main() {
-        vec2 c = vUv - 0.5;
+        vec2 c = vec2(vUv.x - 0.5, 0.5 - vUv.y);
         float d = length(c) * 2.0;
         float r = atan(c.y, c.x) + PI * 0.5;
         ${glslLines.join('\n        ')}
         r -= PI * 0.5;
-        vec2 uv = vec2(cos(r), sin(r)) * d * 0.5 + 0.5;
+        vec2 uv = vec2(cos(r) * d * 0.5 + 0.5, 1.0 - (sin(r) * d * 0.5 + 0.5));
         ${wrapCode}
         gl_FragColor = texture2D(tSource, uv);
       }
@@ -229,9 +229,9 @@ function tryTranspileToGLSL(code, isPolar, wrap) {
       #define PI 3.14159265358979
       void main() {
         float x = vUv.x * 2.0 - 1.0;
-        float y = vUv.y * 2.0 - 1.0;
+        float y = 1.0 - vUv.y * 2.0;
         ${glslLines.join('\n        ')}
-        vec2 uv = vec2((x + 1.0) * 0.5, (y + 1.0) * 0.5);
+        vec2 uv = vec2((x + 1.0) * 0.5, 1.0 - (y + 1.0) * 0.5);
         ${wrapCode}
         gl_FragColor = texture2D(tSource, uv);
       }
@@ -424,12 +424,12 @@ export class Movement extends AvsComponent {
 
         if (usePolar) {
           const cx = origX - 0.5;
-          const cy = origY - 0.5;
+          const cy = 0.5 - origY; // vis_avs Y convention (y-down)
           s.d = Math.sqrt(cx * cx + cy * cy) * 2;
           s.r = Math.atan2(cy, cx) + Math.PI * 0.5;
         } else {
           s.x = origX * 2 - 1;
-          s.y = origY * 2 - 1;
+          s.y = 1 - origY * 2; // vis_avs Y convention (y-down)
         }
 
         try { this.codeFn(s, lib); } catch {}
@@ -439,10 +439,10 @@ export class Movement extends AvsComponent {
           const nd = s.d * 0.5;
           const rOut = s.r - Math.PI * 0.5;
           newU = Math.cos(rOut) * nd + 0.5;
-          newV = Math.sin(rOut) * nd + 0.5;
+          newV = 1 - (Math.sin(rOut) * nd + 0.5); // flip back to WebGL
         } else {
           newU = (s.x + 1) / 2;
-          newV = (s.y + 1) / 2;
+          newV = 1 - (s.y + 1) / 2; // flip back to WebGL
         }
 
         const idx = (y * sz + x) * 4;

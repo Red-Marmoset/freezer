@@ -106,10 +106,9 @@ const FRAG_SHADER = `
     } else {
       color = tex.rgb;
     }
-    // Skip black pixels — original AVS skips 0x000000 pixels in the inner loop.
-    // BMP sprites have no alpha, so black background acts as transparent.
-    if (dot(color, color) < 0.001) discard;
-    gl_FragColor = vec4(color, 1.0);
+    // Skip transparent pixels (alpha) and black pixels (24-bit BMP convention).
+    if (tex.a < 0.01 || dot(color, color) < 0.001) discard;
+    gl_FragColor = vec4(color, tex.a);
   }
 `;
 

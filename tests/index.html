@@ -331,9 +331,28 @@
             code: { init: 'n=20', perFrame: '', onBeat: '',
               perPoint: 'a=i*$PI*2; x=cos(a)*0.5; y=sin(a)*0.5; sizex=0.06; sizey=0.06; red=sin(i*$PI*2)*0.5+0.5; green=cos(i*$PI*2)*0.5+0.5; blue=0.7' } }
         ]}},
-        { name: 'Picture (fallback)', preset: { name: 'test', clearFrame: true, components: [
-          { type: 'Picture', enabled: true, imageSrc: '', blendMode: 'REPLACE' }
-        ]}},
+        { name: 'Picture PAK9_1', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'Picture', enabled: true, imageSrc: 'PAK9_1.BMP', blendMode: 'REPLACE' }
+        ]}, frames: 5 },
+        { name: 'Picture Jheriko', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'Picture', enabled: true, imageSrc: 'Jheriko_2.bmp', blendMode: 'REPLACE' }
+        ]}, frames: 5 },
+        { name: 'Texer JherikoT1', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+            audioChannel: 'CENTER', colors: ['#ffffff'],
+            code: { init: 'n=20', perFrame: '', onBeat: '', perPoint: 'x=sin(i*$PI*6)*0.5; y=cos(i*$PI*4)*0.4' } },
+          { type: 'Texer', enabled: true, imageSrc: 'JherikoT1.bmp' }
+        ]}, frames: 3 },
+        { name: 'Texer II P9_Tx_1', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'Acko.net: Texer II', enabled: true, imageSrc: 'P9_Tx_1.bmp', resize: true,
+            code: { init: 'n=12', perFrame: '', onBeat: '',
+              perPoint: 'a=i*$PI*2; x=cos(a)*0.5; y=sin(a)*0.5; sizex=0.15; sizey=0.15' } }
+        ]}, frames: 3 },
+        { name: 'Texer II PAK9_1', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'Acko.net: Texer II', enabled: true, imageSrc: 'PAK9_1.BMP', resize: true,
+            code: { init: 'n=1', perFrame: '', onBeat: '',
+              perPoint: 'x=0; y=0; sizex=0.8; sizey=0.8' } }
+        ]}, frames: 5 },
       ];
 
       // Share one renderer for all visual tests
