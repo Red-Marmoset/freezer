@@ -33,8 +33,8 @@ const FRAG = `
   void main() {
     vec4 tex = texture2D(tSprite, vUv);
     vec3 c = uColorize == 1 ? tex.rgb * vColor : tex.rgb;
-    if (dot(c, c) < 0.001) discard;
-    gl_FragColor = vec4(c, 1.0);
+    if (tex.a < 0.01 || dot(c, c) < 0.001) discard;
+    gl_FragColor = vec4(c, tex.a);
   }
 `;
 

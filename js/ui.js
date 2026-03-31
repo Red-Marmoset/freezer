@@ -368,6 +368,8 @@ const FINISHED_COMPONENTS = new Set([
   'Invert',
   'UniqueTone',
   'SuperScope',
+  'SetRenderMode',
+  'ClearScreen',
 ]);
 
 // Known select-type fields and their options
