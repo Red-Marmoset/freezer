@@ -205,6 +205,9 @@ export class TextComponent extends AvsComponent {
       displayText = this.text;
     }
 
+    // Skip rendering entirely when there's nothing to display
+    if (!displayText) return;
+
     // Redraw text buffer if needed
     if (this._needsRedraw) {
       this._drawText(displayText, w, h);
