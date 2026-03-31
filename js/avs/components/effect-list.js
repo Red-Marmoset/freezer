@@ -101,8 +101,10 @@ export class EffectList extends AvsComponent {
     }
 
     // Determine rendering target:
-    // If both input and output are IGNORE, render directly onto parent FB
-    const renderToParent = (this.input === BLEND.IGNORE && this.output === BLEND.IGNORE && parentFb);
+    // vis_avs optimization: if both input=IGNORE and output=REPLACE, render
+    // children directly onto parent FB (skipping the child FB copy).
+    // Note: output=IGNORE means "discard child result" — must use child FB.
+    const renderToParent = (this.input === BLEND.IGNORE && this.output === BLEND.REPLACE && parentFb);
     const targetFb = renderToParent ? parentFb : this.childFb;
 
     if (!renderToParent) {

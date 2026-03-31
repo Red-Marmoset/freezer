@@ -963,14 +963,14 @@ test('EL input=REPLACE: child gets parent content', async () => {
 });
 
 test('EL input=FIFTY_FIFTY: child gets 50% parent', async () => {
-  // Parent=white, input=FIFTY_FIFTY → child gets 50% white → child does nothing → output=REPLACE
+  // Parent=white, input=FIFTY_FIFTY → child cleared to black → blend 50% parent → output=REPLACE
   const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
     { type: 'ClearScreen', enabled: true, color: '#ffffff' },
-    { type: 'EffectList', enabled: true, clearFrame: false, input: 'FIFTY_FIFTY', output: 'REPLACE',
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'FIFTY_FIFTY', output: 'REPLACE',
       components: [] }
   ]});
   const mid = (64 * 128 + 64) * 4;
-  // 50% of 255 ≈ 127
+  // 50/50 of white and black child → ~127
   if (pixels[mid] < 90 || pixels[mid] > 170) throw new Error(`Expected ~127 from 50/50 input, got R=${pixels[mid]}`);
 });
 
