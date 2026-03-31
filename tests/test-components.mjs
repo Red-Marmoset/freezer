@@ -935,6 +935,72 @@ test('DotGrid renders grid of dots', async () => {
   if (nonBlack < 20) throw new Error(`Expected DotGrid dots, got ${nonBlack} pixels`);
 });
 
+// ── BufferSave/Restore round-trip test ──────────────────────────────
+
+test('BufferSave+ClearScreen+Restore preserves original', async () => {
+  // Draw a pattern, save it, render random junk in EffectLists,
+  // clear screen, restore — result should match the saved pattern.
+  const { pixels: original } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ff8800'],
+        code: { init: 'n=200', perFrame: '', onBeat: '',
+          perPoint: 'x=sin(i*$PI*6)*0.7; y=cos(i*$PI*4)*0.5; red=i; green=1-i; blue=0.5+sin(i*$PI)*0.5' } },
+    ]
+  });
+
+  const { pixels: restored } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      // 1. Draw the same pattern
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ff8800'],
+        code: { init: 'n=200', perFrame: '', onBeat: '',
+          perPoint: 'x=sin(i*$PI*6)*0.7; y=cos(i*$PI*4)*0.5; red=i; green=1-i; blue=0.5+sin(i*$PI)*0.5' } },
+      // 2. Save to buffer 0
+      { type: 'BufferSave', action: 0, buffer: 0, blendMode: 'REPLACE' },
+      // 3. Splatter random garbage via EffectList
+      { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'REPLACE',
+        components: [
+          { type: 'ClearScreen', enabled: true, color: '#ff00ff' },
+          { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+            audioChannel: 'CENTER', colors: ['#00ff00'],
+            code: { init: 'n=500', perFrame: '', onBeat: '',
+              perPoint: 'x=rand(200)/100-1; y=rand(200)/100-1' } },
+        ]
+      },
+      // 4. Clear screen to wipe the garbage
+      { type: 'ClearScreen', enabled: true, color: '#000000' },
+      // 5. More junk
+      { type: 'SuperScope', enabled: true, drawMode: 'LINES', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=50', perFrame: '', onBeat: '',
+          perPoint: 'x=i*2-1; y=sin(i*20)*0.8' } },
+      // 6. Clear again
+      { type: 'ClearScreen', enabled: true, color: '#000000' },
+      // 7. Restore from buffer 0
+      { type: 'BufferSave', action: 1, buffer: 0, blendMode: 'REPLACE' },
+    ]
+  });
+
+  // Compare: restored frame should match the original
+  let matchPixels = 0, totalChecked = 0, maxDiff = 0;
+  for (let i = 0; i < original.length; i += 4) {
+    totalChecked++;
+    const dr = Math.abs(original[i] - restored[i]);
+    const dg = Math.abs(original[i+1] - restored[i+1]);
+    const db = Math.abs(original[i+2] - restored[i+2]);
+    const diff = Math.max(dr, dg, db);
+    maxDiff = Math.max(maxDiff, diff);
+    if (diff <= 2) matchPixels++;
+  }
+  const matchPct = (matchPixels / totalChecked * 100);
+  if (matchPct < 95) {
+    throw new Error(`Expected >95% match after save/restore, got ${matchPct.toFixed(1)}% (maxDiff=${maxDiff})`);
+  }
+});
+
 // ── Helpers ─────────────────────────────────────────────────────────
 
 function countPixelsInRing(pixels, width, height, innerR, outerR) {
