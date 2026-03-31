@@ -1256,6 +1256,95 @@ test('Text empty string renders nothing', async () => {
   }
 });
 
+// ── Texer II Tests ──────────────────────────────────────────────────
+
+test('Texer II renders sprites at EEL positions', async () => {
+  // Texer II with n=5 points in a line should produce visible sprites
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
+        code: { init: 'n=5', perFrame: '', onBeat: '',
+          perPoint: 'x=i*1.6-0.8; y=0; sizex=0.1; sizey=0.1' } }
+    ]
+  });
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 10) throw new Error(`Expected Texer II sprites >10 pixels, got ${nonBlack}`);
+});
+
+test('Texer II sprites at known positions', async () => {
+  // Place one sprite at center — should light up center area
+  const { pixels, width, height } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
+        code: { init: 'n=1', perFrame: '', onBeat: '',
+          perPoint: 'x=0; y=0; sizex=0.2; sizey=0.2' } }
+    ]
+  });
+  // Center area should have pixels
+  const cx = Math.floor(width / 2);
+  const cy = Math.floor(height / 2);
+  let centerBright = 0;
+  for (let dy = -10; dy <= 10; dy++) {
+    for (let dx = -10; dx <= 10; dx++) {
+      const px = cx + dx, py = cy + dy;
+      if (px >= 0 && px < width && py >= 0 && py < height) {
+        const i = (py * width + px) * 4;
+        if (pixels[i] > 10 || pixels[i+1] > 10 || pixels[i+2] > 10) centerBright++;
+      }
+    }
+  }
+  if (centerBright < 5) throw new Error(`Expected Texer II sprite at center, got ${centerBright} bright pixels`);
+});
+
+test('Texer II sprite not at center when offset', async () => {
+  // Place sprite at x=0.5 — should NOT be at center
+  const { pixels, width, height } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
+        code: { init: 'n=1', perFrame: '', onBeat: '',
+          perPoint: 'x=0.5; y=0; sizex=0.1; sizey=0.1' } }
+    ]
+  });
+  // Center column should be dark, right side should have sprite
+  const cx = Math.floor(width / 2);
+  const cy = Math.floor(height / 2);
+  const centerVal = pixels[(cy * width + cx) * 4];
+  // Check right quarter
+  const rx = Math.floor(width * 0.75);
+  let rightBright = 0;
+  for (let dy = -8; dy <= 8; dy++) {
+    const py = cy + dy;
+    if (py >= 0 && py < height) {
+      const i = (py * width + rx) * 4;
+      if (pixels[i] > 10) rightBright++;
+    }
+  }
+  if (centerVal > 20 && rightBright === 0) throw new Error(`Sprite should be offset right, but center=${centerVal}, right=${rightBright}`);
+});
+
+test('Texer II per-point color tinting', async () => {
+  // Set sprite color to red via EEL
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
+        code: { init: 'n=1', perFrame: '', onBeat: '',
+          perPoint: 'x=0; y=0; sizex=0.3; sizey=0.3; red=1; green=0; blue=0' } }
+    ]
+  });
+  // Should have red pixels, minimal green/blue
+  let redCount = 0, greenCount = 0;
+  for (let i = 0; i < pixels.length; i += 4) {
+    if (pixels[i] > 50 && pixels[i+1] < 30 && pixels[i+2] < 30) redCount++;
+    if (pixels[i+1] > 50 && pixels[i] < 30) greenCount++;
+  }
+  if (redCount < 5) throw new Error(`Expected red-tinted sprites, got ${redCount} red pixels`);
+  if (greenCount > redCount) throw new Error(`Expected mostly red, got ${greenCount} green vs ${redCount} red`);
+});
+
 // ── Helpers ─────────────────────────────────────────────────────────
 
 function countPixelsInRing(pixels, width, height, innerR, outerR) {
