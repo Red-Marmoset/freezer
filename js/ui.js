@@ -1865,7 +1865,10 @@ document.querySelector('.comment-overlay-backdrop').addEventListener('click', ()
 
 document.addEventListener('dragover', (e) => {
   e.preventDefault();
-  document.body.classList.add('dragover');
+  // Only show drop overlay for external file drags, not internal component reordering
+  if (e.dataTransfer.types.includes('Files')) {
+    document.body.classList.add('dragover');
+  }
 });
 
 document.addEventListener('dragleave', (e) => {

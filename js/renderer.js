@@ -1,8 +1,8 @@
 import * as THREE from 'https://esm.sh/three@0.171.0';
 
 export function createRenderer(canvas) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
+  renderer.setPixelRatio(1); // AVS is a low-res pixel art engine — no HiDPI scaling
   // AVS operates in linear color space — no sRGB gamma correction.
   // Without this, effects like Invert produce wrong colors (white→pink instead of black).
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;

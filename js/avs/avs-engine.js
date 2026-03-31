@@ -185,36 +185,18 @@ class AvsPreset {
       this.framebuffer.clear(0x000000);
     }
 
-    // Get raw WebGL context for texture unbinding
-    const gl = renderer.getContext();
-
     // Render all components onto the active framebuffer
     for (const comp of this.components) {
       if (comp.enabled) {
         comp.render(avsCtx, this.framebuffer);
-        // Unbind ALL texture units and render target to prevent feedback loops.
-        // Three.js caches texture bindings — nulling uniforms isn't enough.
-        renderer.setRenderTarget(null);
-        for (let i = 0; i < 8; i++) {
-          gl.activeTexture(gl.TEXTURE0 + i);
-          gl.bindTexture(gl.TEXTURE_2D, null);
-        }
-        // Tell Three.js its cache is stale
-        renderer.resetState();
       }
     }
 
     // Restore autoClear
     renderer.autoClear = prevAutoClear;
 
-    // Blit framebuffer to screen using dedicated scene (avoids feedback loop)
-    // Reset ALL GL state first so no framebuffer textures remain bound
+    // Blit framebuffer to screen
     renderer.setRenderTarget(null);
-    for (let i = 0; i < 8; i++) {
-      gl.activeTexture(gl.TEXTURE0 + i);
-      gl.bindTexture(gl.TEXTURE_2D, null);
-    }
-    renderer.resetState();
 
     // Now safely bind the framebuffer texture and render to screen
     this._outputMaterial.uniforms.tSource.value = this.framebuffer.getActiveTexture();
