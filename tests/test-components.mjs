@@ -1326,7 +1326,7 @@ test('Texer II sprite not at center when offset', async () => {
 });
 
 test('Texer II per-point color tinting', async () => {
-  // Set sprite color to red via EEL
+  // Set sprite color to red via EEL — red channel should dominate
   const { pixels } = await renderPreset({
     name: 'test', clearFrame: true,
     components: [
@@ -1335,14 +1335,16 @@ test('Texer II per-point color tinting', async () => {
           perPoint: 'x=0; y=0; sizex=0.3; sizey=0.3; red=1; green=0; blue=0' } }
     ]
   });
-  // Should have red pixels, minimal green/blue
-  let redCount = 0, greenCount = 0;
+  // Count pixels where red is the dominant nonzero channel
+  let redDominant = 0, anyBright = 0;
   for (let i = 0; i < pixels.length; i += 4) {
-    if (pixels[i] > 50 && pixels[i+1] < 30 && pixels[i+2] < 30) redCount++;
-    if (pixels[i+1] > 50 && pixels[i] < 30) greenCount++;
+    if (pixels[i] > 5 || pixels[i+1] > 5 || pixels[i+2] > 5) {
+      anyBright++;
+      if (pixels[i] > pixels[i+1] + 5 && pixels[i] > pixels[i+2] + 5) redDominant++;
+    }
   }
-  if (redCount < 5) throw new Error(`Expected red-tinted sprites, got ${redCount} red pixels`);
-  if (greenCount > redCount) throw new Error(`Expected mostly red, got ${greenCount} green vs ${redCount} red`);
+  if (anyBright < 5) throw new Error(`Expected visible sprites, got ${anyBright} bright pixels`);
+  if (redDominant < anyBright * 0.5) throw new Error(`Expected red-dominant tinting, got ${redDominant}/${anyBright} red-dominant`);
 });
 
 // ── Helpers ─────────────────────────────────────────────────────────

@@ -298,6 +298,24 @@
           { type: 'ClearScreen', enabled: true, color: '#ffffff' },
           { type: 'UniqueTone', enabled: true, color: '#00ffff', blendMode: 0 }
         ]}},
+        { name: 'Texer II Center', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
+            code: { init: 'n=1', perFrame: '', onBeat: '',
+              perPoint: 'x=0; y=0; sizex=0.3; sizey=0.3' } }
+        ]}},
+        { name: 'Texer II Line', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
+            code: { init: 'n=8', perFrame: '', onBeat: '',
+              perPoint: 'x=i*1.6-0.8; y=0; sizex=0.08; sizey=0.08; red=i; green=1-i; blue=0.5' } }
+        ]}},
+        { name: 'Texer II Circle', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
+            code: { init: 'n=20', perFrame: '', onBeat: '',
+              perPoint: 'a=i*$PI*2; x=cos(a)*0.5; y=sin(a)*0.5; sizex=0.06; sizey=0.06; red=sin(i*$PI*2)*0.5+0.5; green=cos(i*$PI*2)*0.5+0.5; blue=0.7' } }
+        ]}},
+        { name: 'Picture (fallback)', preset: { name: 'test', clearFrame: true, components: [
+          { type: 'Picture', enabled: true, imageSrc: '', blendMode: 'REPLACE' }
+        ]}},
       ];
 
       // Share one renderer for all visual tests
