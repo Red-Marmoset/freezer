@@ -47,7 +47,7 @@ const DEFAULT_PRESET = {
         perPoint: 'asp=h/w; r=0.4+v*0.15; a=i*$PI*2+t; x=cos(a)*r*asp; y=sin(a)*r; hue=i+t*0.1; red=sin(hue*$PI*2)*0.5+0.5; green=sin((hue+0.333)*$PI*2)*0.5+0.5; blue=sin((hue+0.666)*$PI*2)*0.5+0.5',
       },
     },
-    { type: 'Starfield', enabled: true, speed: 48, onBeatSpeed: 48, maxStars: 4096, colors: ['#ffffff'] },
+    { type: 'Starfield', enabled: true, speed: 48, onBeatSpeed: 48, numStars: 4096, colors: ['#ffffff'] },
     { type: 'MovingParticle', enabled: true, color: '#ff9999', maxdist: 16, size: 4, size2: 8, onBeatSizeChange: true },
     { type: 'MovingParticle', enabled: true, color: '#99ccff', maxdist: 16, size: 4, size2: 8, onBeatSizeChange: true },
     { type: 'MovingParticle', enabled: true, color: '#99ff99', maxdist: 16, size: 4, size2: 8, onBeatSizeChange: true },
