@@ -1326,11 +1326,11 @@ test('Texer II sprite not at center when offset', async () => {
 });
 
 test('Texer II per-point color tinting', async () => {
-  // Set sprite color to red via EEL — red channel should dominate
+  // Set sprite color to red via EEL — need colorFilter:1 to enable tinting
   const { pixels } = await renderPreset({
     name: 'test', clearFrame: true,
     components: [
-      { type: 'Acko.net: Texer II', enabled: true, imageSrc: '',
+      { type: 'Acko.net: Texer II', enabled: true, imageSrc: '', colorFilter: 1,
         code: { init: 'n=1', perFrame: '', onBeat: '',
           perPoint: 'x=0; y=0; sizex=0.3; sizey=0.3; red=1; green=0; blue=0' } }
     ]
