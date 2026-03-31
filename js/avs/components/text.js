@@ -72,7 +72,7 @@ const FRAG_5050 = `
 export class TextComponent extends AvsComponent {
   constructor(opts) {
     super(opts);
-    this.text = opts.text || 'AVS';
+    this.text = opts.text !== undefined ? opts.text : 'AVS';
     this.color = opts.color || '#ffffff';
     this.outlineColor = opts.outlineColor || '#000000';
     this.outline = opts.outline || false;
