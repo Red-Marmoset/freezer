@@ -1,6 +1,7 @@
 import { createAudioEngine } from './audio-engine.js';
 import { createRenderer } from './renderer.js';
 import { loadAvsPreset } from './avs/avs-engine.js';
+import { AvsComponent } from './avs/avs-component.js';
 import { parseAvsFileWithName } from './avs/avs-parser.js';
 import { initPresetBrowser, open as openPresetLibrary, close as closePresetLibrary, isOpen as isPresetLibraryOpen, loadPresetById, findPresetId } from './preset-library/preset-browser.js';
 import { initHelp } from './help.js';
@@ -1697,14 +1698,46 @@ function closePicker() {
 btnPickerClose.addEventListener('click', closePicker);
 componentPicker.querySelector('.comp-picker-backdrop').addEventListener('click', closePicker);
 
-// Handle pick
-componentPicker.querySelectorAll('.comp-pick-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const type = btn.dataset.type;
-    addComponent(type);
-    closePicker();
-  });
-});
+// Build picker dynamically from component registry
+(function buildComponentPicker() {
+  const body = document.getElementById('comp-picker-body');
+  const allTypes = AvsComponent.getRegisteredTypes();
+
+  const MILKDROP = new Set(['MilkDropMotion', 'CustomShader', 'DarkenCenter', 'Echo', 'GeissEffect']);
+  const MISC = new Set(['EffectList', 'BufferSave', 'SetRenderMode', 'Comment', 'CustomBPM',
+    'EelTrans', 'Jheriko: Global', 'Multiplier', 'MultiFilter']);
+
+  const categories = { render: [], trans: [], misc: [], milkdrop: [] };
+  for (const type of allTypes) {
+    if (MILKDROP.has(type)) categories.milkdrop.push(type);
+    else if (MISC.has(type)) categories.misc.push(type);
+    else if (RENDER_TYPES.includes(type)) categories.render.push(type);
+    else if (TRANS_TYPES.includes(type)) categories.trans.push(type);
+    else categories.render.push(type); // default: render
+  }
+
+  for (const [cat, label] of [['render','RENDER'],['trans','TRANSFORM'],['misc','MISC'],['milkdrop','MILKDROP']]) {
+    if (!categories[cat].length) continue;
+    const section = document.createElement('div');
+    section.className = 'comp-picker-category';
+    const lbl = document.createElement('div');
+    lbl.className = 'comp-picker-cat-label';
+    lbl.textContent = label;
+    section.appendChild(lbl);
+    const list = document.createElement('div');
+    list.className = 'comp-picker-list';
+    for (const type of categories[cat]) {
+      const btn = document.createElement('button');
+      btn.className = 'comp-pick-btn';
+      btn.dataset.type = type;
+      btn.textContent = DISPLAY_NAMES[type] || type;
+      btn.addEventListener('click', () => { addComponent(type); closePicker(); });
+      list.appendChild(btn);
+    }
+    section.appendChild(list);
+    body.appendChild(section);
+  }
+})();
 
 function addComponent(type) {
   if (!currentPresetJSON) return;

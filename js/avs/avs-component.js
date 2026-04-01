@@ -14,6 +14,22 @@ export class AvsComponent {
 
   static register(type, cls) {
     registry[type.toLowerCase()] = cls;
+    // Store original casing for display
+    if (!cls._registeredName) cls._registeredName = type;
+  }
+
+  /** Return all registered type names (original casing). */
+  static getRegisteredTypes() {
+    const seen = new Set();
+    const types = [];
+    for (const cls of Object.values(registry)) {
+      const name = cls._registeredName;
+      if (name && !seen.has(name)) {
+        seen.add(name);
+        types.push(name);
+      }
+    }
+    return types.sort();
   }
 
   static fromJSON(json) {
