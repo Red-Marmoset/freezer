@@ -101,9 +101,10 @@ export class EffectList extends AvsComponent {
     }
 
     // Determine rendering target:
-    // vis_avs optimization: if both input=IGNORE and output=REPLACE, render
-    // children directly onto parent FB (skipping the child FB copy).
-    // Note: output=IGNORE means "discard child result" — must use child FB.
+    // When input=IGNORE and output=REPLACE, children render directly onto
+    // the parent FB (no separate buffer needed, result replaces parent).
+    // When output=IGNORE, children render into their own buffer (for side
+    // effects like BufferSave) but the result is NOT composited back.
     const renderToParent = (this.input === BLEND.IGNORE && this.output === BLEND.REPLACE && parentFb);
     const targetFb = renderToParent ? parentFb : this.childFb;
 

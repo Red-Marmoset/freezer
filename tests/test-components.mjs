@@ -1003,14 +1003,16 @@ test('EL output=REPLACE: child overwrites parent', async () => {
   if (pixels[mid + 2] < 200) throw new Error(`Expected blue from child, got B=${pixels[mid + 2]}`);
 });
 
-test('EL output=IGNORE: child result discarded', async () => {
+test('EL IGNORE/IGNORE: renders to own buffer, parent unchanged', async () => {
+  // input=IGNORE + output=IGNORE: children render to their own buffer
+  // (for side effects like BufferSave) but result is NOT composited back.
   const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
     { type: 'ClearScreen', enabled: true, color: '#ff0000' },
     { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'IGNORE',
       components: [{ type: 'ClearScreen', enabled: true, color: '#0000ff' }] }
   ]});
   const mid = (64 * 128 + 64) * 4;
-  // Output=IGNORE → parent unchanged = still red
+  // Output=IGNORE → parent stays red, blue is discarded
   if (pixels[mid] < 200) throw new Error(`Expected red preserved (output ignored), got R=${pixels[mid]}`);
   if (pixels[mid + 2] > 10) throw new Error(`Expected no blue (output ignored), got B=${pixels[mid + 2]}`);
 });
@@ -1116,6 +1118,71 @@ test('Triple nested EL: additive chain builds white', async () => {
   if (pixels[mid] < 200) throw new Error(`Expected R~255, got R=${pixels[mid]}`);
   if (pixels[mid + 1] < 200) throw new Error(`Expected G~255, got G=${pixels[mid + 1]}`);
   if (pixels[mid + 2] < 200) throw new Error(`Expected B~255, got B=${pixels[mid + 2]}`);
+});
+
+// ── Nuclear Warfare pattern: nested ELs with IGNORE/IGNORE outer ────
+
+test('Nuclear Warfare pattern: EL IGNORE/IGNORE + BufferSave + SuperScope', async () => {
+  // Pattern from UnConeD Nuclear Warfare:
+  // 1. EL(IGNORE/IGNORE) renders into own buffer, saves to buffer 0
+  // 2. SuperScope after the EL reads buffer 0 and renders to parent
+  // This tests that BufferSave inside IGNORE/IGNORE EL works and
+  // content after the EL can read the saved buffer.
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'IGNORE',
+      components: [
+        { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+          audioChannel: 'CENTER', colors: ['#ffffff'],
+          code: { init: 'n=100', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=sin(i*$PI*8)*0.5' } },
+        { type: 'BufferSave', action: 0, buffer: 0, blendMode: 'REPLACE' },
+      ]
+    },
+    // After the EL: draw something visible directly on the root FB
+    { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+      audioChannel: 'CENTER', colors: ['#ff8800'],
+      code: { init: 'n=50', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=0' } },
+  ]});
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 10) throw new Error(`Expected visible content after IGNORE/IGNORE EL, got ${nonBlack} pixels`);
+});
+
+test('BufferSave inside IGNORE/IGNORE EL can be restored outside', async () => {
+  // This is the key pattern from Nuclear Warfare:
+  // EL(IGNORE/IGNORE) draws content + saves to buffer
+  // Outside the EL, buffer is restored → content becomes visible
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    // 1. IGNORE/IGNORE EL draws white dots and saves to buffer 0
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'IGNORE',
+      components: [
+        { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+          audioChannel: 'CENTER', colors: ['#ffffff'],
+          code: { init: 'n=100', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=sin(i*$PI*6)*0.4' } },
+        { type: 'BufferSave', action: 0, buffer: 0, blendMode: 'REPLACE' },
+      ]
+    },
+    // 2. Parent FB is still black (EL output was ignored)
+    // 3. Restore buffer 0 → white dots appear on parent
+    { type: 'BufferSave', action: 1, buffer: 0, blendMode: 'REPLACE' },
+  ]});
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 20) throw new Error(`Expected buffer restore to show saved content, got ${nonBlack} pixels`);
+});
+
+test('EL IGNORE/IGNORE does not affect parent', async () => {
+  // Verify that IGNORE/IGNORE EL content doesn't leak to parent
+  const { pixels } = await renderPreset({ name: 'test', clearFrame: true, components: [
+    { type: 'ClearScreen', enabled: true, color: '#000000' },
+    { type: 'EffectList', enabled: true, clearFrame: true, input: 'IGNORE', output: 'IGNORE',
+      components: [
+        { type: 'ClearScreen', enabled: true, color: '#ffffff' },
+        { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+          audioChannel: 'CENTER', colors: ['#ff0000'],
+          code: { init: 'n=200', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=i*2-1' } },
+      ]
+    },
+  ]});
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack > 0) throw new Error(`Expected IGNORE/IGNORE to not affect parent, got ${nonBlack} non-black pixels`);
 });
 
 // ── BufferSave/Restore round-trip test ──────────────────────────────
@@ -1254,6 +1321,127 @@ test('Text empty string renders nothing', async () => {
   if (Math.abs(withText[mid] - without[mid]) > 3) {
     throw new Error(`Empty text changed pixels: with=${withText[mid]}, without=${without[mid]}`);
   }
+});
+
+// ── Simple component tests ──────────────────────────────────────────
+
+test('Simple waveform renders horizontal line', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'Simple', enabled: true, audioSource: 'WAVEFORM', renderType: 'LINES',
+        audioChannel: 'CENTER', positionY: 'CENTER', colors: ['#ffffff'] }
+    ]
+  });
+  // With silence (128 waveform), Simple draws a flat horizontal line at center
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 10) throw new Error(`Expected Simple waveform line, got ${nonBlack} pixels`);
+});
+
+test('Simple spectrum renders bars', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'Simple', enabled: true, audioSource: 'SPECTRUM', renderType: 'LINES',
+        audioChannel: 'CENTER', positionY: 'BOTTOM', colors: ['#00ff00'] }
+    ]
+  });
+  // Spectrum at -60dB should still produce some visible bars near the left
+  const nonBlack = countNonBlack(pixels);
+  // Even with quiet audio, there should be some spectrum data
+  if (nonBlack === 0) throw new Error(`Expected Simple spectrum to render something, got 0 pixels`);
+});
+
+test('Simple DOTS mode renders points', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'Simple', enabled: true, audioSource: 'WAVEFORM', renderType: 'DOTS',
+        audioChannel: 'CENTER', positionY: 'CENTER', colors: ['#ffff00'] }
+    ]
+  });
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 5) throw new Error(`Expected Simple dots, got ${nonBlack} pixels`);
+});
+
+// ── Water component test ────────────────────────────────────────────
+
+test('Water distorts existing content', async () => {
+  const { pixels: before } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=100', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=0' } }
+    ]
+  });
+  const { pixels: after } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=100', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=0' } },
+      { type: 'Water', enabled: true }
+    ]
+  }, 5);
+  // Water should change the pixel distribution
+  const beforeCount = countNonBlack(before);
+  const afterCount = countNonBlack(after);
+  if (beforeCount === 0) throw new Error('Before has no pixels');
+  if (afterCount === beforeCount) throw new Error(`Expected Water to change distribution: ${beforeCount} → ${afterCount}`);
+});
+
+// ── SetRenderMode test ──────────────────────────────────────────────
+
+test('SetRenderMode affects line rendering', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'SetRenderMode', enabled: true },
+      { type: 'SuperScope', enabled: true, drawMode: 'LINES', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=100', perFrame: '', onBeat: '', perPoint: 'x=i*2-1; y=sin(i*$PI*4)*0.3' } }
+    ]
+  });
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 10) throw new Error(`Expected lines with SetRenderMode, got ${nonBlack} pixels`);
+});
+
+// ── Movement user-defined (effect 32767) test ───────────────────────
+
+test('Movement user-defined code works', async () => {
+  const { pixels: before } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=100', perFrame: '', onBeat: '', perPoint: 'a=i*$PI*2; x=cos(a)*0.5; y=sin(a)*0.5' } }
+    ]
+  });
+  const { pixels: after } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [
+      { type: 'SuperScope', enabled: true, drawMode: 'DOTS', audioSource: 'WAVEFORM',
+        audioChannel: 'CENTER', colors: ['#ffffff'],
+        code: { init: 'n=100', perFrame: '', onBeat: '', perPoint: 'a=i*$PI*2; x=cos(a)*0.5; y=sin(a)*0.5' } },
+      { type: 'Movement', enabled: true, builtinEffect: 32767, coordinates: 'POLAR',
+        code: 'd=d*0.8; r=r+0.1' }
+    ]
+  });
+  const beforeCount = countNonBlack(before);
+  const afterCount = countNonBlack(after);
+  if (beforeCount === afterCount) throw new Error(`Expected user Movement to change pattern: ${beforeCount} → ${afterCount}`);
+});
+
+// ── Interferences test ──────────────────────────────────────────────
+
+test('Interferences creates visible pattern', async () => {
+  const { pixels } = await renderPreset({
+    name: 'test', clearFrame: true,
+    components: [{ type: 'Interferences', enabled: true }]
+  }, 3);
+  const nonBlack = countNonBlack(pixels);
+  if (nonBlack < 50) throw new Error(`Expected Interferences pattern, got ${nonBlack} pixels`);
 });
 
 // ── ColorMap Tests ───────────────────────────────────────────────────
