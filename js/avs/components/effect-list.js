@@ -101,11 +101,13 @@ export class EffectList extends AvsComponent {
     }
 
     // Determine rendering target:
-    // When input=IGNORE and output=REPLACE, children render directly onto
-    // the parent FB (no separate buffer needed, result replaces parent).
-    // When output=IGNORE, children render into their own buffer (for side
-    // effects like BufferSave) but the result is NOT composited back.
-    const renderToParent = (this.input === BLEND.IGNORE && this.output === BLEND.REPLACE && parentFb);
+    // When input=IGNORE, output=REPLACE, AND clearFrame=true, render directly
+    // onto parent FB (optimization — no separate buffer needed).
+    // When clearFrame=false, we MUST use the child FB for frame persistence
+    // (child content survives across frames, e.g. earth texture in Nuclear Warfare).
+    // When output=IGNORE, use child FB for side effects (BufferSave).
+    const renderToParent = (this.input === BLEND.IGNORE && this.output === BLEND.REPLACE
+                            && frameClear && parentFb);
     const targetFb = renderToParent ? parentFb : this.childFb;
 
     if (!renderToParent) {
